@@ -11,6 +11,12 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'images.unsplash.com',
       },
+      {
+        // Vercel Blob Storage — matches any subdomain like
+        // abc123.public.blob.vercel-storage.com
+        protocol: 'https',
+        hostname: '**.public.blob.vercel-storage.com',
+      },
     ],
   },
 }
