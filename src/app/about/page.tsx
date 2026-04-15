@@ -6,7 +6,7 @@ import FadeIn from '@/components/FadeIn'
 export const metadata = {
   title: 'About — Dynamik Design Lab',
   description:
-    'A maker-run product design and prototyping studio in Pune. Built by engineers who have shipped real hardware.',
+    'A maker-run product design and prototyping studio in Pune. Built by Jeetendra Kumar.',
 }
 
 const EQUIPMENT = [
