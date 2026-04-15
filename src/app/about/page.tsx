@@ -165,7 +165,7 @@ export default function AboutPage() {
             <div className="grid grid-cols-1 lg:grid-cols-[1fr_2fr] gap-10 lg:gap-16 items-start">
               <div className="relative aspect-square overflow-hidden bg-bg-light max-w-md">
                 <Image
-                  src="https://picsum.photos/seed/founder/900/900"
+                  src="https://www.base.org/_next/image?url=%2F_next%2Fstatic%2Fmedia%2Fasset.3dd7158d.png&w=750&q=99"
                   alt="Founder"
                   fill
                   sizes="(min-width: 1024px) 33vw, 100vw"
