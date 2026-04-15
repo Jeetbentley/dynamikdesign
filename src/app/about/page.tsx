@@ -34,7 +34,7 @@ const EQUIPMENT = [
 
 const VALUES = [
   {
-    title: 'Build, then talk',
+    title: 'Build and then talk XD ',
     body: 'We would rather hand you a printed part than send another email.',
     icon: (
       <svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="currentColor" strokeWidth="1.5">
