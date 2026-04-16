@@ -14,7 +14,7 @@ interface LogoProps {
   height?: number
 }
 
-export default function Logo({ light = false, height = 28 }: LogoProps) {
+export default function Logo({ light = false, height = 20 }: LogoProps) {
   const width = Math.round(height * ASPECT_RATIO)
 
   return (
