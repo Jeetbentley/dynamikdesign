@@ -5,11 +5,18 @@ import Link from 'next/link'
 const LOGO_DARK = 'https://YOUR-BLOB-URL.public.blob.vercel-storage.com/logo.svg'
 const LOGO_LIGHT = 'https://YOUR-BLOB-URL.public.blob.vercel-storage.com/logo-white.svg'
 
-// Intrinsic aspect ratio of your logo file (adjust if different)
-const LOGO_WIDTH = 160
-const LOGO_HEIGHT = 32
+// Intrinsic aspect ratio of your logo file (width / height)
+const ASPECT_RATIO = 5 // 160 / 32
 
-export default function Logo({ light = false }: { light?: boolean }) {
+interface LogoProps {
+  light?: boolean
+  /** Logo height in pixels (default: 28) */
+  height?: number
+}
+
+export default function Logo({ light = false, height = 28 }: LogoProps) {
+  const width = Math.round(height * ASPECT_RATIO)
+
   return (
     <Link
       href="/"
@@ -19,10 +26,10 @@ export default function Logo({ light = false }: { light?: boolean }) {
       <Image
         src={light ? LOGO_LIGHT : LOGO_DARK}
         alt="Dynamik Design Lab"
-        width={LOGO_WIDTH}
-        height={LOGO_HEIGHT}
+        width={width}
+        height={height}
         priority
-        className="h-7 w-auto"
+        style={{ height, width: 'auto' }}
       />
     </Link>
   )
