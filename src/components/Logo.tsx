@@ -2,8 +2,8 @@ import Image from 'next/image'
 import Link from 'next/link'
 
 // Paste your Vercel Blob URLs here:
-const LOGO_DARK = 'https://YOUR-BLOB-URL.public.blob.vercel-storage.com/logo.svg'
-const LOGO_LIGHT = 'https://YOUR-BLOB-URL.public.blob.vercel-storage.com/logo-white.svg'
+const LOGO_DARK = 'https://0tnfcliofmlsl1jg.public.blob.vercel-storage.com/Company_logo_homepage/dynamik.svg'
+const LOGO_LIGHT = 'https://0tnfcliofmlsl1jg.public.blob.vercel-storage.com/Company_logo_homepage/dynamik.svg'
 
 // Intrinsic aspect ratio of your logo file (width / height)
 const ASPECT_RATIO = 5 // 160 / 32
