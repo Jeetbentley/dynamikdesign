@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from 'react'
 import { usePathname } from 'next/navigation'
 import { AnimatePresence, motion } from 'framer-motion'
 import Logo from './Logo'
+import { PRODUCTS_MENU, SERVICES_MENU } from '@/data/navigation'
 
 interface MenuItem {
   label: string
@@ -18,30 +19,31 @@ interface Menu {
   items: MenuItem[]
 }
 
-const MENUS: Menu[] = [
-  {
-    label: 'Services',
-    href: '/services',
-    items: [
-      { label: 'All Services', href: '/services', description: 'Overview of what we do' },
-      { label: 'FDM 3D Printing', href: '/services/fdm-printing', description: 'Large-format functional parts' },
-      { label: 'SLA 3D Printing', href: '/services/sla-printing', description: 'High-detail resin prints' },
-      { label: 'Product Design', href: '/services/product-design', description: 'Industrial design, CAD & DFM' },
-      { label: 'Embedded & IoT', href: '/services/embedded', description: 'PCBs, firmware, sensors' },
-    ],
-  },
-  {
-    label: 'Products',
-    href: '/products',
-    items: [
-      { label: 'Tile', href: '/products/tile', description: '64-pixel desk clock, lamp & canvas' },
-    ],
-  },
-]
-
 const NAV_HEIGHT = 68
 // Pages that get the dark navbar that hides on scroll-down and returns on scroll-up.
 const DARK_ROUTES = ['/products/tile']
+
+const triggerClass = (dark: boolean, active: boolean) =>
+  `flex items-center gap-1.5 font-medium py-2 transition-colors ${
+    dark
+      ? `text-[13px] uppercase tracking-[0.14em] ${active ? 'text-[#F0641E]' : 'text-[#EDEDEF] hover:text-[#F0641E]'}`
+      : `text-[15px] ${active ? 'text-red' : 'text-text-primary hover:text-red'}`
+  }`
+
+function Chevron({ open }: { open: boolean }) {
+  return (
+    <svg
+      width="10"
+      height="6"
+      viewBox="0 0 10 6"
+      fill="none"
+      aria-hidden="true"
+      className={`transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
+    >
+      <path d="M1 1L5 5L9 1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  )
+}
 
 function Dropdown({ menu, active, dark }: { menu: Menu; active: boolean; dark: boolean }) {
   const [open, setOpen] = useState(false)
@@ -49,36 +51,22 @@ function Dropdown({ menu, active, dark }: { menu: Menu; active: boolean; dark: b
 
   useEffect(() => setOpen(false), [pathname])
 
-  const triggerColor = dark
-    ? active ? 'text-[#F0641E]' : 'text-[#EDEDEF] hover:text-[#F0641E]'
-    : active ? 'text-red' : 'text-text-primary hover:text-red'
-
   return (
     <div
       className="relative"
       onMouseEnter={() => setOpen(true)}
       onMouseLeave={() => setOpen(false)}
+      onKeyDown={(e) => e.key === 'Escape' && setOpen(false)}
     >
       <button
         type="button"
         aria-expanded={open}
         aria-haspopup="true"
         onClick={() => setOpen((o) => !o)}
-        className={`flex items-center gap-1.5 font-medium py-2 transition-colors ${triggerColor} ${
-          dark ? 'text-[13px] uppercase tracking-[0.14em]' : 'text-[15px]'
-        }`}
+        className={triggerClass(dark, active)}
       >
         {menu.label}
-        <svg
-          width="10"
-          height="6"
-          viewBox="0 0 10 6"
-          fill="none"
-          aria-hidden="true"
-          className={`transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
-        >
-          <path d="M1 1L5 5L9 1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
+        <Chevron open={open} />
       </button>
       <AnimatePresence>
         {open && (
@@ -123,6 +111,214 @@ function Dropdown({ menu, active, dark }: { menu: Menu; active: boolean; dark: b
                 </Link>
               ))}
             </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  )
+}
+
+function MegaMenu({ active, dark }: { active: boolean; dark: boolean }) {
+  const [open, setOpen] = useState(false)
+  const pathname = usePathname()
+  const wrapRef = useRef<HTMLDivElement>(null)
+  const buttonRef = useRef<HTMLButtonElement>(null)
+  const m = SERVICES_MENU
+
+  useEffect(() => setOpen(false), [pathname])
+
+  const c = dark
+    ? {
+        panel: 'bg-[#0B0B0C] border-[#1E1E22] shadow-[0_30px_60px_-30px_rgba(0,0,0,0.8)]',
+        divider: 'border-[#1E1E22]',
+        banner: 'text-[#EDEDEF] uppercase tracking-[0.04em]',
+        bannerLink: 'text-[#F0641E] hover:text-[#EDEDEF]',
+        heading: 'text-[#85858D] hover:text-[#F0641E]',
+        link: 'text-[#C9C9CF] hover:text-[#F0641E]',
+        card: 'bg-[#141416] border border-[#1E1E22]',
+        cta: 'inline-flex items-center gap-2 rounded border border-white/25 px-[18px] py-2.5 text-[12px] font-semibold uppercase tracking-[0.12em] text-white transition-colors hover:bg-white hover:text-[#0B0B0C]',
+      }
+    : {
+        panel: 'bg-white border-border shadow-[0_30px_60px_-30px_rgba(26,26,26,0.25)]',
+        divider: 'border-border',
+        banner: 'text-text-primary',
+        bannerLink: 'text-red hover:text-red-hover',
+        heading: 'text-text-muted hover:text-red',
+        link: 'text-text-body hover:text-red',
+        card: 'bg-bg-light',
+        cta: 'btn-red',
+      }
+
+  const close = () => setOpen(false)
+
+  return (
+    <div
+      ref={wrapRef}
+      className="flex h-[68px] items-center"
+      onMouseEnter={() => setOpen(true)}
+      onMouseLeave={close}
+      onKeyDown={(e) => {
+        if (e.key === 'Escape' && open) {
+          close()
+          buttonRef.current?.focus()
+        }
+      }}
+      onBlur={(e) => {
+        if (!wrapRef.current?.contains(e.relatedTarget as Node | null)) close()
+      }}
+    >
+      <button
+        ref={buttonRef}
+        type="button"
+        aria-expanded={open}
+        aria-controls="services-mega-menu"
+        onClick={() => setOpen((o) => !o)}
+        className={triggerClass(dark, active)}
+      >
+        {m.label}
+        <Chevron open={open} />
+      </button>
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            id="services-mega-menu"
+            initial={{ opacity: 0, y: -6 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }}
+            transition={{ duration: 0.18 }}
+            className={`absolute left-0 right-0 top-full border-y ${c.panel}`}
+          >
+            <div className="container-x py-8">
+              <div className={`flex items-center justify-between gap-6 border-b pb-6 ${c.divider}`}>
+                <p className={`text-[18px] font-semibold ${c.banner}`}>{m.banner.text}</p>
+                <Link
+                  href={m.banner.link.href}
+                  onClick={close}
+                  className={`inline-flex items-center gap-2 text-[14px] font-semibold transition-colors ${c.bannerLink}`}
+                >
+                  {m.banner.link.label} <span aria-hidden="true">→</span>
+                </Link>
+              </div>
+              <div className="mt-7 grid grid-cols-[repeat(4,minmax(0,1fr))_1.15fr] gap-8">
+                {m.columns.map((col) => (
+                  <div key={col.title}>
+                    {col.href ? (
+                      <Link href={col.href} onClick={close} className={`eyebrow transition-colors ${c.heading}`}>
+                        {col.title}
+                      </Link>
+                    ) : (
+                      <span className={`eyebrow ${c.heading}`}>{col.title}</span>
+                    )}
+                    <ul className="mt-4 space-y-2.5">
+                      {col.links.map((l) => (
+                        <li key={l.href}>
+                          <Link href={l.href} onClick={close} className={`text-[14px] leading-snug transition-colors ${c.link}`}>
+                            {l.label}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+                <div className={`rounded-md p-6 ${c.card}`}>
+                  <span className={`eyebrow ${c.heading}`}>{m.engage.title}</span>
+                  <ul className="mt-4 space-y-2.5">
+                    {m.engage.links.map((l) => (
+                      <li key={l.href}>
+                        <Link href={l.href} onClick={close} className={`text-[14px] transition-colors ${c.link}`}>
+                          {l.label}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                  <Link href={m.engage.cta.href} onClick={close} className={`mt-6 ${c.cta}`}>
+                    {m.engage.cta.label} <span aria-hidden="true">→</span>
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  )
+}
+
+function MobileServices({ dark }: { dark: boolean }) {
+  const [open, setOpen] = useState(false)
+  const [section, setSection] = useState<string | null>(null)
+  const m = SERVICES_MENU
+  const sections = [
+    ...m.columns.map((col) => ({ title: col.title, links: col.href ? [{ label: `All ${col.title}`, href: col.href }, ...col.links] : col.links })),
+    { title: m.engage.title, links: [...m.engage.links, m.engage.cta] },
+  ]
+  const border = dark ? 'border-[#1E1E22]' : 'border-border'
+  const top = dark
+    ? 'text-[22px] uppercase tracking-[0.04em] text-[#EDEDEF]'
+    : 'text-[26px] text-text-primary'
+  const sub = dark ? 'text-[15px] uppercase tracking-[0.08em] text-[#EDEDEF]' : 'text-[18px] text-text-primary'
+  const link = dark ? 'text-[#A3A3AB] hover:text-[#F0641E]' : 'text-text-body hover:text-red'
+
+  return (
+    <div className="mb-10">
+      <button
+        type="button"
+        aria-expanded={open}
+        aria-controls="mobile-services"
+        onClick={() => setOpen((o) => !o)}
+        className={`flex w-full items-center justify-between border-b py-3 text-left font-semibold ${border} ${top}`}
+      >
+        {m.label}
+        <Chevron open={open} />
+      </button>
+      <AnimatePresence initial={false}>
+        {open && (
+          <motion.div
+            id="mobile-services"
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+            className="overflow-hidden"
+          >
+            <div className={`border-b py-4 ${border}`}>
+              <p className={`text-[13px] ${dark ? 'text-[#85858D]' : 'text-text-muted'}`}>{m.banner.text}</p>
+              <Link
+                href={m.banner.link.href}
+                className={`mt-1 inline-flex items-center gap-2 text-[15px] font-semibold ${dark ? 'text-[#F0641E]' : 'text-red'}`}
+              >
+                {m.banner.link.label} <span aria-hidden="true">→</span>
+              </Link>
+            </div>
+            {sections.map((sec) => {
+              const isOpen = section === sec.title
+              const id = `mobile-services-${sec.title.toLowerCase()}`
+              return (
+                <div key={sec.title} className={`border-b ${border}`}>
+                  <button
+                    type="button"
+                    aria-expanded={isOpen}
+                    aria-controls={id}
+                    onClick={() => setSection(isOpen ? null : sec.title)}
+                    className={`flex w-full items-center justify-between py-3.5 pl-4 text-left font-medium ${sub}`}
+                  >
+                    {sec.title}
+                    <Chevron open={isOpen} />
+                  </button>
+                  {isOpen && (
+                    <ul id={id} className="space-y-3 pb-4 pl-8">
+                      {sec.links.map((l) => (
+                        <li key={l.href}>
+                          <Link href={l.href} className={`text-[15px] transition-colors ${link}`}>
+                            {l.label}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              )
+            })}
           </motion.div>
         )}
       </AnimatePresence>
@@ -181,14 +377,11 @@ export default function Navbar() {
         <Logo light={dark} />
 
         <nav aria-label="Main" className="hidden lg:flex items-center gap-10">
-          {MENUS.map((menu) => (
-            <Dropdown
-              key={menu.label}
-              menu={menu}
-              dark={dark}
-              active={pathname.startsWith(menu.href)}
-            />
-          ))}
+          <MegaMenu
+            dark={dark}
+            active={['/services', '/industries', '/approach'].some((r) => pathname.startsWith(r))}
+          />
+          <Dropdown menu={PRODUCTS_MENU} dark={dark} active={pathname.startsWith(PRODUCTS_MENU.href)} />
         </nav>
 
         <div className="hidden lg:block">
@@ -243,7 +436,8 @@ export default function Navbar() {
               </button>
             </div>
             <nav aria-label="Main" className="container-x py-10">
-              {MENUS.map((menu) => (
+              <MobileServices dark={dark} />
+              {[PRODUCTS_MENU].map((menu) => (
                 <div key={menu.label} className="mb-10">
                   <div className={`eyebrow mb-4 ${dark ? 'text-[#85858D]' : 'text-text-muted'}`}>{menu.label}</div>
                   {menu.items.map((item) => (

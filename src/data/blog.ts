@@ -5,11 +5,10 @@ export interface BlogPost {
   date: string
   readTime: string
   excerpt: string
-  image: string
+  imageSlot: string // see src/data/images.ts
+  materialComparison?: boolean // hidden from "Related reads" on service and industry pages
   body: string[]
 }
-
-const img = (seed: string) => `https://picsum.photos/seed/${seed}/1600/900`
 
 export const posts: BlogPost[] = [
   {
@@ -20,7 +19,8 @@ export const posts: BlogPost[] = [
     readTime: '5 min read',
     excerpt:
       'Both are workhorses for functional prototyping. Here’s how we choose between them in our shop.',
-    image: img('petg-vs-abs'),
+    imageSlot: 'blog-choosing-petg-vs-abs',
+    materialComparison: true,
     body: [
       'PETG and ABS are the two materials we reach for most often when a customer needs a functional prototype that has to actually do something — not just look the part.',
       'PETG prints more reliably, has better layer adhesion, and is more forgiving of imperfect cooling. We default to it for enclosures, brackets, and any part that does not need to live inside a hot car or chemical environment.',
@@ -36,7 +36,7 @@ export const posts: BlogPost[] = [
     readTime: '7 min read',
     excerpt:
       'The dozen-or-so things we check before we put any customer file on the print bed.',
-    image: img('dfm-checklist'),
+    imageSlot: 'blog-dfm-checklist-for-3d-printed-parts',
     body: [
       'Most prints fail or look worse than they should because of decisions made in CAD, not because of the printer.',
       'Wall thickness, hole sizes, overhangs, and orientation account for the vast majority of issues. We have a short checklist we run every customer file through before quoting.',
@@ -51,7 +51,7 @@ export const posts: BlogPost[] = [
     readTime: '6 min read',
     excerpt:
       'From breadboard to a custom PCB in under two weeks — here is how we do it.',
-    image: img('esp32-pipeline'),
+    imageSlot: 'blog-esp32-prototyping-pipeline',
     body: [
       'For most IoT prototypes we keep the path short: validate the idea on a dev board, draft the schematic in KiCad, and iterate on the PCB once.',
       'Component selection is where most rookie projects burn time. We keep a curated BOM library so we can move faster.',
@@ -65,7 +65,8 @@ export const posts: BlogPost[] = [
     readTime: '4 min read',
     excerpt:
       'Resin is not always better. Here is the honest rundown of where each shines.',
-    image: img('sla-vs-fdm'),
+    imageSlot: 'blog-when-to-choose-sla-over-fdm',
+    materialComparison: true,
     body: [
       'SLA gives you detail FDM cannot match. FDM gives you size and material flexibility SLA cannot match.',
       'For presentation models, micro parts, and anything jewelry-adjacent, SLA wins on appearance every time.',
@@ -79,7 +80,7 @@ export const posts: BlogPost[] = [
     readTime: '8 min read',
     excerpt:
       'Six small CAD habits that will save you days across the lifetime of a project.',
-    image: img('cad-habits'),
+    imageSlot: 'blog-iterating-fast-with-print-friendly-cad',
     body: [
       'Modeling for print is a discipline. The good news is the habits are simple and once internalized they cost nothing.',
       'Use parametric features wherever possible, avoid sub-millimeter detail unless SLA, and orient your part deliberately in CAD.',
@@ -93,7 +94,7 @@ export const posts: BlogPost[] = [
     readTime: '9 min read',
     excerpt:
       'Why the next decade of Indian product startups will look very different from the last.',
-    image: img('hardware-india'),
+    imageSlot: 'blog-india-hardware-startup-landscape',
     body: [
       'Local supply chains, cheaper prototyping, and a generation of engineers who have built abroad are converging.',
       'We see it in the steady rise of customer enquiries from teams that would have gone to Shenzhen five years ago.',
@@ -103,3 +104,5 @@ export const posts: BlogPost[] = [
 
 export const getPostBySlug = (slug: string) =>
   posts.find((p) => p.slug === slug)
+
+export const relatedReads = (n = 3) => posts.filter((p) => !p.materialComparison).slice(0, n)

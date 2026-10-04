@@ -1,9 +1,9 @@
-import Image from 'next/image'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { posts, getPostBySlug } from '@/data/blog'
 import CtaBanner from '@/components/CtaBanner'
 import FadeIn from '@/components/FadeIn'
+import ImageSlot from '@/components/ImageSlot'
 
 export function generateStaticParams() {
   return posts.map((p) => ({ slug: p.slug }))
@@ -43,14 +43,7 @@ export default function BlogPostPage({
 
         <FadeIn className="mt-12 lg:mt-16">
           <div className="relative w-full aspect-[16/8] bg-bg-light">
-            <Image
-              src={post.image}
-              alt={post.title}
-              fill
-              priority
-              sizes="100vw"
-              className="object-cover"
-            />
+            <ImageSlot slot={post.imageSlot} priority sizes="100vw" />
           </div>
         </FadeIn>
 
@@ -62,19 +55,12 @@ export default function BlogPostPage({
           </div>
 
           <div className="mt-16 pt-8 border-t border-border flex items-center gap-4">
-            <div className="w-12 h-12 rounded-full bg-bg-light overflow-hidden relative">
-              <Image
-                src="https://picsum.photos/seed/founder/200/200"
-                alt="Author"
-                fill
-                className="object-cover"
-              />
+            <div className="w-12 h-12 rounded-full bg-bg-dark flex items-center justify-center" aria-hidden="true">
+              <span className="w-2 h-2 rounded-full bg-red" />
             </div>
             <div>
-              <div className="text-text-primary font-semibold">Dhananjay Moré</div>
-              <div className="text-text-muted text-[13px]">
-                Founder · Dynamik Design Lab
-              </div>
+              <div className="text-text-primary font-semibold">Dynamik Design Lab</div>
+              <div className="text-text-muted text-[13px]">The studio team</div>
             </div>
           </div>
         </div>
@@ -90,13 +76,9 @@ export default function BlogPostPage({
             {related.map((p) => (
               <Link href={`/blog/${p.slug}`} key={p.slug} className="group block">
                 <div className="relative aspect-[3/2] overflow-hidden bg-white mb-5">
-                  <Image
-                    src={p.image}
-                    alt={p.title}
-                    fill
-                    sizes="(min-width: 1024px) 33vw, 100vw"
-                    className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
-                  />
+                  <div className="absolute inset-0 transition-transform duration-500 group-hover:scale-[1.03]">
+                    <ImageSlot slot={p.imageSlot} sizes="(min-width: 1024px) 33vw, 100vw" />
+                  </div>
                 </div>
                 <span className="tag tag--red">{p.category}</span>
                 <h3 className="mt-4 text-[20px] font-semibold text-text-primary group-hover:text-red transition-colors">

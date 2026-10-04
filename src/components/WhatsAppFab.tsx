@@ -1,13 +1,14 @@
 'use client'
 
 import { useState } from 'react'
+import { site } from '@/config/site'
 
 export default function WhatsAppFab() {
   const [hover, setHover] = useState(false)
 
   return (
     <a
-      href="https://wa.me/910000000000"
+      href={site.whatsappHref}
       target="_blank"
       rel="noopener noreferrer"
       aria-label="Chat with us on WhatsApp"

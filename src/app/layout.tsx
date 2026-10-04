@@ -21,22 +21,21 @@ const mono = localFont({
 })
 
 export const metadata: Metadata = {
-  title: 'Dynamik Design Lab — Design in Motion',
+  title: 'Dynamik Design Lab — Concept to Prototype',
   description:
-    'Pune-based rapid prototyping and product design studio. FDM and SLA 3D printing, embedded systems, and industrial design — under one roof.',
+    'A one-stop concept-to-prototype studio in Pune. Automotive, industrial and phygital products — ideated, designed, engineered and built under one roof.',
   keywords: [
-    '3D printing Pune',
-    'rapid prototyping India',
-    'FDM printing',
-    'SLA printing',
-    'product design studio',
-    'embedded systems',
+    'concept to prototype',
+    'prototyping studio Pune',
+    'automotive design',
+    'Class-A surfacing',
     'industrial design',
+    'embedded systems',
+    'phygital products',
   ],
   openGraph: {
-    title: 'Dynamik Design Lab — Design in Motion',
-    description:
-      'Rapid prototyping and product design studio in Pune. From idea to functional prototype.',
+    title: 'Dynamik Design Lab — Concept to Prototype',
+    description: 'Automotive, industrial and phygital products, ideated, designed, engineered and built under one roof in Pune.',
     type: 'website',
   },
 }

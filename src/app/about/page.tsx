@@ -1,41 +1,38 @@
-import Image from 'next/image'
 import PageHero from '@/components/PageHero'
 import CtaBanner from '@/components/CtaBanner'
 import FadeIn from '@/components/FadeIn'
+import ImageSlot from '@/components/ImageSlot'
 
 export const metadata = {
   title: 'About — Dynamik Design Lab',
   description:
-    'A maker-run product design and prototyping studio in Pune. Built by Jeetendra Kumar.',
+    'A concept-to-prototype studio in Pune. One team with 10+ years of combined experience across automotive design, industrial design and embedded engineering.',
 }
 
+// Described by capability, not by brand or model.
 const EQUIPMENT = [
-  {
-    name: 'Elegoo Neptune 4 MAX',
-    spec: 'FDM, 520 × 520 × 600mm build volume, multiple materials',
-  },
-  {
-    name: 'SLA Resin Printer',
-    spec: '218 × 123 × 230mm, 25 – 100 micron layers, multi-resin',
-  },
-  {
-    name: 'Embedded Systems Lab',
-    spec: 'ESP32, STM32, soldering station, oscilloscope, logic analyzer',
-  },
-  {
-    name: 'Design Workstation',
-    spec: 'Fusion 360, SolidWorks, KiCad, Figma, KeyShot',
-  },
-  {
-    name: 'QC & Finishing',
-    spec: 'Calipers, micrometer, sanding, vapor smoothing chamber, paint booth',
-  },
+  { name: 'Large-format additive manufacturing', spec: 'Build volume up to 520 × 520 × 600 mm for functional parts, jigs and full-size models.' },
+  { name: 'High-resolution resin printing', spec: 'Fine-detail appearance models with sub-0.05 mm layer resolution.' },
+  { name: 'Embedded systems lab', spec: 'Microcontroller development, PCB assembly, bring-up and test.' },
+  { name: 'Design workstations', spec: 'Fusion 360, SolidWorks and Figma for CAD, surfacing and visualization.' },
+  { name: 'Finishing & quality', spec: 'Dimensional inspection, sanding, priming and paint finishing.' },
+]
+
+const DISCIPLINES = [
+  'Automotive Design',
+  'CAS & Class-A Surfacing',
+  'Industrial Design',
+  'CMF',
+  'Mechanical Engineering',
+  'Embedded Systems',
+  'Firmware',
+  'Prototyping & Fabrication',
 ]
 
 const VALUES = [
   {
-    title: 'Build and then talk XD ',
-    body: 'We would rather hand you a printed part than send another email.',
+    title: 'Build, then talk',
+    body: 'We would rather hand you a prototype than send another email.',
     icon: (
       <svg width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="currentColor" strokeWidth="1.5">
         <path d="M3 14h22M14 3v22" strokeLinecap="round" />
@@ -80,7 +77,7 @@ export default function AboutPage() {
       <PageHero
         eyebrow="ABOUT"
         title="Built by Makers"
-        image="https://picsum.photos/seed/about-hero/2400/1400"
+        imageSlot="about-hero"
         height="short"
       />
 
@@ -94,28 +91,21 @@ export default function AboutPage() {
             </h2>
             <div className="space-y-6 text-text-body text-[18px] leading-[1.75]">
               <p>
-                Dynamik Design Lab was founded by a team that grew up in maker
-                spaces and product engineering teams — most recently at Matter
-                Motor Works, where we designed and built parts for new EV
-                products from concept to production.
+                Dynamik Design Lab is a one-stop concept-to-prototype studio in Pune. Our team brings 10+ years of
+                combined experience across automotive design, industrial design and embedded engineering — including
+                work on EV products from concept to production.
               </p>
               <p>
-                After years of helping other people build things, we set up our
-                own shop in Pune. The idea was simple: cut the distance between
-                the customer with the idea and the part on the bench. No
-                handoffs to a print farm, no weeks of email back and forth, no
-                hidden post-processing surcharges.
+                We set up the studio to cut the distance between an idea and a working prototype. No handoffs between
+                agencies, no weeks of email back and forth — one team that designs, engineers and builds.
               </p>
               <p>
-                Today we run an in-house FDM and SLA print floor, an embedded
-                systems lab, and a small industrial design practice. Every
-                project crosses at least two of those, and the same person who
-                quotes your job will print it.
+                Clients come to us at every stage: a raw idea, a set of sketches, finished CAD, or a product that needs
+                to work. They leave with a prototype that is presentable, functional and close to production.
               </p>
               <p>
-                We work with hardware startups, product designers, EV companies,
-                medtech teams, and engineering firms — anyone who needs a
-                physical thing to exist this week, not next month.
+                We work across automotive & mobility and industrial & interior products, with an optional phygital
+                layer — sensors, connectivity and interfaces — wherever a product needs to be intelligent.
               </p>
             </div>
 
@@ -124,7 +114,7 @@ export default function AboutPage() {
                 “
               </div>
               <p className="text-text-primary text-[22px] leading-[1.5] font-medium -mt-6">
-                The studio that does both — designs the part and prints it —
+                The studio that does both — designs the product and builds it —
                 ends up doing both better.
               </p>
             </div>
@@ -136,8 +126,8 @@ export default function AboutPage() {
       <section className="bg-bg-light">
         <div className="container-x py-24 lg:py-32">
           <FadeIn>
-            <span className="eyebrow text-text-muted">OUR EQUIPMENT</span>
-            <h2 className="heading-h2 mt-4 max-w-2xl">What we have in the shop</h2>
+            <span className="eyebrow text-text-muted">CAPABILITIES</span>
+            <h2 className="heading-h2 mt-4 max-w-2xl">What we work with</h2>
           </FadeIn>
           <div className="mt-14 grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-8">
             {EQUIPMENT.map((e, i) => (
@@ -154,63 +144,27 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Founder */}
+      {/* Team */}
       <section className="bg-white">
-        <div className="container-x py-24 lg:py-32">
+        <div className="container-x py-24 lg:py-32 grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
           <FadeIn>
-            <span className="eyebrow text-text-muted">FOUNDER</span>
-            <h2 className="heading-h2 mt-4 mb-12">Who runs the shop</h2>
-          </FadeIn>
-          <FadeIn delay={0.1}>
-            <div className="grid grid-cols-1 lg:grid-cols-[1fr_2fr] gap-10 lg:gap-16 items-start">
-              <div className="relative aspect-square overflow-hidden bg-bg-light max-w-md">
-                <Image
-                  src="https://www.base.org/_next/image?url=%2F_next%2Fstatic%2Fmedia%2Fasset.3dd7158d.png&w=750&q=99"
-                  alt="Founder"
-                  fill
-                  sizes="(min-width: 1024px) 33vw, 100vw"
-                  className="object-cover"
-                />
-              </div>
-              <div>
-                <h3 className="text-[28px] font-bold text-text-primary">
-                  Dhananjay Moré
-                </h3>
-                <p className="text-red text-[14px] uppercase tracking-[0.12em] font-semibold mt-2">
-                  Founder & Lead Engineer
-                </p>
-                <div className="mt-6 space-y-4 text-text-body text-[17px] leading-[1.75]">
-                  <p>
-                    Mechanical engineer turned product engineer. Years on the
-                    Matter Motor Works EV product team, building real parts
-                    that ship on real bikes.
-                  </p>
-                  <p>
-                    Splits time between CAD, the print floor, and the embedded
-                    bench. Believes the studio that does both — designs the
-                    part and builds it — ends up doing both better.
-                  </p>
-                </div>
-                <a
-                  href="https://linkedin.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="arrow-link mt-8"
-                >
-                  Connect on LinkedIn
-                  <svg width="14" height="12" viewBox="0 0 14 12" fill="none">
-                    <path
-                      d="M1 6H13M13 6L8 1M13 6L8 11"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                </a>
-              </div>
+            <span className="eyebrow text-text-muted">THE TEAM</span>
+            <h2 className="heading-h2 mt-4 max-w-xl">A decade of building what&apos;s next.</h2>
+            <p className="mt-6 max-w-xl text-text-body text-[18px] leading-[1.75]">
+              10+ years of combined experience across automotive design, industrial design and embedded engineering.
+              Designers, engineers and makers working as one team — so nothing gets lost between stages.
+            </p>
+            <div className="mt-8 flex flex-wrap gap-2">
+              {DISCIPLINES.map((d) => (
+                <span key={d} className="rounded-full border border-border px-4 py-2 text-[13px] font-medium text-text-primary">
+                  {d}
+                </span>
+              ))}
             </div>
           </FadeIn>
+          <div className="relative aspect-[4/3] overflow-hidden">
+            <ImageSlot slot="about-team" sizes="(min-width: 1024px) 50vw, 100vw" />
+          </div>
         </div>
       </section>
 

@@ -2,30 +2,11 @@
 
 import { useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
-
-const TESTIMONIALS = [
-  {
-    quote:
-      'Dynamik turned our CAD file into a perfect functional prototype in under 3 days. The DFM feedback alone saved us two costly revision cycles.',
-    name: 'Aditya R.',
-    role: 'Product Lead, Pune Hardware Startup',
-  },
-  {
-    quote:
-      'They handled the print, the PCB, and the assembly. We picked up working prototypes for our investor demo a week later. No agency dance.',
-    name: 'Meera K.',
-    role: 'Co-founder, Smart Home Brand',
-  },
-  {
-    quote:
-      'The SLA finish was indistinguishable from injection molded parts at 1/100th the tooling cost. Exactly what we needed for the pitch.',
-    name: 'Rahul S.',
-    role: 'Industrial Designer, Mumbai',
-  },
-]
+import { testimonials as TESTIMONIALS } from '@/data/testimonials'
 
 export default function Testimonials() {
   const [i, setI] = useState(0)
+  if (TESTIMONIALS.length === 0) return null
   const t = TESTIMONIALS[i]
   const next = () => setI((i + 1) % TESTIMONIALS.length)
   const prev = () => setI((i - 1 + TESTIMONIALS.length) % TESTIMONIALS.length)
