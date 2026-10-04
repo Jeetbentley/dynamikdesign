@@ -11,7 +11,7 @@ export const site = {
   address: ['Dynamik Design Lab', 'Pune, Maharashtra', 'India'], // TODO: full studio address if public
   hours: ['Mon – Sat', '10:00 – 19:00 IST'], // TODO: confirm studio hours
   social: {
-    linkedin: 'https://www.linkedin.com/company/dynamik-design-lab/',
+    linkedin: 'https://www.linkedin.com/company/dynamik-design-lab/?lipi=urn%3Ali%3Apage%3Ad_flagship3_search_srp_companies%3Bp%2BNC0NUFQ8eLd%2Fvj9xFNrA%3D%3D',
     instagram: 'https://www.instagram.com/dynamik_designlab/',
     instagramHandle: '@dynamik_designlab',
   },
