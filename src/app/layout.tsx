@@ -1,20 +1,21 @@
 import type { Metadata } from 'next'
-import { Plus_Jakarta_Sans, JetBrains_Mono } from 'next/font/google'
+import localFont from 'next/font/local'
 import './globals.css'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import WhatsAppFab from '@/components/WhatsAppFab'
 
-const jakarta = Plus_Jakarta_Sans({
-  subsets: ['latin'],
-  weight: ['400', '500', '600', '700', '800'],
+// Self-hosted so builds don't depend on fetching from Google Fonts.
+const jakarta = localFont({
+  src: '../fonts/PlusJakartaSans-Variable.woff2',
+  weight: '200 800',
   variable: '--font-jakarta',
   display: 'swap',
 })
 
-const mono = JetBrains_Mono({
-  subsets: ['latin'],
-  weight: ['400', '500'],
+const mono = localFont({
+  src: '../fonts/JetBrainsMono-Variable.woff2',
+  weight: '100 800',
   variable: '--font-mono',
   display: 'swap',
 })

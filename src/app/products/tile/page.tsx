@@ -1,9 +1,9 @@
-import { Space_Grotesk } from 'next/font/google'
+import localFont from 'next/font/local'
 import TileProduct from './TileProduct'
 
-const grotesk = Space_Grotesk({
-  subsets: ['latin'],
-  weight: ['400', '500', '700'],
+const grotesk = localFont({
+  src: '../../../fonts/SpaceGrotesk-Variable.woff2',
+  weight: '300 700',
   variable: '--font-grotesk',
   display: 'swap',
 })
