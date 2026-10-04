@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import Logo from './Logo'
 import WhatsAppIcon from './WhatsAppIcon'
+import CopyButton from './CopyButton'
 import { site } from '@/config/site'
 import { FOOTER_EXPLORE as EXPLORE, FOOTER_SERVICES as SERVICES } from '@/data/navigation'
 
@@ -78,13 +79,14 @@ export default function Footer() {
               Contact
             </h4>
             <ul className="space-y-3 mb-6">
-              <li>
+              <li className="flex items-center gap-2.5">
                 <a
                   href={`mailto:${site.email}`}
                   className="text-[15px] text-white/85 hover:text-red transition-colors"
                 >
                   {site.email}
                 </a>
+                <CopyButton text={site.email} label="Copy email address" tone="dark" compact />
               </li>
               <li>
                 <a

@@ -10,6 +10,7 @@ import FadeIn from '@/components/FadeIn'
 import { site } from '@/config/site'
 import { CONTACT_SERVICES } from '@/data/approach'
 import WhatsAppIcon from '@/components/WhatsAppIcon'
+import CopyButton from '@/components/CopyButton'
 
 const schema = z.object({
   name: z.string().min(2, 'Please enter your name'),
@@ -199,12 +200,15 @@ export default function ContactForm() {
 
                   <div>
                     <div className="form-label mb-3">Email</div>
-                    <a
-                      href={`mailto:${site.email}`}
-                      className="text-text-primary text-[18px] hover:text-red transition-colors"
-                    >
-                      {site.email}
-                    </a>
+                    <div className="flex flex-wrap items-center gap-3">
+                      <a
+                        href={`mailto:${site.email}`}
+                        className="text-text-primary text-[18px] hover:text-red transition-colors"
+                      >
+                        {site.email}
+                      </a>
+                      <CopyButton text={site.email} label="Copy email address" />
+                    </div>
                   </div>
 
                   <div>
