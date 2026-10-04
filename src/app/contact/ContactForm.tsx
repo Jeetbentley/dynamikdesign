@@ -9,6 +9,7 @@ import { z } from 'zod'
 import FadeIn from '@/components/FadeIn'
 import { site } from '@/config/site'
 import { CONTACT_SERVICES } from '@/data/approach'
+import WhatsAppIcon from '@/components/WhatsAppIcon'
 
 const schema = z.object({
   name: z.string().min(2, 'Please enter your name'),
@@ -191,11 +192,7 @@ export default function ContactForm() {
                       rel="noopener noreferrer"
                       className="inline-flex items-center gap-3 text-text-primary text-[18px] hover:text-red transition-colors"
                     >
-                      <span className="w-9 h-9 rounded-full bg-[#25D366] text-white flex items-center justify-center">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                          <path d="M17.5 14.4c-.3-.1-1.7-.8-2-.9s-.5-.1-.7.2-.8.9-1 1.1-.4.2-.6.1c-.9-.4-1.7-.9-2.4-1.6-.6-.6-1.1-1.3-1.5-2.1-.2-.3 0-.4.1-.6.1-.1.3-.3.4-.5.1-.1.2-.3.2-.4.1-.2 0-.3 0-.5s-.7-1.6-.9-2.2-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.9.9-1.4 2.2-1.3 3.5.2 1.5.7 2.9 1.6 4.1 1.7 2.3 4 4.1 6.6 5 .7.3 1.2.4 1.6.5.7.2 1.3.2 1.8.1.6-.1 1.7-.7 2-1.4.2-.4.2-.9.1-1.4-.1-.2-.3-.3-.6-.4z" />
-                        </svg>
-                      </span>
+                      <WhatsAppIcon size={36} />
                       {site.phoneDisplay}
                     </a>
                   </div>
@@ -207,6 +204,18 @@ export default function ContactForm() {
                       className="text-text-primary text-[18px] hover:text-red transition-colors"
                     >
                       {site.email}
+                    </a>
+                  </div>
+
+                  <div>
+                    <div className="form-label mb-3">Instagram</div>
+                    <a
+                      href={site.social.instagram}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-text-primary text-[18px] hover:text-red transition-colors"
+                    >
+                      {site.social.instagramHandle}
                     </a>
                   </div>
 
