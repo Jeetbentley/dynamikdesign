@@ -1,16 +1,12 @@
 import Image from 'next/image'
 import Link from 'next/link'
 
-// Paste your Vercel Blob URLs here:
-const LOGO_DARK = 'https://0tnfcliofmlsl1jg.public.blob.vercel-storage.com/Company_logo_homepage/dynamik.svg'
-const LOGO_LIGHT = 'https://0tnfcliofmlsl1jg.public.blob.vercel-storage.com/Company_logo_homepage/dynamik_white.svg'
+// One source file for both variants; the light variant is recoloured to white with CSS,
+// so the dark navbar and footer logo always match the default logo exactly in size.
+const LOGO = 'https://0tnfcliofmlsl1jg.public.blob.vercel-storage.com/Company_logo_homepage/dynamik.svg'
 
-// Intrinsic aspect ratio of your logo file (width / height)
-const ASPECT_RATIO = 5 // 160 / 32
-
-// The white SVG has more empty space around the wordmark, so it renders smaller
-// at the same height. Raise or lower this until both wordmarks look the same size.
-const LIGHT_SCALE = 1.4
+// Intrinsic aspect ratio of the logo file (viewBox 819 × 96)
+const ASPECT_RATIO = 819 / 96
 
 interface LogoProps {
   light?: boolean
@@ -18,8 +14,7 @@ interface LogoProps {
   height?: number
 }
 
-export default function Logo({ light = false, height: baseHeight = 20 }: LogoProps) {
-  const height = Math.round(baseHeight * (light ? LIGHT_SCALE : 1))
+export default function Logo({ light = false, height = 20 }: LogoProps) {
   const width = Math.round(height * ASPECT_RATIO)
 
   return (
@@ -29,12 +24,12 @@ export default function Logo({ light = false, height: baseHeight = 20 }: LogoPro
       className="inline-block select-none"
     >
       <Image
-        src={light ? LOGO_LIGHT : LOGO_DARK}
+        src={LOGO}
         alt="Dynamik Design Lab"
         width={width}
         height={height}
         priority
-        style={{ height, width: 'auto' }}
+        style={{ height, width: 'auto', filter: light ? 'brightness(0) invert(1)' : undefined }}
       />
     </Link>
   )
