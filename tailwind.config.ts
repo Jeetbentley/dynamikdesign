@@ -26,6 +26,7 @@ const config: Config = {
       fontFamily: {
         sans: ['var(--font-jakarta)', 'system-ui', 'sans-serif'],
         mono: ['var(--font-mono)', 'monospace'],
+        grotesk: ['var(--font-grotesk)', 'system-ui', 'sans-serif'],
       },
       fontSize: {
         display: ['72px', { lineHeight: '1.1', letterSpacing: '-0.02em', fontWeight: '700' }],
