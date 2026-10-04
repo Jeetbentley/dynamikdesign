@@ -1,4 +1,5 @@
 import PageHero from '@/components/PageHero'
+import { site } from '@/config/site'
 
 export const metadata = {
   title: 'Privacy Policy — Dynamik Design Lab',
@@ -30,7 +31,7 @@ export default function PrivacyPage() {
           </p>
           <h2 className="heading-h3 pt-4">Get in touch</h2>
           <p>
-            Email <a className="text-red" href="mailto:hello@dynamikdesignlab.com">hello@dynamikdesignlab.com</a> with any privacy questions.
+            Email <a className="text-red" href={`mailto:${site.email}`}>{site.email}</a> with any privacy questions.
           </p>
         </div>
       </section>

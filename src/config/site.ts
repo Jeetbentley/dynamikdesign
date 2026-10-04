@@ -4,7 +4,7 @@
 export const site = {
   name: 'Dynamik Design Lab',
   tagline: 'Concept to Prototype, one team.',
-  email: 'lab.dynamikdesign@gmail.com',
+  email: 'hello@dynamikdesignlab.in',
   phoneDisplay: '+91 81800 13679',
   phoneHref: 'tel:+918180013679',
   whatsappHref: 'https://wa.me/918180013679',
