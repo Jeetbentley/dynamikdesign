@@ -48,7 +48,7 @@ export const INDUSTRIES: IndustryPage[] = [
     services: [
       { title: 'Automotive Design', body: 'CAS & Class-A surfacing, styling.', href: '/services/design#automotive-design' },
       { title: 'Visualization & Renders', body: 'Reviews, CMF variants, presentations.', href: '/services/design#visualization' },
-      { title: 'Phygital & IoT Interfaces', body: 'HMI, voice and connected dashboards.', href: '/services/engineering#phygital' },
+      { title: 'Phygital Systems', body: 'HMI, voice, dashboards and the electronics behind them.', href: '/services/engineering#phygital' },
       { title: 'FRP & Composites', body: 'Panels, bucks and styling models.', href: '/services/build#composites' },
       { title: 'Finishing & CMF', body: 'Presentation-quality finish.', href: '/services/build#finishing' },
     ],
@@ -86,7 +86,7 @@ export const INDUSTRIES: IndustryPage[] = [
     services: [
       { title: 'Industrial Design', body: 'Form, ergonomics and CMF.', href: '/services/design#industrial-design' },
       { title: 'CAD & DFM', body: 'Engineering CAD, ready to make.', href: '/services/design#cad-dfm' },
-      { title: 'Mechanical Engineering', body: 'Mechanisms, thermal and assembly.', href: '/services/engineering#mechanical' },
+      { title: 'Mechanical Design', body: 'Mechanisms, thermal and assembly.', href: '/services/engineering#mechanical' },
       { title: 'Additive Manufacturing', body: 'Appearance and functional parts.', href: '/services/build#additive' },
       { title: 'Silicone Molding & Casting', body: 'Short runs with production-like surfaces.', href: '/services/build#molding' },
     ],

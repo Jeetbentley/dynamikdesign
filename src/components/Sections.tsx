@@ -110,7 +110,7 @@ export function PhygitalStrip({
             ))}
           </div>
           <Link href="/services/engineering#phygital" className="arrow-link mt-8">
-            Phygital & IoT Interfaces <ArrowRight />
+            Phygital — embedded, firmware & interfaces <ArrowRight />
           </Link>
         </FadeIn>
         {slot && (

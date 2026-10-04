@@ -35,10 +35,8 @@ export const SERVICES_MENU = {
       title: 'Engineer',
       href: '/services/engineering',
       links: [
-        { label: 'Mechanical Engineering', href: '/services/engineering#mechanical' },
-        { label: 'Embedded Systems & PCB', href: '/services/embedded' },
-        { label: 'Firmware Development', href: '/services/engineering#firmware' },
-        { label: 'Phygital & IoT Interfaces', href: '/services/engineering#phygital' },
+        { label: 'Mechanical Design', href: '/services/engineering#mechanical' },
+        { label: 'Phygital — Embedded, Firmware & Interfaces', href: '/services/engineering#phygital' },
       ],
     },
     {
