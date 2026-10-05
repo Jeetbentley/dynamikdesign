@@ -88,7 +88,7 @@ export function PrototypeTypes({
 
 export function PhygitalStrip({
   body = 'Phygital means physical products with a digital or intelligent layer — sensors, connectivity, displays and touch, voice, companion apps and dashboards. It works with any product we design and build.',
-  points = ['Sensors', 'Wi-Fi / BLE / CAN / cellular', 'Displays & touch', 'Voice interaction', 'Apps & dashboards'],
+  points = ['Sensors', 'Wi-Fi / BLE / cellular', 'Displays & touch', 'Voice interaction', 'Apps & dashboards'],
   slot,
   read,
 }: {

@@ -38,11 +38,10 @@ export const INDUSTRIES: IndustryPage[] = [
       { title: 'Interior trim & switchgear', body: 'Trim, controls and tactile components.' },
       { title: 'Lighting concepts', body: 'Lamp and ambient lighting concepts and prototypes.' },
       { title: 'HMI, cluster & voice interfaces', body: 'Displays, controls and voice interaction.' },
-      { title: 'CAN & telemetry prototyping', body: 'Vehicle data, connectivity and test units.' },
     ],
     prototypes: [
       { type: 'Looks-like', examples: 'Styling and appearance models, interior bucks, CMF studies.' },
-      { type: 'Works-like', examples: 'Switchgear rigs, HMI demonstrators, CAN/telemetry test units.' },
+      { type: 'Works-like', examples: 'Switchgear rigs and HMI demonstrators.' },
       { type: 'Looks-like + Works-like', examples: 'Functional accessory and interior component prototypes.' },
     ],
     services: [
@@ -54,7 +53,7 @@ export const INDUSTRIES: IndustryPage[] = [
     ],
     phygital: {
       body: 'Adding intelligence to a vehicle product means it can show, sense and respond. Add it where it matters, or leave it out.',
-      points: ['Connected dashboards', 'Voice assistants', 'Rider and driver HMI', 'Telemetry'],
+      points: ['Connected dashboards', 'Voice assistants', 'Rider and driver HMI'],
       slot: 'industry-automotive-phygital',
     },
   },

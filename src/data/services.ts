@@ -147,7 +147,7 @@ export const SERVICES: Record<ServicePage['slug'], ServicePage> = {
         points: [
           'Embedded systems & custom PCBs',
           'Firmware, communication stacks & OTA updates',
-          'Wi-Fi, BLE, CAN and cellular connectivity',
+          'Wi-Fi, BLE and cellular connectivity',
           'Displays, touch, voice, companion apps and dashboards',
         ],
         link: { label: 'Embedded deep-dive', href: '/services/embedded' },
@@ -157,7 +157,7 @@ export const SERVICES: Record<ServicePage['slug'], ServicePage> = {
     specsTitle: 'What you get',
     specs: [
       { param: 'Disciplines', value: 'Mechanical design; phygital — embedded, firmware, interfaces' },
-      { param: 'Connectivity', value: 'Wi-Fi, BLE, CAN, cellular' },
+      { param: 'Connectivity', value: 'Wi-Fi, BLE, cellular' },
       { param: 'Deliverables', value: 'Engineered 3D models, PCB, firmware, test notes' },
       { param: 'Typical duration', value: 'TODO' },
     ],
@@ -182,7 +182,7 @@ export const SERVICES: Record<ServicePage['slug'], ServicePage> = {
     ],
     whyUs: [
       'Schematic, PCB, firmware and enclosure under one roof',
-      'Connectivity across Wi-Fi, BLE, CAN and cellular',
+      'Connectivity across Wi-Fi, BLE and cellular',
       'Working prototypes, not just dev-board demos',
       'Integrated and tested with the physical product',
     ],
@@ -200,13 +200,13 @@ export const SERVICES: Record<ServicePage['slug'], ServicePage> = {
     specs: [
       { param: 'Primary platform', value: 'ESP32' },
       { param: 'Other MCU platforms', value: 'TODO' },
-      { param: 'Connectivity', value: 'Wi-Fi, BLE, CAN, cellular' },
+      { param: 'Connectivity', value: 'Wi-Fi, BLE, cellular' },
       { param: 'PCB design tools', value: 'TODO' },
       { param: 'Assembly', value: 'In-house for prototypes; partner assembly for runs' },
       { param: 'Typical duration', value: 'TODO' },
     ],
     tagsLabel: 'Platforms & Tools',
-    tags: ['ESP32', 'Custom PCB', 'Sensor Integration', 'Firmware', 'Wi-Fi', 'BLE', 'CAN', 'OTA Updates'],
+    tags: ['ESP32', 'Custom PCB', 'Sensor Integration', 'Firmware', 'Wi-Fi', 'BLE', 'OTA Updates'],
     workTag: 'engineering',
     card: { n: '04', title: 'Embedded Systems', description: 'Custom PCBs, firmware and connected interfaces.', slot: 'services-card-embedded' },
   },
