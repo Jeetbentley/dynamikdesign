@@ -34,13 +34,13 @@ export const IMAGES: ImageEntry[] = [
   // Services overview
   e('services-hero', '/images/services/hero.jpg', 'Prototyping workshop with tools and parts on the bench', ['prototyping workshop bench', 'product design workshop', 'maker studio tools']),
   e('services-card-design', '/images/services/card-design.jpg', 'Industrial design sketches on paper', ['industrial design sketches', 'product sketching marker', 'design sketchbook']),
-  e('services-card-engineering', '/images/services/card-engineering.jpg', 'Mechanical CAD assembly on a monitor', ['mechanical engineering CAD screen', 'engineering design computer', 'CAD assembly monitor']),
+  e('services-card-engineering', '/images/services/card-engineering.jpg', 'Mechanical assembly model on a monitor', ['3D digital model on screen', 'product design workstation', 'engineering design computer']),
   e('services-card-build', '/images/services/card-build.jpg', '3D printer building a part', ['3d printer printing close up', 'additive manufacturing machine', 'prototype fabrication workshop']),
   e('services-card-embedded', '/images/services/card-embedded.jpg', 'Close-up of a printed circuit board', ['pcb close up', 'circuit board macro', 'electronics prototype board']),
 
   // Design
   e('design-hero', '/images/design/hero.jpg', 'Designer sketching product concepts', ['industrial designer sketching', 'product design sketch drawing', 'concept sketching studio']),
-  e('design-capabilities', '/images/design/capabilities.jpg', 'Surface model shown on a CAD screen', ['CAD surface modeling screen', '3d modeling software product', 'product render workstation']),
+  e('design-capabilities', '/images/design/capabilities.jpg', '3D digital model on a design workstation', ['3D digital model on screen', 'product design workstation', 'product render workstation']),
 
   // Engineering
   e('engineering-hero', '/images/engineering/hero.jpg', 'Engineer working on an electronics prototype', ['electronics engineering bench', 'hardware prototype engineering', 'engineer soldering prototype']),
@@ -64,7 +64,7 @@ export const IMAGES: ImageEntry[] = [
   // Approach
   e('approach-hero', '/images/approach/hero.jpg', 'Design studio wall with sketches and concept boards', ['design studio mood board wall', 'concept board sketches wall', 'design process workshop']),
   e('approach-ideate', '/images/approach/ideate.jpg', 'Concept sketches and mood boards spread on a table', ['product sketching table', 'mood board design', 'concept sketches']),
-  e('approach-design', '/images/approach/design.jpg', 'Surface modeling on a CAD workstation', ['CAD surface modeling', '3d modeling workstation', 'product design software screen']),
+  e('approach-design', '/images/approach/design.jpg', 'Digital modeling on a design workstation', ['3D digital model on screen', 'product design workstation']),
   e('approach-engineer', '/images/approach/engineer.jpg', 'Electronics bench with a prototype board under test', ['electronics bench prototype', 'pcb testing oscilloscope', 'hardware engineering lab']),
   e('approach-build', '/images/approach/build.jpg', '3D printer printing a prototype part', ['3d printer printing part', 'prototype fabrication', 'additive manufacturing close up']),
   e('approach-validate', '/images/approach/validate.jpg', 'Calipers measuring a prototype part', ['calipers measuring part', 'quality inspection prototype', 'dimensional inspection']),
@@ -78,7 +78,7 @@ export const IMAGES: ImageEntry[] = [
   e('blog-dfm-checklist-for-3d-printed-parts', '/images/blog/dfm-checklist.jpg', 'Engineering drawing with a part beside it', ['engineering drawing part', 'design for manufacturing review']),
   e('blog-esp32-prototyping-pipeline', '/images/blog/esp32-pipeline.jpg', 'Microcontroller development board on a desk', ['microcontroller development board', 'iot prototype board']),
   e('blog-when-to-choose-sla-over-fdm', '/images/blog/sla-vs-fdm.jpg', 'High-detail printed part in hand', ['high detail 3d print', 'resin printed part']),
-  e('blog-iterating-fast-with-print-friendly-cad', '/images/blog/cad-habits.jpg', 'CAD model on a laptop screen', ['cad model laptop', 'product design software']),
+  e('blog-iterating-fast-with-print-friendly-cad', '/images/blog/modeling-habits.jpg', '3D digital model on a laptop screen', ['3D model laptop', 'product design workstation']),
   e('blog-india-hardware-startup-landscape', '/images/blog/hardware-india.jpg', 'Hardware startup workshop bench', ['hardware startup workshop', 'electronics workbench startup']),
 ]
 

@@ -11,6 +11,7 @@ export interface Capability {
   points?: string[]
   sourcing?: Sourcing
   link?: { label: string; href: string }
+  deliverables?: string
 }
 
 export interface ServicePage {
@@ -50,7 +51,8 @@ export const TURNAROUND = [
   { tier: 'Urgent', time: '24 – 48 hours', note: 'Call us' },
 ]
 
-export const FILE_FORMATS = ['STL', 'STEP', 'OBJ', '3MF', 'IGES', 'Fusion 360', 'SolidWorks']
+export const FILE_FORMATS = ['STEP', 'IGES', 'STL', 'OBJ', '3MF', 'Native 3D model files']
+export const FILE_FORMATS_NOTE = 'STEP, IGES, STL, OBJ, 3MF, and native files from major 3D modeling software.'
 
 const processCapability = (id: string, n: string, points: string[], extraAnchors?: string[]): Capability => {
   const p = BUILD_PROCESSES.find((x) => x.id === id)!
@@ -62,41 +64,56 @@ export const SERVICES: Record<ServicePage['slug'], ServicePage> = {
     slug: 'design',
     href: '/services/design',
     metaTitle: 'Design — Dynamik Design Lab',
-    metaDescription: 'Ideation, industrial design, automotive CAS & Class-A surfacing, CAD & DFM and visualization — from first idea to manufacturable form.',
+    metaDescription: 'Ideation, industrial and automotive design, digital modeling and visualization — from first idea to manufacturable form.',
     eyebrow: '01 — DESIGN',
     title: 'Design',
     heroSlot: 'design-hero',
     intro: [
       'Good prototypes start with good design. We take an idea, a brief or a rough sketch and develop it into a form that looks right, works for its user and can actually be made.',
-      'Our team covers both industrial and automotive design — from concept sketches and CMF through CAS and Class-A surfacing to engineering-ready CAD — with manufacturing in mind from the first line.',
+      'Our team covers both industrial and automotive design — from concept sketches and CMF through to industrial and automotive-grade digital models — with manufacturing in mind from the first line.',
       'Because the same team engineers and builds, every design decision is checked against how the part will be made.',
     ],
     whyUs: [
       'Industrial and automotive design under one roof',
       'Design developed with manufacturing in mind from day one',
       'Renders and reviews at every stage, so decisions are easy',
-      'A direct path from final CAD to a physical prototype',
+      'A direct path from final digital model to a physical prototype',
     ],
     capabilitiesTitle: 'From idea to manufacturable form',
     capabilities: [
       { id: 'ideation', n: '01', title: 'Ideation & Concept Generation', body: 'Research, problem framing and multiple concept directions, so the right idea is chosen before detail work begins.', points: ['User and context research', 'Concept sketches', 'Mood boards and direction reviews'] },
       { id: 'industrial-design', n: '02', title: 'Industrial Design', body: 'Form, ergonomics and CMF for products people live and work with — lighting, devices, appliances and fixtures.', points: ['Form development', 'Ergonomics', 'CMF direction'] },
-      { id: 'automotive-design', n: '03', title: 'Automotive Design — CAS & Class-A Surfacing', body: 'Exterior and interior styling taken through concept surfacing to production-quality Class-A surfaces.', points: ['Exterior & interior styling', 'CAS surfacing', 'Class-A surfacing'] },
-      { id: 'cad-dfm', n: '04', title: 'CAD & DFM', body: 'Parametric engineering CAD with design-for-manufacture reviews against the chosen production method.', points: ['Engineering CAD', 'Draft, wall and parting reviews', 'Assembly and fastening strategy'] },
+      { id: 'automotive-design', n: '03', title: 'Automotive Design', body: 'Styling and form development for vehicles and mobility products — exterior and interior concepts, accessories, trim, lighting and switchgear forms.', points: ['Exterior & interior concepts', 'Accessories & trim', 'Lighting & switchgear forms'] },
+      {
+        id: 'digital-modeling',
+        extraAnchors: ['cad-dfm'],
+        n: '04',
+        title: 'Digital Modeling',
+        body: 'We turn sketches and concepts into precise, industrial and automotive-grade digital models: accurate, parametric and built for what comes next. Every model is developed with manufacturability in mind, with a DFM review built in, so it moves straight into prototyping, tooling discussions or supplier handoff without rework.',
+        points: [
+          'Concept-to-production-intent 3D modeling',
+          'Parametric part and assembly modeling',
+          'Design for Manufacturing (DFM) review',
+          'Reverse modeling from sketches, references or existing parts',
+          '2D engineering drawings and documentation',
+          'Neutral exchange files (STEP, IGES, STL) for suppliers and fabrication',
+        ],
+        deliverables: '3D models, neutral exchange files, 2D drawings, renders',
+      },
       { id: 'visualization', n: '05', title: 'Visualization & Renders', body: 'Photoreal renders and visual studies for design reviews, investors and marketing.', points: ['Studio and lifestyle renders', 'CMF variants', 'Presentation boards'] },
     ],
     capabilitySlot: 'design-capabilities',
     specsTitle: 'What you get',
     specs: [
-      { param: 'Software', value: 'Fusion 360, SolidWorks, Figma; surfacing tools TODO' },
-      { param: 'Deliverables', value: 'Concept boards, CAD (STEP), drawings (PDF), renders' },
+      { param: 'Tools', value: 'Design and modeling workstations for industrial and automotive-grade work' },
+      { param: 'Deliverables', value: 'Concept boards, 3D models, neutral exchange files, 2D drawings, renders' },
       { param: 'Engagement', value: 'Concept Sprint or as part of a Prototype Build' },
       { param: 'Typical duration', value: 'TODO' },
     ],
     tagsLabel: 'Capabilities',
-    tags: ['Ideation', 'Industrial Design', 'CAS Surfacing', 'Class-A Surfacing', 'CMF', 'CAD & DFM', 'Renders'],
+    tags: ['Ideation', 'Industrial Design', 'Automotive Design', 'Digital Modeling', 'DFM', 'CMF', 'Renders'],
     workTag: 'design',
-    card: { n: '01', title: 'Design', description: 'Ideation, industrial and automotive design, CAD & DFM, renders.', slot: 'services-card-design' },
+    card: { n: '01', title: 'Design', description: 'Ideation, industrial and automotive design, digital modeling, renders.', slot: 'services-card-design' },
   },
 
   engineering: {
@@ -141,7 +158,7 @@ export const SERVICES: Record<ServicePage['slug'], ServicePage> = {
     specs: [
       { param: 'Disciplines', value: 'Mechanical design; phygital — embedded, firmware, interfaces' },
       { param: 'Connectivity', value: 'Wi-Fi, BLE, CAN, cellular' },
-      { param: 'Deliverables', value: 'Engineered CAD, PCB, firmware, test notes' },
+      { param: 'Deliverables', value: 'Engineered 3D models, PCB, firmware, test notes' },
       { param: 'Typical duration', value: 'TODO' },
     ],
     tagsLabel: 'Capabilities',

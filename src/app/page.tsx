@@ -16,7 +16,7 @@ import {
 
 const DISCIPLINES = [
   'Automotive Design',
-  'CAS & Class-A Surfacing',
+  'Digital Modeling',
   'Industrial Design',
   'CMF',
   'Mechanical Engineering',
@@ -113,7 +113,7 @@ export default function HomePage() {
       {/* 11. Final CTA */}
       <CtaBanner
         title="Have an idea? Let's make it real."
-        subtitle="Tell us where you are — idea, sketch, CAD or a product that needs to work. We'll reply within 24 hours."
+        subtitle="Tell us where you are — idea, sketch, 3D model or a product that needs to work. We'll reply within 24 hours."
         ctaLabel="Start a Project"
       />
     </>

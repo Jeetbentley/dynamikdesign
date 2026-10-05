@@ -4,7 +4,7 @@ import ContactForm from './ContactForm'
 
 export const metadata = {
   title: 'Contact — Dynamik Design Lab',
-  description: 'Tell us about your project — idea, sketches, CAD or a product that needs to work. Reply within one working day.',
+  description: 'Tell us about your project — idea, sketches, a 3D model or a product that needs to work. Reply within one working day.',
 }
 
 export default function ContactPage() {

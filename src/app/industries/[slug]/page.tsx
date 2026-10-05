@@ -77,11 +77,16 @@ export default function IndustryPage({ params }: { params: { slug: string } }) {
         </div>
       </section>
 
-      <PhygitalStrip body={ind.phygital.body} points={ind.phygital.points} slot={ind.phygital.slot} />
+      <PhygitalStrip
+        body={ind.phygital.body}
+        points={ind.phygital.points}
+        slot={ind.phygital.slot}
+        read={{ label: 'Read: Our ESP32 prototyping pipeline', href: '/blog/esp32-prototyping-pipeline' }}
+      />
 
       <SelectedWork industry={ind.industry} />
 
-      <RelatedReads />
+      <RelatedReads context="industry" />
 
       <CtaBanner title={`Building something for ${ind.shortName.toLowerCase()}?`} ctaLabel="Start a Project" />
     </>

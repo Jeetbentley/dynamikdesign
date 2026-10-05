@@ -17,7 +17,7 @@ export default function ApproachPage() {
       <PageHero
         eyebrow="APPROACH"
         title="One team. Five stages. No handoffs."
-        subtitle="Enter at any stage — a raw idea, sketches or finished CAD — and leave with a working, presentable prototype."
+        subtitle="Enter at any stage — a raw idea, sketches or a finished 3D model — and leave with a working, presentable prototype."
         imageSlot="approach-hero"
       />
 

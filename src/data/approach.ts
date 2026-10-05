@@ -23,8 +23,8 @@ export interface Engagement {
 
 export const ENTRY_POINTS: EntryPoint[] = [
   { label: 'I have an idea', body: 'A problem, a brief or a hunch. We start with research and concept directions.', stage: 'ideate' },
-  { label: 'I have sketches', body: 'We turn sketches into surfaces, CAD and renders ready for review.', stage: 'design' },
-  { label: 'I have CAD', body: 'We engineer it for manufacture and build the prototype.', stage: 'build' },
+  { label: 'I have sketches', body: 'We turn sketches into digital models and renders ready for review.', stage: 'design' },
+  { label: 'I have a 3D model', body: 'We engineer, refine and build it.', stage: 'build' },
   { label: 'I need it working', body: 'We add electronics, firmware and interfaces, then validate it.', stage: 'engineer' },
 ]
 
@@ -43,10 +43,10 @@ export const STAGES: Stage[] = [
     id: 'design',
     n: '02',
     title: 'Design',
-    summary: 'Give the chosen concept its form.',
-    description: 'The selected direction is developed into surfaces and engineering-ready CAD, with renders for review at every step.',
-    activities: ['Sketching', 'CAS & Class-A surfacing', 'Engineering CAD', 'Renders'],
-    deliverables: ['CAD', 'Renders'],
+    summary: 'Sketching, digital modeling and visualization.',
+    description: 'Sketching, digital modeling and visualization — the chosen direction becomes precise, industrial and automotive-grade digital models, with renders for review at every step.',
+    activities: ['Sketching', 'Digital modeling', 'Visualization'],
+    deliverables: ['Digital models, drawings and renders'],
     imageSlot: 'approach-design',
   },
   {
@@ -85,7 +85,7 @@ export const ENGAGEMENTS: Engagement[] = [
   { slug: 'concept-sprint', title: 'Concept Sprint', body: 'A short, focused engagement to go from brief to concept directions and renders.' },
   { slug: 'prototype-build', title: 'Prototype Build', body: 'Design, engineering and fabrication of a working, presentable prototype.' },
   { slug: 'phygital-integration', title: 'Phygital Integration', body: 'Add electronics, connectivity and an interface to an existing product.' },
-  { slug: 'fabrication-only', title: 'Fabrication Only', body: 'Already have final CAD? Files in, parts out — with a DFM review and quality check.' },
+  { slug: 'fabrication-only', title: 'Fabrication Only', body: 'Already have a final 3D model? Files in, parts out — with a DFM review and quality check.' },
 ]
 
 export const CONTACT_SERVICES = [
@@ -127,11 +127,11 @@ export const FAQ = [
     a: 'We remake it. You are not charged for parts that fail our internal QC.',
   },
   {
-    q: "Can you help if I don't have a CAD file?",
+    q: "Can you help if I don't have a 3D model?",
     a: 'Yes — describe the idea or send a sketch. We can start at ideation or design and take it all the way to a prototype.',
   },
   {
     q: 'Do you offer design consultation before building?',
-    a: 'A DFM review is included with every quote. Deeper design work — concepts, surfacing, engineering CAD — is part of a Concept Sprint or Prototype Build.',
+    a: 'A DFM review is included with every quote. Deeper design work — concepts, digital modeling, drawings — is part of a Concept Sprint or Prototype Build.',
   },
 ]

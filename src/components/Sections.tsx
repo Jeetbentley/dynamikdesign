@@ -90,10 +90,12 @@ export function PhygitalStrip({
   body = 'Phygital means physical products with a digital or intelligent layer — sensors, connectivity, displays and touch, voice, companion apps and dashboards. It works with any product we design and build.',
   points = ['Sensors', 'Wi-Fi / BLE / CAN / cellular', 'Displays & touch', 'Voice interaction', 'Apps & dashboards'],
   slot,
+  read,
 }: {
   body?: string
   points?: string[]
   slot?: string
+  read?: { label: string; href: string } // optional related blog post
 }) {
   return (
     <section className="bg-bg-dark text-white">
@@ -112,6 +114,11 @@ export function PhygitalStrip({
           <Link href="/services/engineering#phygital" className="arrow-link mt-8">
             Phygital — embedded, firmware & interfaces <ArrowRight />
           </Link>
+          {read && (
+            <Link href={read.href} className="mt-4 flex w-fit items-center gap-2 text-[14px] text-white/60 hover:text-white transition-colors">
+              {read.label} <ArrowRight />
+            </Link>
+          )}
         </FadeIn>
         {slot && (
           <div className="relative aspect-[4/3] overflow-hidden">

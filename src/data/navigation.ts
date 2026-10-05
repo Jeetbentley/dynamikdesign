@@ -26,8 +26,8 @@ export const SERVICES_MENU = {
       links: [
         { label: 'Ideation & Concept', href: '/services/design#ideation' },
         { label: 'Industrial Design', href: '/services/design#industrial-design' },
-        { label: 'Automotive Design — CAS & Class-A', href: '/services/design#automotive-design' },
-        { label: 'CAD & DFM', href: '/services/design#cad-dfm' },
+        { label: 'Automotive Design', href: '/services/design#automotive-design' },
+        { label: 'Digital Modeling', href: '/services/design#digital-modeling' },
         { label: 'Visualization & Renders', href: '/services/design#visualization' },
       ],
     },

@@ -2,7 +2,7 @@ import Link from 'next/link'
 import ServiceDetail from '@/components/ServiceDetail'
 import FadeIn from '@/components/FadeIn'
 import ImageSlot from '@/components/ImageSlot'
-import { FILE_FORMATS, SERVICES, TURNAROUND } from '@/data/services'
+import { FILE_FORMATS, FILE_FORMATS_NOTE, SERVICES, TURNAROUND } from '@/data/services'
 
 const page = SERVICES.build
 
@@ -48,6 +48,7 @@ export default function BuildPage() {
                 </span>
               ))}
             </div>
+            <p className="mt-3 text-[14px] text-white/55">{FILE_FORMATS_NOTE}</p>
 
             <Link href="/contact?service=fabrication-only" className="btn-red mt-10">
               Send Your Files

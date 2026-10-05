@@ -97,6 +97,12 @@ export default function ServiceDetail({ page, children }: Props) {
                             ))}
                           </ul>
                         )}
+                        {c.deliverables && (
+                          <p className="mt-4 text-[15px] text-text-body">
+                            <span className="font-semibold text-text-primary">Deliverables: </span>
+                            {c.deliverables}
+                          </p>
+                        )}
                         {c.link && (
                           <Link href={c.link.href} className="arrow-link mt-4">
                             {c.link.label}
@@ -178,7 +184,7 @@ export default function ServiceDetail({ page, children }: Props) {
         </section>
       )}
 
-      <RelatedReads />
+      <RelatedReads context={page.slug} />
       <CtaBanner />
     </>
   )

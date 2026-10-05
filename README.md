@@ -40,7 +40,7 @@ Values marked `TODO` in these files still need confirming. In spec tables they r
   summary: 'One or two sentences shown at the top of the case study.',
   coverImage: '/work/ev-dashboard/cover.jpg',
   gallery: [
-    { src: '/work/ev-dashboard/01.jpg', caption: 'CAS surfacing review' },
+    { src: '/work/ev-dashboard/01.jpg', caption: 'Digital modeling review' },
   ],
   challenge: 'What problem the client brought.',
   approach: 'How we tackled it.',

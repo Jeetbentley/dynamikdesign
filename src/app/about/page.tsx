@@ -14,13 +14,13 @@ const EQUIPMENT = [
   { name: 'Large-format additive manufacturing', spec: 'Build volume up to 520 × 520 × 600 mm for functional parts, jigs and full-size models.' },
   { name: 'High-resolution resin printing', spec: 'Fine-detail appearance models with sub-0.05 mm layer resolution.' },
   { name: 'Embedded systems lab', spec: 'Microcontroller development, PCB assembly, bring-up and test.' },
-  { name: 'Design workstations', spec: 'Fusion 360, SolidWorks and Figma for CAD, surfacing and visualization.' },
+  { name: 'Design and modeling workstations', spec: 'Industrial and automotive-grade digital modeling, drawings and visualization.' },
   { name: 'Finishing & quality', spec: 'Dimensional inspection, sanding, priming and paint finishing.' },
 ]
 
 const DISCIPLINES = [
   'Automotive Design',
-  'CAS & Class-A Surfacing',
+  'Digital Modeling',
   'Industrial Design',
   'CMF',
   'Mechanical Engineering',
@@ -100,7 +100,7 @@ export default function AboutPage() {
                 agencies, no weeks of email back and forth — one team that designs, engineers and builds.
               </p>
               <p>
-                Clients come to us at every stage: a raw idea, a set of sketches, finished CAD, or a product that needs
+                Clients come to us at every stage: a raw idea, a set of sketches, a finished 3D model, or a product that needs
                 to work. They leave with a prototype that is presentable, functional and close to production.
               </p>
               <p>

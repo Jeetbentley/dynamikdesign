@@ -27,9 +27,10 @@ export const metadata: Metadata = {
   keywords: [
     'concept to prototype',
     'prototyping studio Pune',
-    'automotive design',
-    'Class-A surfacing',
+    'digital modeling',
     'industrial design',
+    'automotive design',
+    'product prototyping',
     'embedded systems',
     'phygital products',
   ],

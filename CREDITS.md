@@ -27,7 +27,7 @@ Every image on the site is listed here and in `src/data/images.ts` (the manifest
 |---|---|---|---|---|---|---|
 | `services-hero` | `public/images/services/hero.jpg` | Prototyping workshop with tools and parts on the bench | prototyping workshop bench, product design workshop, maker studio tools | TODO | TODO | TODO |
 | `services-card-design` | `public/images/services/card-design.jpg` | Industrial design sketches on paper | industrial design sketches, product sketching marker, design sketchbook | TODO | TODO | TODO |
-| `services-card-engineering` | `public/images/services/card-engineering.jpg` | Mechanical CAD assembly on a monitor | mechanical engineering CAD screen, engineering design computer, CAD assembly monitor | TODO | TODO | TODO |
+| `services-card-engineering` | `public/images/services/card-engineering.jpg` | Mechanical assembly model on a monitor | 3D digital model on screen, product design workstation, engineering design computer | TODO | TODO | TODO |
 | `services-card-build` | `public/images/services/card-build.jpg` | 3D printer building a part | 3d printer printing close up, additive manufacturing machine, prototype fabrication workshop | TODO | TODO | TODO |
 | `services-card-embedded` | `public/images/services/card-embedded.jpg` | Close-up of a printed circuit board | pcb close up, circuit board macro, electronics prototype board | TODO | TODO | TODO |
 
@@ -36,7 +36,7 @@ Every image on the site is listed here and in `src/data/images.ts` (the manifest
 | Slot | File | Alt text | Search terms | Source | Photographer | License |
 |---|---|---|---|---|---|---|
 | `design-hero` | `public/images/design/hero.jpg` | Designer sketching product concepts | industrial designer sketching, product design sketch drawing, concept sketching studio | TODO | TODO | TODO |
-| `design-capabilities` | `public/images/design/capabilities.jpg` | Surface model shown on a CAD screen | CAD surface modeling screen, 3d modeling software product, product render workstation | TODO | TODO | TODO |
+| `design-capabilities` | `public/images/design/capabilities.jpg` | 3D digital model on a design workstation | 3D digital model on screen, product design workstation, product render workstation | TODO | TODO | TODO |
 
 ## Engineering
 
@@ -75,7 +75,7 @@ Every image on the site is listed here and in `src/data/images.ts` (the manifest
 |---|---|---|---|---|---|---|
 | `approach-hero` | `public/images/approach/hero.jpg` | Design studio wall with sketches and concept boards | design studio mood board wall, concept board sketches wall, design process workshop | TODO | TODO | TODO |
 | `approach-ideate` | `public/images/approach/ideate.jpg` | Concept sketches and mood boards spread on a table | product sketching table, mood board design, concept sketches | TODO | TODO | TODO |
-| `approach-design` | `public/images/approach/design.jpg` | Surface modeling on a CAD workstation | CAD surface modeling, 3d modeling workstation, product design software screen | TODO | TODO | TODO |
+| `approach-design` | `public/images/approach/design.jpg` | Digital modeling on a design workstation | 3D digital model on screen, product design workstation | TODO | TODO | TODO |
 | `approach-engineer` | `public/images/approach/engineer.jpg` | Electronics bench with a prototype board under test | electronics bench prototype, pcb testing oscilloscope, hardware engineering lab | TODO | TODO | TODO |
 | `approach-build` | `public/images/approach/build.jpg` | 3D printer printing a prototype part | 3d printer printing part, prototype fabrication, additive manufacturing close up | TODO | TODO | TODO |
 | `approach-validate` | `public/images/approach/validate.jpg` | Calipers measuring a prototype part | calipers measuring part, quality inspection prototype, dimensional inspection | TODO | TODO | TODO |
@@ -95,7 +95,7 @@ Every image on the site is listed here and in `src/data/images.ts` (the manifest
 | `blog-dfm-checklist-for-3d-printed-parts` | `public/images/blog/dfm-checklist.jpg` | Engineering drawing with a part beside it | engineering drawing part, design for manufacturing review | TODO | TODO | TODO |
 | `blog-esp32-prototyping-pipeline` | `public/images/blog/esp32-pipeline.jpg` | Microcontroller development board on a desk | microcontroller development board, iot prototype board | TODO | TODO | TODO |
 | `blog-when-to-choose-sla-over-fdm` | `public/images/blog/sla-vs-fdm.jpg` | High-detail printed part in hand | high detail 3d print, resin printed part | TODO | TODO | TODO |
-| `blog-iterating-fast-with-print-friendly-cad` | `public/images/blog/cad-habits.jpg` | CAD model on a laptop screen | cad model laptop, product design software | TODO | TODO | TODO |
+| `blog-iterating-fast-with-print-friendly-cad` | `public/images/blog/modeling-habits.jpg` | 3D digital model on a laptop screen | 3D model laptop, product design workstation | TODO | TODO | TODO |
 | `blog-india-hardware-startup-landscape` | `public/images/blog/hardware-india.jpg` | Hardware startup workshop bench | hardware startup workshop, electronics workbench startup | TODO | TODO | TODO |
 
 ## Work project images

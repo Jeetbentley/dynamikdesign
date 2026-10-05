@@ -1,11 +1,11 @@
 import Link from 'next/link'
 import FadeIn from './FadeIn'
 import ImageSlot from './ImageSlot'
-import { relatedReads } from '@/data/blog'
+import { relatedReads, type RelatedContext } from '@/data/blog'
 
 // Design, process and industry posts only — material comparisons are excluded. Hidden if none fit.
-export default function RelatedReads({ tone = 'light' }: { tone?: 'light' | 'white' }) {
-  const posts = relatedReads(3)
+export default function RelatedReads({ context, tone = 'light' }: { context: RelatedContext; tone?: 'light' | 'white' }) {
+  const posts = relatedReads(context, 3)
   if (posts.length === 0) return null
 
   return (
