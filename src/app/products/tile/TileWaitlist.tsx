@@ -12,7 +12,7 @@ type Status = 'idle' | 'submitting' | 'success' | 'duplicate' | 'error'
 const ORANGE = '#F0641E'
 const label = 'block font-mono text-[11px] uppercase tracking-[0.14em] text-[#85858D]'
 const input =
-  'w-full border-0 border-b border-[#34343A] bg-transparent px-0 pb-3 pt-3 text-[17px] text-[#EDEDEF] placeholder:text-[#55555C] outline-none transition-colors focus:border-[#F0641E] focus:ring-0'
+  'w-full border-0 border-b border-[#34343A] bg-transparent px-0 pb-3 pt-3 text-[17px] text-[#EDEDEF] placeholder:text-[#55555C] outline-none transition-colors focus:border-[#F0641E] focus:ring-0 [&:-webkit-autofill]:[-webkit-text-fill-color:#EDEDEF] [&:-webkit-autofill]:[caret-color:#EDEDEF] [&:-webkit-autofill]:[transition:background-color_99999s_ease-in-out_0s]'
 const errorText = 'mt-2 text-[13px] text-[#FF7A3D]'
 
 function referrer() {

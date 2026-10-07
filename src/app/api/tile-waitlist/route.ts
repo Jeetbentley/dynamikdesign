@@ -122,14 +122,30 @@ export async function POST(req: Request) {
       cache: 'no-store',
       signal: AbortSignal.timeout(15000),
     })
-    result = await res.json()
+    const raw = await res.text()
+    try {
+      result = JSON.parse(raw)
+    } catch {
+      // Usually a Google sign-in page (web app access is not "Anyone") or an Apps Script error page.
+      const hint = /accounts\.google\.com|ServiceLogin|Sign in/i.test(raw)
+        ? 'Google sign-in page: set the web app\'s "Who has access" to "Anyone" and redeploy.'
+        : /Script function not found|doPost/i.test(raw)
+          ? 'doPost not found: save the script and deploy a new version.'
+          : 'Non-JSON reply from the Apps Script.'
+      console.error(`[tile-waitlist] webhook HTTP ${res.status} at ${res.url} — ${hint} First 300 chars:`, raw.slice(0, 300))
+      return fail(502, 'We could not save your signup. Please try again.')
+    }
   } catch (err) {
-    console.error('[tile-waitlist] webhook request failed:', err)
+    console.error('[tile-waitlist] webhook request failed (network/timeout):', err)
     return fail(502, 'We could not save your signup. Please try again.')
   }
 
   if (!result.ok) {
-    console.error('[tile-waitlist] webhook rejected signup:', result.error)
+    const hint =
+      result.error === 'unauthorized'
+        ? 'Secret mismatch: WAITLIST_SECRET on Vercel must equal the WAITLIST_SECRET script property exactly.'
+        : 'Apps Script rejected the payload.'
+    console.error(`[tile-waitlist] webhook rejected signup: ${result.error} — ${hint}`)
     return fail(502, 'We could not save your signup. Please try again.')
   }
 
