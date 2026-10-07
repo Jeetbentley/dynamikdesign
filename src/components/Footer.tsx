@@ -122,7 +122,7 @@ export default function Footer() {
             <Logo light />
           </div>
           <div className="flex items-center gap-6 text-[13px] text-white/55">
-            <span>© Dynamik Design Lab 2025</span>
+            <span>© Dynamik Design Lab {new Date().getFullYear()}</span>
             <Link href="/privacy" className="hover:text-white transition-colors">
               Privacy Policy
             </Link>

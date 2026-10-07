@@ -21,6 +21,7 @@ const mono = localFont({
 })
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://www.dynamikdesignlab.in'),
   title: 'Dynamik Design Lab — Concept to Prototype',
   description:
     'A one-stop concept-to-prototype studio in Pune. Automotive, industrial and phygital products — ideated, designed, engineered and built under one roof.',

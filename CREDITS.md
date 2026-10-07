@@ -80,6 +80,12 @@ Every image on the site is listed here and in `src/data/images.ts` (the manifest
 | `approach-build` | `public/images/approach/build.jpg` | 3D printer printing a prototype part | 3d printer printing part, prototype fabrication, additive manufacturing close up | TODO | TODO | TODO |
 | `approach-validate` | `public/images/approach/validate.jpg` | Calipers measuring a prototype part | calipers measuring part, quality inspection prototype, dimensional inspection | TODO | TODO | TODO |
 
+## Tile
+
+| Slot | File | Alt text | Search terms | Source | Photographer | License |
+|---|---|---|---|---|---|---|
+| `tile-desk-night` | `public/images/tile/desk-night.jpg` | Tile on a desk at night beside a laptop, clock glowing, room lit only by the screens | own product photo — Tile on a desk at night | Dynamik Design Lab | TODO | Own work |
+
 ## About
 
 | Slot | File | Alt text | Search terms | Source | Photographer | License |

@@ -1,13 +1,17 @@
 'use client'
 
+import Image from 'next/image'
 import Link from 'next/link'
 import { useRef, useState, type PointerEvent } from 'react'
 import TileDevice, { type Lit } from './TileDevice'
+import TileWaitlist from './TileWaitlist'
+import { inr, salesOpenLine, tileLaunch } from '@/data/tile-launch'
+import { visibleFaqs, visibleSpecs } from '@/data/tile'
 
-// Fill these in before launch — they appear in several places on the page.
-const PRICE = '[PRICE]'
-const SHIPS_IN = '[X]'
-const WARRANTY = '[WARRANTY]'
+const IS_SALES = tileLaunch.mode === 'sales'
+const CTA = IS_SALES
+  ? { href: '#buy', label: 'Buy Tile', nav: 'Buy' }
+  : { href: '#waitlist', label: 'Join the Founders Batch', nav: 'Join' }
 
 const ORANGE = '#F0641E'
 
@@ -51,7 +55,7 @@ const MODES: { id: Mode; label: string; n: string; text: string; points: string[
   {
     id: 'clock', label: 'Clock', n: '01',
     text: 'Big, chunky digits you can read from across the room, in your colours.',
-    points: ['Glance and Tetris faces', '12 or 24 hour', 'Amber, Ice, Mono or your own colours'],
+    points: ['Glance and Blocks faces', '12 or 24 hour', 'Amber, Ice, Mono or your own colours'],
   },
   {
     id: 'lamp', label: 'Lamp', n: '02',
@@ -72,24 +76,6 @@ const STATS = [
   { value: '0', label: 'Accounts needed', color: '#EDEDEF' },
 ]
 
-const SPECS = [
-  { k: 'Display', v: '64 RGB pixels, 8 × 8, frosted diffuser' },
-  { k: 'Modes', v: 'Clock, lamp, canvas' },
-  { k: 'Connectivity', v: '2.4 GHz WiFi, works offline' },
-  { k: 'Control', v: 'Phone browser, Android app, Alexa, Home Assistant' },
-  { k: 'Power', v: 'USB-C, 5 V [CONFIRM ADAPTER RATING]' },
-  { k: 'Size', v: '[W × H × D] mm, [WEIGHT] g' },
-  { k: 'In the box', v: 'Tile, USB-C cable, quick start card [CONFIRM]' },
-  { k: 'Made in', v: 'Pune, India' },
-]
-
-const FAQS = [
-  { q: 'Does Tile need internet?', a: 'No. On home WiFi it sets its own time. Without WiFi, your phone connects to Tile directly and sends it the time.' },
-  { q: 'Does it work with iPhone?', a: 'Yes, through Safari. The Tile app is Android-only for now.' },
-  { q: 'How do I reset it?', a: 'Plug it in and unplug it within 5 seconds, twice. Plug it in a third time and it starts fresh.' },
-  { q: "What's the warranty?", a: WARRANTY },
-]
-
 // Caps for headings, labels and clickables; lowercase for descriptive copy.
 const mono = 'font-mono text-[12px] uppercase tracking-[0.12em] text-[#85858D]'
 const eyebrow = 'mb-[18px] font-mono text-[12px] uppercase tracking-[0.12em] text-[#F0641E]'
@@ -99,7 +85,23 @@ const body = 'lowercase text-[17px] leading-[1.6] text-[#A3A3AB]'
 const card = 'rounded-[28px] border border-[#1E1E22] bg-[#141416] p-8 sm:p-10 box-border min-w-0'
 const pill = 'inline-flex items-center rounded-full font-semibold uppercase tracking-[0.1em] !text-[#0B0B0C]'
 
-export default function TileProduct() {
+function PriceLine() {
+  return (
+    <div className="flex flex-col items-center">
+      <p className="flex flex-wrap items-baseline justify-center gap-x-3 gap-y-1">
+        <span className="sr-only">Regular price</span>
+        <s className="text-[20px] text-[#85858D] decoration-[#F0641E] decoration-2">{inr(tileLaunch.regularPrice)}</s>
+        <span aria-hidden="true" className="text-[18px] text-[#55555C]">→</span>
+        <span className="sr-only">Founders price</span>
+        <span className="text-[36px] font-bold leading-none tracking-[-0.02em]">{inr(tileLaunch.foundersPrice)}</span>
+        <span className="text-[16px] lowercase text-[#C9C9CF]">for the first {tileLaunch.foundersBatchSize} founders</span>
+      </p>
+      <p className="mt-2 font-mono text-[11px] uppercase tracking-[0.12em] text-[#85858D]">Inclusive of all taxes</p>
+    </div>
+  )
+}
+
+export default function TileProduct({ photo }: { photo?: { src: string; alt: string } }) {
   const [mode, setMode] = useState<Mode>('clock')
   const [brush, setBrush] = useState(1)
   const [paint, setPaint] = useState<number[]>(CLOCK)
@@ -155,8 +157,8 @@ export default function TileProduct() {
             <a href="#modes" className="hidden sm:inline text-[#EDEDEF]">Overview</a>
             <a href="#specs" className="hidden sm:inline text-[#EDEDEF]">Specs</a>
             <a href="#faq" className="hidden sm:inline text-[#EDEDEF]">Support</a>
-            <a href="#buy" className={`${pill} min-h-10 px-[18px] text-[12px]`} style={{ background: ORANGE }}>
-              Buy
+            <a href={CTA.href} className={`${pill} min-h-10 px-[18px] text-[12px]`} style={{ background: ORANGE }}>
+              {CTA.nav}
             </a>
           </nav>
         </div>
@@ -216,17 +218,19 @@ export default function TileProduct() {
           </button>
         </div>
 
-        <div className="relative mt-14 flex flex-wrap items-center justify-center gap-x-7 gap-y-[18px]">
-          <span className="text-[26px] font-medium tracking-[-0.02em]">₹{PRICE}</span>
-          <a href="#buy" className={`${pill} min-h-[52px] px-8 text-[14px]`} style={{ background: ORANGE }}>
-            Buy Tile
+        <div className="relative mt-14">
+          <PriceLine />
+        </div>
+        <div className="relative mt-8 flex flex-wrap items-center justify-center gap-x-7 gap-y-[18px]">
+          <a href={CTA.href} className={`${pill} min-h-[52px] px-8 text-[14px]`} style={{ background: ORANGE }}>
+            {CTA.label}
           </a>
           <a href="#modes" className="inline-flex min-h-[52px] items-center px-2 text-[14px] font-medium uppercase tracking-[0.1em] text-[#EDEDEF] underline underline-offset-[6px]">
             See what it does
           </a>
         </div>
         <p className={`relative mt-[22px] ${mono}`}>
-          Ships in {SHIPS_IN} days&nbsp;&nbsp;/&nbsp;&nbsp;No account&nbsp;&nbsp;/&nbsp;&nbsp;No subscription
+          {salesOpenLine.replace(/\.$/, '')}&nbsp;&nbsp;/&nbsp;&nbsp;No account&nbsp;&nbsp;/&nbsp;&nbsp;No subscription
         </p>
       </section>
 
@@ -285,14 +289,14 @@ export default function TileProduct() {
         </dl>
       </section>
 
-      {/* Photo placeholder */}
-      <section aria-label="Product photo" className="p-6">
-        <div className="mx-auto box-border flex h-[min(640px,70vw)] min-h-[320px] max-w-[1240px] items-end rounded-[28px] border border-[#1E1E22] bg-[#141416] p-8">
-          <p className="m-0 max-w-[44ch] font-mono text-[13px] lowercase text-[#85858D]">
-            [PHOTO] Tile on a desk at night beside a laptop, clock glowing, room lit only by the screens
-          </p>
-        </div>
-      </section>
+      {/* Product photo — only rendered once the image file exists (see data/tile.ts) */}
+      {photo && (
+        <section aria-label="Product photo" className="p-6">
+          <div className="relative mx-auto h-[min(640px,70vw)] min-h-[320px] max-w-[1240px] overflow-hidden rounded-[28px] border border-[#1E1E22] bg-[#141416]">
+            <Image src={photo.src} alt={photo.alt} fill sizes="(min-width: 1280px) 1240px, 100vw" className="object-cover" />
+          </div>
+        </section>
+      )}
 
       {/* Details */}
       <section aria-labelledby="feat-h" className="px-6 py-28 sm:py-32">
@@ -369,7 +373,7 @@ export default function TileProduct() {
           <p className={eyebrow}>/ 03 Specs</p>
           <h2 id="specs-h" className={`mb-12 ${h2}`}>The details.</h2>
           <dl className="m-0 grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-x-12">
-            {SPECS.map((s) => (
+            {visibleSpecs.map((s) => (
               <div key={s.k} className="flex gap-5 border-t border-[#1E1E22] py-[22px]">
                 <dt className={`flex-[0_0_120px] pt-[4px] ${mono}`}>{s.k}</dt>
                 <dd className="m-0 text-[18px] lowercase leading-[1.45]">{s.v}</dd>
@@ -387,7 +391,7 @@ export default function TileProduct() {
             <h2 id="faq-h" className={h2}>Good to know.</h2>
           </div>
           <div className="min-w-0 flex-[2_1_480px]">
-            {FAQS.map((f) => (
+            {visibleFaqs.map((f) => (
               <details key={f.q} className="group border-t border-[#1E1E22] py-[22px]">
                 <summary className="flex cursor-pointer list-none justify-between gap-4 text-[17px] font-semibold uppercase tracking-[0.04em] [&::-webkit-details-marker]:hidden">
                   {f.q}
@@ -400,23 +404,39 @@ export default function TileProduct() {
         </div>
       </section>
 
-      {/* Buy */}
-      <section id="buy" aria-labelledby="buy-h" className="relative scroll-mt-[132px] overflow-hidden border-t border-[#1E1E22] px-6 pb-[140px] pt-28 text-center">
-        <div
-          aria-hidden="true"
-          className="absolute left-1/2 top-[40%] h-[420px] w-[900px] -translate-x-1/2"
-          style={{ background: 'radial-gradient(ellipse at center, rgba(240,100,30,0.18), transparent 65%)' }}
-        />
-        <div className="relative mx-auto mb-10 w-full max-w-[200px]">
-          <TileDevice cells={toCells(drewSomething ? paint : CLOCK)} glow={10} sizes="200px" />
+      {IS_SALES ? (
+        <section id="buy" aria-labelledby="buy-h" className="relative scroll-mt-[132px] overflow-hidden border-t border-[#1E1E22] px-6 pb-[140px] pt-28 text-center">
+          <div
+            aria-hidden="true"
+            className="absolute left-1/2 top-[40%] h-[420px] w-[900px] -translate-x-1/2"
+            style={{ background: 'radial-gradient(ellipse at center, rgba(240,100,30,0.18), transparent 65%)' }}
+          />
+          <div className="relative mx-auto mb-10 w-full max-w-[200px]">
+            <TileDevice cells={toCells(drewSomething ? paint : CLOCK)} glow={10} sizes="200px" />
+          </div>
+          <h2 id="buy-h" className="relative mb-8 text-[clamp(52px,9vw,128px)] font-bold uppercase leading-[0.9] tracking-[-0.04em]">Get Tile.</h2>
+          <div className="relative mb-9">
+            <PriceLine />
+          </div>
+          <Link href="/contact" className={`relative ${pill} min-h-[58px] px-11 text-[15px]`} style={{ background: ORANGE }}>
+            Buy Tile
+          </Link>
+        </section>
+      ) : (
+        <TileWaitlist device={<TileDevice cells={toCells(drewSomething ? paint : CLOCK)} glow={10} sizes="180px" />} />
+      )}
+
+      {/* Credit strip above the site footer */}
+      <section className="border-t border-[#1E1E22] px-6 py-10">
+        <div className="mx-auto max-w-[1240px] text-center sm:text-left">
+          <Link
+            href="/services/engineering#phygital"
+            className="inline-flex items-center gap-2 text-[15px] text-[#A3A3AB] transition-colors"
+          >
+            Designed, engineered and built by Dynamik Design Lab.
+            <span aria-hidden="true" className="text-[#F0641E]">→</span>
+          </Link>
         </div>
-        <h2 id="buy-h" className="relative mb-[18px] text-[clamp(52px,9vw,128px)] font-bold uppercase leading-[0.9] tracking-[-0.04em]">Get Tile.</h2>
-        <p className={`relative mb-9 !text-[13px] ${mono}`}>
-          ₹{PRICE}&nbsp;&nbsp;/&nbsp;&nbsp;Ships in {SHIPS_IN} days&nbsp;&nbsp;/&nbsp;&nbsp;{WARRANTY}
-        </p>
-        <Link href="/contact" className={`relative ${pill} min-h-[58px] px-11 text-[15px]`} style={{ background: ORANGE }}>
-          Buy Tile
-        </Link>
       </section>
     </div>
   )

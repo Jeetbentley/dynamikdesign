@@ -69,6 +69,9 @@ export const IMAGES: ImageEntry[] = [
   e('approach-build', '/images/approach/build.jpg', '3D printer printing a prototype part', ['3d printer printing part', 'prototype fabrication', 'additive manufacturing close up']),
   e('approach-validate', '/images/approach/validate.jpg', 'Calipers measuring a prototype part', ['calipers measuring part', 'quality inspection prototype', 'dimensional inspection']),
 
+  // Tile (own product photography, not stock)
+  e('tile-desk-night', '/images/tile/desk-night.jpg', 'Tile on a desk at night beside a laptop, clock glowing, room lit only by the screens', ['own product photo — Tile on a desk at night']),
+
   // About
   e('about-hero', '/images/about/hero.jpg', 'Design and prototyping studio workspace', ['design studio workspace', 'prototyping studio interior', 'industrial design studio']),
   e('about-team', '/images/about/team.jpg', 'Team reviewing a prototype together at a workbench', ['team reviewing prototype', 'engineers workshop collaboration', 'design team workbench']),
