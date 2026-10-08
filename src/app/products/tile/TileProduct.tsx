@@ -43,29 +43,31 @@ const CLOCK: number[] = (() => {
   return a
 })()
 
-// 3×4 pixel digits in Tile's clock face. 1, 3, 4 and 9 match the product photo.
-const DIGITS: Record<string, string[]> = {
-  '0': ['XXX', 'X.X', 'X.X', 'XXX'],
-  '1': ['.X.', 'XX.', '.X.', '.X.'],
-  '2': ['XX.', '..X', '.X.', 'XXX'],
-  '3': ['XX.', '.XX', '..X', 'XX.'],
-  '4': ['X.X', 'X.X', 'XX.', '..X'],
-  '5': ['XXX', 'XX.', '..X', 'XX.'],
-  '6': ['X..', 'XXX', 'X.X', 'XXX'],
-  '7': ['XXX', '..X', '.X.', '.X.'],
-  '8': ['XXX', 'XXX', 'X.X', 'XXX'],
-  '9': ['XX.', 'X.X', 'XXX', '..X'],
-}
+// Tile's clock digits, copied from FONT_NUM in the firmware (tile_combined.ino v1.3.0).
+// 4 rows × 4 columns per digit; column 4 is always the gap.
+const FONT_NUM: number[][][] = [
+  [[1,1,0,0],[1,0,1,0],[1,0,1,0],[1,1,1,0]], // 0
+  [[0,1,0,0],[1,1,0,0],[0,1,0,0],[0,1,0,0]], // 1
+  [[1,1,0,0],[0,1,0,0],[1,0,0,0],[1,1,0,0]], // 2
+  [[1,1,0,0],[0,1,1,0],[0,0,1,0],[1,1,0,0]], // 3
+  [[1,0,1,0],[1,0,1,0],[1,1,0,0],[0,0,1,0]], // 4
+  [[1,1,1,0],[1,0,0,0],[0,1,0,0],[1,1,0,0]], // 5
+  [[1,0,0,0],[1,1,1,0],[1,0,1,0],[0,1,1,0]], // 6
+  [[1,1,1,0],[0,0,1,0],[0,1,0,0],[0,1,0,0]], // 7
+  [[1,1,1,0],[1,1,1,0],[1,0,1,0],[1,1,1,0]], // 8
+  [[1,1,0,0],[1,0,1,0],[1,1,1,0],[0,0,1,0]], // 9
+]
 
-// Hours on the top half (warm), minutes on the bottom half (ice), 24-hour with leading zero — same layout as the photo.
+// Glance face layout from renderGlanceFace(): hours at cols 0/4 rows 0–3, minutes at cols 1/5 rows 4–7, 24-hour (firmware default).
 const clockGrid = (h: number, m: number): number[] => {
   const a = Array(64).fill(-1)
   const hh = String(h).padStart(2, '0')
   const mm = String(m).padStart(2, '0')
+  // Same as stampNumDigit() in the firmware, clipped to the 8×8 matrix.
   const place = (digit: string, row: number, col: number, colour: number) =>
-    DIGITS[digit].forEach((line, y) =>
-      line.split('').forEach((ch, x) => {
-        if (ch === 'X') a[(row + y) * 8 + col + x] = colour
+    FONT_NUM[Number(digit)].forEach((line, y) =>
+      line.forEach((on, x) => {
+        if (on && col + x < 8 && row + y < 8) a[(row + y) * 8 + col + x] = colour
       }),
     )
   place(hh[0], 0, 0, 0)
