@@ -2,7 +2,7 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
-import { useRef, useState, type PointerEvent } from 'react'
+import { useEffect, useRef, useState, type PointerEvent } from 'react'
 import TileDevice, { type Lit } from './TileDevice'
 import TileWaitlist from './TileWaitlist'
 import { inr, salesOpenLine, tileLaunch } from '@/data/tile-launch'
@@ -43,13 +43,64 @@ const CLOCK: number[] = (() => {
   return a
 })()
 
+// 3×4 pixel digits in Tile's clock face. 1, 3, 4 and 9 match the product photo.
+const DIGITS: Record<string, string[]> = {
+  '0': ['XXX', 'X.X', 'X.X', 'XXX'],
+  '1': ['.X.', 'XX.', '.X.', '.X.'],
+  '2': ['XX.', '..X', '.X.', 'XXX'],
+  '3': ['XX.', '.XX', '..X', 'XX.'],
+  '4': ['X.X', 'X.X', 'XX.', '..X'],
+  '5': ['XXX', 'XX.', '..X', 'XX.'],
+  '6': ['X..', 'XXX', 'X.X', 'XXX'],
+  '7': ['XXX', '..X', '.X.', '.X.'],
+  '8': ['XXX', 'XXX', 'X.X', 'XXX'],
+  '9': ['XX.', 'X.X', 'XXX', '..X'],
+}
+
+// Hours on the top half (warm), minutes on the bottom half (ice), 24-hour with leading zero — same layout as the photo.
+const clockGrid = (h: number, m: number): number[] => {
+  const a = Array(64).fill(-1)
+  const hh = String(h).padStart(2, '0')
+  const mm = String(m).padStart(2, '0')
+  const place = (digit: string, row: number, col: number, colour: number) =>
+    DIGITS[digit].forEach((line, y) =>
+      line.split('').forEach((ch, x) => {
+        if (ch === 'X') a[(row + y) * 8 + col + x] = colour
+      }),
+    )
+  place(hh[0], 0, 0, 0)
+  place(hh[1], 0, 4, 0)
+  place(mm[0], 4, 1, 1)
+  place(mm[1], 4, 5, 1)
+  return a
+}
+
+// Visitor's local time, updated when the minute changes. Starts on the photo's 14:39 so server and client match.
+function useLiveClock() {
+  const [grid, setGrid] = useState<number[]>(CLOCK)
+  useEffect(() => {
+    let last = ''
+    const tick = () => {
+      const now = new Date()
+      const key = `${now.getHours()}:${now.getMinutes()}`
+      if (key === last) return
+      last = key
+      setGrid(clockGrid(now.getHours(), now.getMinutes()))
+    }
+    tick()
+    const id = setInterval(tick, 1000)
+    return () => clearInterval(id)
+  }, [])
+  return grid
+}
+
 const HEART = ['........', '.##..##.', '########', '########', '.######.', '..####..', '...##...', '........']
   .join('')
   .split('')
   .map((ch) => (ch === '#' ? 4 : -1))
 
 const toCells = (grid: number[]) => grid.map((v) => (v >= 0 ? BRUSHES[v] : null))
-const nightCells = CLOCK.map((v) => (v === 0 ? NIGHT_H : v === 1 ? NIGHT_M : null))
+const nightCellsFor = (grid: number[]) => grid.map((v) => (v === 0 ? NIGHT_H : v === 1 ? NIGHT_M : null))
 
 const MODES: { id: Mode; label: string; n: string; text: string; points: string[] }[] = [
   {
@@ -104,36 +155,48 @@ function PriceLine() {
 export default function TileProduct({ photo }: { photo?: { src: string; alt: string } }) {
   const [mode, setMode] = useState<Mode>('clock')
   const [brush, setBrush] = useState(1)
+  const clock = useLiveClock()
+  // The hero shows the live clock until the visitor draws or clears; Reset brings the clock back.
+  const [edited, setEdited] = useState(false)
   const [paint, setPaint] = useState<number[]>(CLOCK)
+  const editedRef = useRef(false)
+  const clockRef = useRef(clock)
+  clockRef.current = clock
   const erasing = useRef(false)
+  const hero = edited ? paint : clock
 
-  const set = (i: number, v: number) =>
+  const set = (i: number, v: number) => {
+    const wasEdited = editedRef.current
+    editedRef.current = true
+    setEdited(true)
     setPaint((p) => {
-      if (p[i] === v) return p
-      const next = p.slice()
+      const base = wasEdited ? p : clockRef.current
+      if (wasEdited && base[i] === v) return p
+      const next = base.slice()
       next[i] = v
       return next
     })
+  }
 
   const canvas = {
     onDown: (i: number) => {
-      erasing.current = paint[i] === brush
+      erasing.current = hero[i] === brush
       set(i, erasing.current ? -1 : brush)
     },
     onEnter: (i: number, e: PointerEvent) => {
       if (e.pointerType === 'mouse' && e.buttons & 1) set(i, erasing.current ? -1 : brush)
     },
-    onKey: (i: number) => set(i, paint[i] === brush ? -1 : brush),
+    onKey: (i: number) => set(i, hero[i] === brush ? -1 : brush),
   }
 
-  const drewSomething = paint.some((v) => v >= 0) && paint.some((v, i) => v !== CLOCK[i])
+  const drewSomething = edited && paint.some((v) => v >= 0)
   const current = MODES.find((m) => m.id === mode)!
   const modeCells =
     mode === 'lamp'
       ? Array(64).fill(LAMP)
       : mode === 'canvas'
         ? toCells(drewSomething ? paint : HEART)
-        : toCells(CLOCK)
+        : toCells(clock)
   const modeText =
     mode === 'canvas' && drewSomething ? 'That’s the drawing you made up top. Tile keeps it on screen until you change it.' : current.text
 
@@ -181,7 +244,7 @@ export default function TileProduct({ photo }: { photo?: { src: string; alt: str
             style={{ background: 'radial-gradient(ellipse at center, rgba(95,217,250,0.22), rgba(240,100,30,0.14) 40%, transparent 70%)' }}
           />
           <div className="relative w-full drop-shadow-[0_50px_60px_rgba(240,100,30,0.28)]">
-            <TileDevice cells={toCells(paint)} interactive={canvas} priority glow={16} />
+            <TileDevice cells={toCells(hero)} interactive={canvas} priority glow={16} />
           </div>
         </div>
 
@@ -204,14 +267,21 @@ export default function TileProduct({ photo }: { photo?: { src: string; alt: str
           <span className="mx-1 h-6 w-px bg-[#26262B]" aria-hidden="true" />
           <button
             type="button"
-            onClick={() => setPaint(Array(64).fill(-1))}
+            onClick={() => {
+              editedRef.current = true
+              setEdited(true)
+              setPaint(Array(64).fill(-1))
+            }}
             className="min-h-11 rounded-full border border-[#34343A] px-4 font-mono text-[12px] uppercase tracking-[0.12em] text-[#EDEDEF] hover:border-[#EDEDEF]"
           >
             Clear
           </button>
           <button
             type="button"
-            onClick={() => setPaint(CLOCK)}
+            onClick={() => {
+              editedRef.current = false
+              setEdited(false)
+            }}
             className="min-h-11 rounded-full border border-[#34343A] px-4 font-mono text-[12px] uppercase tracking-[0.12em] text-[#EDEDEF] hover:border-[#EDEDEF]"
           >
             Reset
@@ -330,7 +400,7 @@ export default function TileProduct({ photo }: { photo?: { src: string; alt: str
                   style={{ background: 'radial-gradient(ellipse at center, rgba(255,74,0,0.28), transparent 70%)' }}
                 />
                 <div className="relative w-full max-w-[220px]">
-                  <TileDevice cells={nightCells} dim glow={10} sizes="220px" alt="Tile at night, dimmed to 5% brightness" />
+                  <TileDevice cells={nightCellsFor(clock)} dim glow={10} sizes="220px" alt="Tile at night, dimmed to 5% brightness" />
                 </div>
               </div>
             </article>
@@ -412,7 +482,7 @@ export default function TileProduct({ photo }: { photo?: { src: string; alt: str
             style={{ background: 'radial-gradient(ellipse at center, rgba(240,100,30,0.18), transparent 65%)' }}
           />
           <div className="relative mx-auto mb-10 w-full max-w-[200px]">
-            <TileDevice cells={toCells(drewSomething ? paint : CLOCK)} glow={10} sizes="200px" />
+            <TileDevice cells={toCells(drewSomething ? paint : clock)} glow={10} sizes="200px" />
           </div>
           <h2 id="buy-h" className="relative mb-8 text-[clamp(52px,9vw,128px)] font-bold uppercase leading-[0.9] tracking-[-0.04em]">Get Tile.</h2>
           <div className="relative mb-9">
@@ -423,7 +493,7 @@ export default function TileProduct({ photo }: { photo?: { src: string; alt: str
           </Link>
         </section>
       ) : (
-        <TileWaitlist device={<TileDevice cells={toCells(drewSomething ? paint : CLOCK)} glow={10} sizes="180px" />} />
+        <TileWaitlist device={<TileDevice cells={toCells(drewSomething ? paint : clock)} glow={10} sizes="180px" />} />
       )}
 
       {/* Credit strip above the site footer */}
