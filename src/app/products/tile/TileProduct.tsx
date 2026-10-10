@@ -101,6 +101,70 @@ const HEART = ['........', '.##..##.', '########', '########', '.######.', '..##
   .split('')
   .map((ch) => (ch === '#' ? 4 : -1))
 
+// Lamp mode in the hero: a small pixel flame. Heat rises from the base, cools as it climbs and is
+// clipped to a cone that sways a little, then blended with the last frame so it flickers instead of strobing.
+const FLAME: Lit[] = [
+  { center: '#FFF7DC', edge: '#FFD36B', glow: 'rgba(255,190,80,0.85)' },
+  { center: '#FFD27A', edge: '#FF9A2E', glow: 'rgba(255,140,40,0.8)' },
+  { center: '#FF9A4D', edge: '#F0641E', glow: 'rgba(240,100,30,0.75)' },
+  { center: '#E0461A', edge: '#A8240A', glow: 'rgba(168,36,10,0.6)' },
+]
+
+const flameFrame = (prev: number[], sway: number, rand: () => number) => {
+  const next = Array(64).fill(0)
+  for (let y = 7; y >= 0; y--) {
+    const half = 1 + y * 0.42
+    for (let x = 0; x < 8; x++) {
+      const row = (y + 1) * 8
+      const below =
+        y === 7
+          ? 0.92 + rand() * 0.08
+          : next[row + x] * 0.6 + ((x > 0 ? next[row + x - 1] : 0) + (x < 7 ? next[row + x + 1] : 0)) * 0.2
+      const cone = Math.min(1, Math.max(0, (half - Math.abs(x - 3.5 - sway)) / 1.1))
+      const heat = Math.max(0, below * cone - (y === 7 ? 0 : 0.07 + rand() * 0.09))
+      next[y * 8 + x] = prev[y * 8 + x] * 0.35 + heat * 0.65
+    }
+  }
+  return next
+}
+
+// Deterministic first frame so the server and client render the same thing.
+const FLAME_STILL = (() => {
+  let seed = 7
+  const rand = () => ((seed = (seed * 16807) % 2147483647) / 2147483647)
+  let f = Array(64).fill(0)
+  for (let n = 0; n < 12; n++) f = flameFrame(f, 0, rand)
+  return f
+})()
+
+const flameCells = (heat: number[]) =>
+  heat.map((h) => (h > 0.8 ? FLAME[0] : h > 0.52 ? FLAME[1] : h > 0.34 ? FLAME[2] : h > 0.17 ? FLAME[3] : null))
+
+function useFlame(on: boolean) {
+  const [heat, setHeat] = useState<number[]>(FLAME_STILL)
+  useEffect(() => {
+    if (!on || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    let sway = 0
+    const id = setInterval(() => {
+      sway = Math.max(-0.7, Math.min(0.7, sway + (Math.random() - 0.5) * 0.5))
+      setHeat((prev) => flameFrame(prev, sway, Math.random))
+    }, 90)
+    return () => clearInterval(id)
+  }, [on])
+  return flameCells(heat)
+}
+
+const HERO_HINT: Record<Mode, string> = {
+  clock: 'Your local time, live',
+  lamp: 'Candle glow, one of the lamp effects',
+  canvas: 'Make it yours — tap or drag on the screen',
+}
+const HERO_ALT: Record<Mode, string> = {
+  clock: 'Tile showing the current time in pixel digits',
+  lamp: 'Tile as a lamp, showing a flickering pixel flame',
+  canvas: 'Tile’s 8 by 8 pixel screen. Choose a colour below, then tap pixels to draw',
+}
+
 const toCells = (grid: number[]) => grid.map((v) => (v >= 0 ? BRUSHES[v] : null))
 const nightCellsFor = (grid: number[]) => grid.map((v) => (v === 0 ? NIGHT_H : v === 1 ? NIGHT_M : null))
 
@@ -156,25 +220,20 @@ function PriceLine() {
 
 export default function TileProduct({ photo }: { photo?: { src: string; alt: string } }) {
   const [mode, setMode] = useState<Mode>('clock')
+  const [heroMode, setHeroMode] = useState<Mode>('clock')
   const [brush, setBrush] = useState(1)
   const clock = useLiveClock()
-  // The hero shows the live clock until the visitor draws or clears; Reset brings the clock back.
+  const flame = useFlame(heroMode === 'lamp')
+  // The hero canvas starts on the heart; Reset brings it back.
   const [edited, setEdited] = useState(false)
-  const [paint, setPaint] = useState<number[]>(CLOCK)
-  const editedRef = useRef(false)
-  const clockRef = useRef(clock)
-  clockRef.current = clock
+  const [paint, setPaint] = useState<number[]>(HEART)
   const erasing = useRef(false)
-  const hero = edited ? paint : clock
 
   const set = (i: number, v: number) => {
-    const wasEdited = editedRef.current
-    editedRef.current = true
     setEdited(true)
     setPaint((p) => {
-      const base = wasEdited ? p : clockRef.current
-      if (wasEdited && base[i] === v) return p
-      const next = base.slice()
+      if (p[i] === v) return p
+      const next = p.slice()
       next[i] = v
       return next
     })
@@ -182,14 +241,16 @@ export default function TileProduct({ photo }: { photo?: { src: string; alt: str
 
   const canvas = {
     onDown: (i: number) => {
-      erasing.current = hero[i] === brush
+      erasing.current = paint[i] === brush
       set(i, erasing.current ? -1 : brush)
     },
     onEnter: (i: number, e: PointerEvent) => {
       if (e.pointerType === 'mouse' && e.buttons & 1) set(i, erasing.current ? -1 : brush)
     },
-    onKey: (i: number) => set(i, hero[i] === brush ? -1 : brush),
+    onKey: (i: number) => set(i, paint[i] === brush ? -1 : brush),
   }
+
+  const heroCells = heroMode === 'lamp' ? flame : toCells(heroMode === 'canvas' ? paint : clock)
 
   const drewSomething = edited && paint.some((v) => v >= 0)
   const current = MODES.find((m) => m.id === mode)!
@@ -236,7 +297,7 @@ export default function TileProduct({ photo }: { photo?: { src: string; alt: str
           Your desk, in 64&nbsp;pixels.
         </h1>
         <p className={`mx-auto mb-12 max-w-[38ch] !text-[clamp(17px,1.8vw,21px)] ${body}`}>
-          A clock, a lamp and a tiny canvas you draw on. This one’s live — tap the screen and make it yours.
+          A clock, a lamp and a tiny canvas you draw on. This one’s live — switch modes and make it yours.
         </p>
 
         <div className="relative mx-auto flex max-w-[460px] justify-center">
@@ -246,48 +307,75 @@ export default function TileProduct({ photo }: { photo?: { src: string; alt: str
             style={{ background: 'radial-gradient(ellipse at center, rgba(95,217,250,0.22), rgba(240,100,30,0.14) 40%, transparent 70%)' }}
           />
           <div className="relative w-full drop-shadow-[0_50px_60px_rgba(240,100,30,0.28)]">
-            <TileDevice cells={toCells(hero)} interactive={canvas} priority glow={16} />
+            <TileDevice
+              cells={heroCells}
+              interactive={heroMode === 'canvas' ? canvas : undefined}
+              glow={heroMode === 'lamp' ? 18 : 16}
+              alt={HERO_ALT[heroMode]}
+            />
           </div>
         </div>
 
-        <p className={`mt-8 ${mono}`}>Make it yours — tap or drag on the screen</p>
-        <div role="group" aria-label="Colour" className="mt-5 flex flex-wrap items-center justify-center gap-2.5">
-          {BRUSHES.map((b, i) => (
-            <button
-              key={b.name}
-              type="button"
-              aria-label={b.name}
-              aria-pressed={brush === i}
-              onClick={() => setBrush(i)}
-              className="h-11 w-11 rounded-full transition-transform hover:scale-110"
-              style={{
-                background: b.swatch,
-                boxShadow: brush === i ? `0 0 0 3px #0B0B0C, 0 0 0 5px #EDEDEF, 0 0 18px ${b.glow}` : 'none',
-              }}
-            />
-          ))}
-          <span className="mx-1 h-6 w-px bg-[#26262B]" aria-hidden="true" />
-          <button
-            type="button"
-            onClick={() => {
-              editedRef.current = true
-              setEdited(true)
-              setPaint(Array(64).fill(-1))
-            }}
-            className="min-h-11 rounded-full border border-[#34343A] px-4 font-mono text-[12px] uppercase tracking-[0.12em] text-[#EDEDEF] hover:border-[#EDEDEF]"
-          >
-            Clear
-          </button>
-          <button
-            type="button"
-            onClick={() => {
-              editedRef.current = false
-              setEdited(false)
-            }}
-            className="min-h-11 rounded-full border border-[#34343A] px-4 font-mono text-[12px] uppercase tracking-[0.12em] text-[#EDEDEF] hover:border-[#EDEDEF]"
-          >
-            Reset
-          </button>
+        <div role="group" aria-label="Mode" className="relative mx-auto mt-10 inline-flex rounded-full border border-[#26262B] bg-[#141416] p-1">
+          {MODES.map((m) => {
+            const on = heroMode === m.id
+            return (
+              <button
+                key={m.id}
+                type="button"
+                aria-pressed={on}
+                onClick={() => setHeroMode(m.id)}
+                className="min-h-11 min-w-[96px] rounded-full px-5 font-mono text-[12px] uppercase tracking-[0.12em] transition-colors"
+                style={on ? { background: ORANGE, color: '#0B0B0C' } : { color: '#A3A3AB' }}
+              >
+                {m.label}
+              </button>
+            )
+          })}
+        </div>
+
+        {/* Fixed height so switching modes doesn't move the price and buttons below */}
+        <div className="mt-6 flex min-h-[156px] flex-col sm:min-h-[92px] items-center">
+          <p className={mono} aria-live="polite">{HERO_HINT[heroMode]}</p>
+          {heroMode === 'canvas' && (
+            <div role="group" aria-label="Colour" className="mt-4 flex flex-wrap items-center justify-center gap-2.5">
+              {BRUSHES.map((b, i) => (
+                <button
+                  key={b.name}
+                  type="button"
+                  aria-label={b.name}
+                  aria-pressed={brush === i}
+                  onClick={() => setBrush(i)}
+                  className="h-11 w-11 rounded-full transition-transform hover:scale-110"
+                  style={{
+                    background: b.swatch,
+                    boxShadow: brush === i ? `0 0 0 3px #0B0B0C, 0 0 0 5px #EDEDEF, 0 0 18px ${b.glow}` : 'none',
+                  }}
+                />
+              ))}
+              <span className="mx-1 h-6 w-px bg-[#26262B]" aria-hidden="true" />
+              <button
+                type="button"
+                onClick={() => {
+                  setEdited(true)
+                  setPaint(Array(64).fill(-1))
+                }}
+                className="min-h-11 rounded-full border border-[#34343A] px-4 font-mono text-[12px] uppercase tracking-[0.12em] text-[#EDEDEF] hover:border-[#EDEDEF]"
+              >
+                Clear
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setEdited(false)
+                  setPaint(HEART)
+                }}
+                className="min-h-11 rounded-full border border-[#34343A] px-4 font-mono text-[12px] uppercase tracking-[0.12em] text-[#EDEDEF] hover:border-[#EDEDEF]"
+              >
+                Reset
+              </button>
+            </div>
+          )}
         </div>
 
         <div className="relative mt-14">
@@ -332,7 +420,7 @@ export default function TileProduct({ photo }: { photo?: { src: string; alt: str
             </div>
             <div className="flex flex-[1_1_320px] justify-center">
               <div className="w-full max-w-[360px]">
-                <TileDevice cells={modeCells} glow={mode === 'lamp' ? 10 : 14} sizes="(min-width: 768px) 360px, 80vw" />
+                <TileDevice cells={modeCells} glow={mode === 'lamp' ? 10 : 14} />
               </div>
             </div>
             <div className="min-w-0 flex-[1_1_280px]">
@@ -402,7 +490,7 @@ export default function TileProduct({ photo }: { photo?: { src: string; alt: str
                   style={{ background: 'radial-gradient(ellipse at center, rgba(255,74,0,0.28), transparent 70%)' }}
                 />
                 <div className="relative w-full max-w-[220px]">
-                  <TileDevice cells={nightCellsFor(clock)} dim glow={10} sizes="220px" alt="Tile at night, dimmed to 5% brightness" />
+                  <TileDevice cells={nightCellsFor(clock)} dim glow={10} alt="Tile at night, dimmed to 5% brightness" />
                 </div>
               </div>
             </article>
@@ -484,7 +572,7 @@ export default function TileProduct({ photo }: { photo?: { src: string; alt: str
             style={{ background: 'radial-gradient(ellipse at center, rgba(240,100,30,0.18), transparent 65%)' }}
           />
           <div className="relative mx-auto mb-10 w-full max-w-[200px]">
-            <TileDevice cells={toCells(drewSomething ? paint : clock)} glow={10} sizes="200px" />
+            <TileDevice cells={toCells(drewSomething ? paint : clock)} glow={10} />
           </div>
           <h2 id="buy-h" className="relative mb-8 text-[clamp(52px,9vw,128px)] font-bold uppercase leading-[0.9] tracking-[-0.04em]">Get Tile.</h2>
           <div className="relative mb-9">
@@ -495,7 +583,7 @@ export default function TileProduct({ photo }: { photo?: { src: string; alt: str
           </Link>
         </section>
       ) : (
-        <TileWaitlist device={<TileDevice cells={toCells(drewSomething ? paint : clock)} glow={10} sizes="180px" />} />
+        <TileWaitlist device={<TileDevice cells={toCells(drewSomething ? paint : clock)} glow={10} />} />
       )}
 
       {/* Credit strip above the site footer */}
