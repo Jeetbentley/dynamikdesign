@@ -4,20 +4,21 @@ const nextConfig = {
   images: {
     remotePatterns: [
       {
-        protocol: 'https',
-        hostname: 'picsum.photos',
-      },
-      {
-        protocol: 'https',
-        hostname: 'images.unsplash.com',
-      },
-      {
-        // Vercel Blob Storage — matches any subdomain like
-        // abc123.public.blob.vercel-storage.com
+        // Vercel Blob Storage (logo) — matches any subdomain like abc123.public.blob.vercel-storage.com
         protocol: 'https',
         hostname: '**.public.blob.vercel-storage.com',
       },
     ],
+  },
+  async redirects() {
+    // statusCode 301 (Next's `permanent: true` would send 308)
+    return [
+      { source: '/services/fdm-printing', destination: '/services/build#additive', statusCode: 301 },
+      { source: '/services/sla-printing', destination: '/services/build#additive', statusCode: 301 },
+      { source: '/services/product-design', destination: '/services/design#industrial-design', statusCode: 301 },
+      { source: '/process', destination: '/approach', statusCode: 301 },
+      { source: '/materials', destination: '/services/build', statusCode: 301 },
+    ]
   },
 }
 

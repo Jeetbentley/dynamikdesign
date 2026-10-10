@@ -1,85 +1,62 @@
-import Image from 'next/image'
 import Link from 'next/link'
+import type { ReactNode } from 'react'
 import PageHero from './PageHero'
 import CtaBanner from './CtaBanner'
 import FadeIn from './FadeIn'
-import ProjectCard from './ProjectCard'
-import { projects, type Category } from '@/data/projects'
-import { posts } from '@/data/blog'
+import ImageSlot from './ImageSlot'
+import WorkCard from './WorkCard'
 import ArrowRight from './ArrowRight'
+import RelatedReads from './RelatedReads'
+import SpecValue from './SpecValue'
+import { work } from '@/data/work'
+import type { ServicePage } from '@/data/services'
 
-export interface Capability {
-  n: string
-  title: string
-  body: string
+interface Props {
+  page: ServicePage
+  children?: ReactNode // extra sections after the tag strip (e.g. Fabrication Only)
 }
 
-export interface SpecRow {
-  param: string
-  value: string
+export function SourcingBadge({ sourcing, dark = false }: { sourcing: 'In-house' | 'Partner'; dark?: boolean }) {
+  const inHouse = sourcing === 'In-house'
+  return (
+    <span
+      className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] font-medium uppercase tracking-[0.08em] ${
+        inHouse
+          ? 'border-red/30 text-red'
+          : dark
+            ? 'border-white/20 text-white/60'
+            : 'border-border text-text-muted'
+      }`}
+    >
+      <span className={`h-1.5 w-1.5 rounded-full ${inHouse ? 'bg-red' : dark ? 'bg-white/40' : 'bg-text-muted'}`} aria-hidden="true" />
+      {sourcing}
+    </span>
+  )
 }
 
-export interface Props {
-  eyebrow: string
-  title: string
-  hero: string
-  intro: string[]
-  whyUs: string[]
-  capabilities: Capability[]
-  capabilityImage: string
-  specs: SpecRow[]
-  materials: string[]
-  category: Category
-  blogTags?: string[]
-}
-
-export default function ServiceDetail({
-  eyebrow,
-  title,
-  hero,
-  intro,
-  whyUs,
-  capabilities,
-  capabilityImage,
-  specs,
-  materials,
-  category,
-}: Props) {
-  const featured = projects
-    .filter((p) => p.category.includes(category))
-    .slice(0, 3)
-  const blog = posts.slice(0, 3)
+export default function ServiceDetail({ page, children }: Props) {
+  const featured = work.filter((w) => w.tags.includes(page.workTag)).slice(0, 3)
 
   return (
     <>
-      <PageHero eyebrow={eyebrow} title={title} image={hero} height="tall" />
+      <PageHero eyebrow={page.eyebrow} title={page.title} imageSlot={page.heroSlot} height="tall" />
 
       {/* Intro */}
       <section className="bg-white">
         <div className="container-text py-24 lg:py-28">
           <FadeIn>
-            {intro.map((p, i) => (
-              <p
-                key={i}
-                className={`text-text-body text-[18px] leading-[1.75] ${
-                  i === 0 ? 'first-letter:text-text-primary' : ''
-                } ${i > 0 ? 'mt-6' : ''}`}
-              >
+            {page.intro.map((p, i) => (
+              <p key={i} className={`text-text-body text-[18px] leading-[1.75] ${i > 0 ? 'mt-6' : ''}`}>
                 {p}
               </p>
             ))}
 
             <div className="mt-12">
-              <h3 className="text-[16px] tracking-[0.12em] uppercase font-semibold text-text-primary mb-5">
-                Why Us
-              </h3>
+              <h2 className="text-[16px] tracking-[0.12em] uppercase font-semibold text-text-primary mb-5">Why Us</h2>
               <ul className="space-y-3">
-                {whyUs.map((w, i) => (
-                  <li
-                    key={i}
-                    className="text-text-body text-[16px] flex gap-3 leading-[1.6]"
-                  >
-                    <span className="text-red shrink-0 mt-[10px]">—</span>
+                {page.whyUs.map((w) => (
+                  <li key={w} className="text-text-body text-[16px] flex gap-3 leading-[1.6]">
+                    <span className="text-red shrink-0" aria-hidden="true">—</span>
                     <span>{w}</span>
                   </li>
                 ))}
@@ -94,34 +71,52 @@ export default function ServiceDetail({
         <div className="container-x py-24 lg:py-32">
           <FadeIn>
             <span className="eyebrow text-text-muted">CAPABILITIES</span>
-            <h2 className="heading-h2 mt-4 max-w-xl">From file to finished part</h2>
+            <h2 className="heading-h2 mt-4 max-w-xl">{page.capabilitiesTitle}</h2>
           </FadeIn>
           <div className="mt-14 grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
-            <div className="space-y-10">
-              {capabilities.map((c, i) => (
-                <FadeIn key={c.n} delay={i * 0.06}>
-                  <div className="flex gap-6 items-start">
-                    <div className="text-red text-[20px] font-bold tabular-nums tracking-tight pt-1">
-                      {c.n}
+            <div className="space-y-12">
+              {page.capabilities.map((c, i) => (
+                <div key={c.n} id={c.id} className="scroll-mt-28">
+                  {c.extraAnchors?.map((a) => <span key={a} id={a} className="block scroll-mt-28" aria-hidden="true" />)}
+                  <FadeIn delay={i * 0.05}>
+                    <div className="flex gap-6 items-start">
+                      <div className="text-red text-[20px] font-bold tabular-nums tracking-tight pt-1">{c.n}</div>
+                      <div>
+                        <div className="flex flex-wrap items-center gap-3">
+                          <h3 className="text-[20px] font-semibold text-text-primary">{c.title}</h3>
+                          {c.sourcing && <SourcingBadge sourcing={c.sourcing} />}
+                        </div>
+                        <p className="mt-2 text-text-body">{c.body}</p>
+                        {c.points && (
+                          <ul className="mt-4 space-y-1.5">
+                            {c.points.map((pt) => (
+                              <li key={pt} className="flex gap-3 text-[15px] text-text-body">
+                                <span className="text-red" aria-hidden="true">—</span>
+                                {pt}
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+                        {c.deliverables && (
+                          <p className="mt-4 text-[15px] text-text-body">
+                            <span className="font-semibold text-text-primary">Deliverables: </span>
+                            {c.deliverables}
+                          </p>
+                        )}
+                        {c.link && (
+                          <Link href={c.link.href} className="arrow-link mt-4">
+                            {c.link.label}
+                            <ArrowRight />
+                          </Link>
+                        )}
+                      </div>
                     </div>
-                    <div>
-                      <h3 className="text-[20px] font-semibold text-text-primary">
-                        {c.title}
-                      </h3>
-                      <p className="mt-2 text-text-body">{c.body}</p>
-                    </div>
-                  </div>
-                </FadeIn>
+                  </FadeIn>
+                </div>
               ))}
             </div>
-            <div className="relative aspect-[4/3] lg:aspect-[5/6] overflow-hidden">
-              <Image
-                src={capabilityImage}
-                alt={title}
-                fill
-                sizes="(min-width: 1024px) 50vw, 100vw"
-                className="object-cover"
-              />
+            <div className="relative aspect-[4/3] lg:aspect-[5/6] overflow-hidden lg:sticky lg:top-28">
+              <ImageSlot slot={page.capabilitySlot} sizes="(min-width: 1024px) 50vw, 100vw" />
             </div>
           </div>
         </div>
@@ -132,38 +127,30 @@ export default function ServiceDetail({
         <div className="container-x py-24 lg:py-32">
           <FadeIn>
             <span className="eyebrow text-text-muted">TECHNICAL DETAILS</span>
-            <h2 className="heading-h2 mt-4">Specifications</h2>
+            <h2 className="heading-h2 mt-4">{page.specsTitle}</h2>
           </FadeIn>
-          <div className="mt-12 max-w-3xl">
-            {specs.map((row) => (
-              <div
-                key={row.param}
-                className="grid grid-cols-[160px_1fr] sm:grid-cols-[220px_1fr] gap-6 py-5 border-b border-border"
-              >
-                <div className="text-text-muted text-[13px] uppercase tracking-[0.1em] font-medium">
-                  {row.param}
-                </div>
-                <div className="text-text-primary text-[16px]">{row.value}</div>
+          <dl className="mt-12 max-w-3xl">
+            {page.specs.map((row) => (
+              <div key={row.param} className="grid grid-cols-[140px_1fr] sm:grid-cols-[220px_1fr] gap-6 py-5 border-b border-border">
+                <dt className="text-text-muted text-[13px] uppercase tracking-[0.1em] font-medium">{row.param}</dt>
+                <dd className="text-text-primary text-[16px]">
+                  <SpecValue value={row.value} />
+                </dd>
               </div>
             ))}
-          </div>
+          </dl>
         </div>
       </section>
 
-      {/* Materials Strip */}
+      {/* Capability tag strip */}
       <section className="bg-bg-light">
         <div className="container-x py-16">
           <div className="flex flex-col lg:flex-row lg:items-center gap-6 lg:gap-12">
-            <span className="eyebrow text-text-muted shrink-0">
-              AVAILABLE MATERIALS
-            </span>
+            <span className="eyebrow text-text-muted shrink-0">{page.tagsLabel}</span>
             <div className="flex gap-3 overflow-x-auto no-scrollbar">
-              {materials.map((m) => (
-                <span
-                  key={m}
-                  className="shrink-0 px-5 py-2.5 rounded-full bg-white border border-border text-[14px] font-medium text-text-primary"
-                >
-                  {m}
+              {page.tags.map((t) => (
+                <span key={t} className="shrink-0 px-5 py-2.5 rounded-full bg-white border border-border text-[14px] font-medium text-text-primary">
+                  {t}
                 </span>
               ))}
             </div>
@@ -171,14 +158,16 @@ export default function ServiceDetail({
         </div>
       </section>
 
-      {/* Featured work for this service */}
+      {children}
+
+      {/* Featured work */}
       {featured.length > 0 && (
         <section className="bg-white">
           <div className="container-x py-24 lg:py-32">
             <FadeIn className="mb-14 flex items-end justify-between gap-6">
               <div>
-                <span className="eyebrow text-text-muted">FEATURED PROJECTS</span>
-                <h2 className="heading-h2 mt-4">Recent {category} work</h2>
+                <span className="eyebrow text-text-muted">SELECTED WORK</span>
+                <h2 className="heading-h2 mt-4">Recent {page.title.toLowerCase()} work</h2>
               </div>
               <Link href="/work" className="arrow-link hidden sm:inline-flex">
                 See all <ArrowRight />
@@ -187,7 +176,7 @@ export default function ServiceDetail({
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-14">
               {featured.map((p, i) => (
                 <FadeIn key={p.slug} delay={i * 0.06}>
-                  <ProjectCard project={p} />
+                  <WorkCard project={p} />
                 </FadeIn>
               ))}
             </div>
@@ -195,38 +184,7 @@ export default function ServiceDetail({
         </section>
       )}
 
-      {/* Related blog */}
-      <section className="bg-bg-light">
-        <div className="container-x py-24 lg:py-32">
-          <FadeIn>
-            <span className="eyebrow text-text-muted">FROM THE BLOG</span>
-            <h2 className="heading-h2 mt-4">Related reads</h2>
-          </FadeIn>
-          <div className="mt-14 grid grid-cols-1 md:grid-cols-3 gap-x-8 gap-y-14">
-            {blog.map((b, i) => (
-              <FadeIn key={b.slug} delay={i * 0.06}>
-                <Link href={`/blog/${b.slug}`} className="group block">
-                  <div className="relative aspect-[3/2] overflow-hidden bg-white mb-5">
-                    <Image
-                      src={b.image}
-                      alt={b.title}
-                      fill
-                      sizes="(min-width: 1024px) 33vw, 100vw"
-                      className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
-                    />
-                  </div>
-                  <span className="tag tag--red">{b.category}</span>
-                  <h3 className="mt-4 text-[20px] font-semibold text-text-primary group-hover:text-red transition-colors">
-                    {b.title}
-                  </h3>
-                  <p className="mt-2 text-text-muted text-[13px]">{b.date} · {b.readTime}</p>
-                </Link>
-              </FadeIn>
-            ))}
-          </div>
-        </div>
-      </section>
-
+      <RelatedReads context={page.slug} />
       <CtaBanner />
     </>
   )

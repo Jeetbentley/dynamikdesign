@@ -1,41 +1,43 @@
 import type { Metadata } from 'next'
-import { Plus_Jakarta_Sans, JetBrains_Mono } from 'next/font/google'
+import localFont from 'next/font/local'
 import './globals.css'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import WhatsAppFab from '@/components/WhatsAppFab'
 
-const jakarta = Plus_Jakarta_Sans({
-  subsets: ['latin'],
-  weight: ['400', '500', '600', '700', '800'],
+// Self-hosted so builds don't depend on fetching from Google Fonts.
+const jakarta = localFont({
+  src: '../fonts/PlusJakartaSans-Variable.woff2',
+  weight: '200 800',
   variable: '--font-jakarta',
   display: 'swap',
 })
 
-const mono = JetBrains_Mono({
-  subsets: ['latin'],
-  weight: ['400', '500'],
+const mono = localFont({
+  src: '../fonts/JetBrainsMono-Variable.woff2',
+  weight: '100 800',
   variable: '--font-mono',
   display: 'swap',
 })
 
 export const metadata: Metadata = {
-  title: 'Dynamik Design Lab — Design in Motion',
+  metadataBase: new URL('https://www.dynamikdesignlab.in'),
+  title: 'Dynamik Design Lab — Concept to Prototype',
   description:
-    'Pune-based rapid prototyping and product design studio. FDM and SLA 3D printing, embedded systems, and industrial design — under one roof.',
+    'A one-stop concept-to-prototype studio in Pune. Automotive, industrial and phygital products — ideated, designed, engineered and built under one roof.',
   keywords: [
-    '3D printing Pune',
-    'rapid prototyping India',
-    'FDM printing',
-    'SLA printing',
-    'product design studio',
-    'embedded systems',
+    'concept to prototype',
+    'prototyping studio Pune',
+    'digital modeling',
     'industrial design',
+    'automotive design',
+    'product prototyping',
+    'embedded systems',
+    'phygital products',
   ],
   openGraph: {
-    title: 'Dynamik Design Lab — Design in Motion',
-    description:
-      'Rapid prototyping and product design studio in Pune. From idea to functional prototype.',
+    title: 'Dynamik Design Lab — Concept to Prototype',
+    description: 'Automotive, industrial and phygital products, ideated, designed, engineered and built under one roof in Pune.',
     type: 'website',
   },
 }
