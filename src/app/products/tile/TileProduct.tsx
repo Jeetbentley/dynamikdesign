@@ -211,7 +211,7 @@ function PriceLine() {
         <span aria-hidden="true" className="text-[18px] text-[#55555C]">→</span>
         <span className="sr-only">Founders price</span>
         <span className="text-[36px] font-bold leading-none tracking-[-0.02em]">{inr(tileLaunch.foundersPrice)}</span>
-        <span className="text-[16px] lowercase text-[#C9C9CF]">for the first {tileLaunch.foundersBatchSize} founders</span>
+        <span className="text-[16px] lowercase text-[#C9C9CF]">for the first {tileLaunch.foundersBatchSize} customers</span>
       </p>
       <p className="mt-2 font-mono text-[11px] uppercase tracking-[0.12em] text-[#85858D]">Inclusive of all taxes</p>
     </div>
@@ -293,7 +293,7 @@ export default function TileProduct({ photo }: { photo?: { src: string; alt: str
       {/* Hero — the live canvas */}
       <section id="top" className="relative scroll-mt-[132px] overflow-hidden px-6 pb-24 pt-16 sm:pt-20 text-center">
         <p className={`mb-[22px] ${mono}`}>/ New from Dynamik Design Lab</p>
-        <h1 className="mx-auto mb-5 max-w-[12ch] text-[clamp(42px,7.4vw,104px)] font-bold uppercase leading-[0.92] tracking-[-0.035em]">
+        <h1 className="mx-auto mb-5 max-w-[12ch] text-[clamp(21px,3.7vw,52px)] font-bold uppercase leading-[0.92] tracking-[-0.035em]">
           Your desk, in 64&nbsp;pixels.
         </h1>
         <p className={`mx-auto mb-12 max-w-[38ch] !text-[clamp(17px,1.8vw,21px)] ${body}`}>
