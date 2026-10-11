@@ -9,7 +9,7 @@ export const tileLaunch = {
   salesOpenDate: '2026-10-25', // YYYY-MM-DD
   showSpotsCounter: false, // true → shows the real signup count from the Apps Script
   colours: ['Orange'], // TODO: add others
-  modes: ['Clock', 'Lamp', 'Canvas'],
+  modes: ['Clock', 'Lamp', 'Canvas', 'Focus'],
 }
 
 export const TILE_URL = 'https://www.dynamikdesignlab.in/products/tile'

@@ -91,15 +91,16 @@ export function dateCells(d: Date): Cells {
 }
 
 // ---------- Lamp ----------
-export type LampId = 'warm' | 'candle' | 'calm' | 'spectrum'
-export const LAMP_SWATCHES: { id: LampId; name: string; swatch: string }[] = [
-  { id: 'warm', name: 'Warm', swatch: '#FF8C00' },
-  { id: 'candle', name: 'Candle', swatch: '#FF6A00' },
-  { id: 'calm', name: 'Calm', swatch: '#5B5FFF' },
-  { id: 'spectrum', name: 'Spectrum', swatch: 'conic-gradient(#ff0000, #ffff00, #00ff00, #00ffff, #0000ff, #ff00ff, #ff0000)' },
+export type LampId = 'embers' | 'candle' | 'calm' | 'spectrum' | 'warm'
+export const LAMP_EFFECTS: { id: LampId; name: string }[] = [
+  { id: 'embers', name: 'Embers' },
+  { id: 'candle', name: 'Candle' },
+  { id: 'calm', name: 'Calm' },
+  { id: 'spectrum', name: 'Spectrum' },
+  { id: 'warm', name: 'Warm white' },
 ]
 // How often each effect changes on the device (ms)
-export const LAMP_STEP_MS: Record<LampId, number> = { warm: 1000, candle: 70, calm: 40, spectrum: 35 }
+export const LAMP_STEP_MS: Record<LampId, number> = { embers: 200, candle: 70, calm: 40, spectrum: 35, warm: 1000 }
 
 function colorWheel(pos: number): number {
   let p = 255 - (pos & 255)
@@ -112,8 +113,35 @@ function colorWheel(pos: number): number {
   return ((p * 3) << 16) | ((255 - p * 3) << 8)
 }
 
+// Embers: a small pyramid of glowing wood at the bottom, faint sparks above, each pixel easing to its target.
+export function embersStep(levels: number[], random: () => number = Math.random): number[] {
+  const pct = () => Math.floor(random() * 100) / 100
+  return levels.map((level, i) => {
+    const x = i % 8
+    const y = Math.floor(i / 8)
+    let target: number
+    if (y === 7 && x >= 2 && x <= 5) target = 0.55 + 0.45 * pct()
+    else if (y === 6 && x >= 3 && x <= 4) target = 0.45 + 0.4 * pct()
+    else {
+      const base = (0.12 * (8 - y)) / 8
+      target = Math.floor(random() * 100) < 30 ? base + 0.3 * pct() : base * 0.4
+    }
+    return level + (target - level) * 0.35
+  })
+}
+export const embersCells = (levels: number[]): Cells => levels.map((l) => led(0xff4500, l))
+
+// Deterministic warmed-up first frame so the server and the browser render the same thing.
+export const EMBERS_START: number[] = (() => {
+  let seed = 11
+  const rand = () => (seed = (seed * 16807) % 2147483647) / 2147483647
+  let levels = Array(64).fill(0)
+  for (let n = 0; n < 12; n++) levels = embersStep(levels, rand)
+  return levels
+})()
+
 // `t` is milliseconds since the effect started; `random` is only used by Candle.
-export function lampCells(id: LampId, t: number, random: () => number = Math.random): Cells {
+export function lampCells(id: Exclude<LampId, 'embers'>, t: number, random: () => number = Math.random): Cells {
   switch (id) {
     case 'warm':
       return fill(led(0xff8c00))
@@ -130,45 +158,97 @@ export function lampCells(id: LampId, t: number, random: () => number = Math.ran
 }
 
 // ---------- Focus ----------
-const RING_BUSY = 0xff1e1e
-const RING_AVAIL = 0x1ed760
 const FILL_FOCUS = 0xff9a1f
-const FILL_BREAK = 0x2bd9a8
-// Demo speed: the real timer is 25 min focus / 5 min break.
-export const DEMO_FOCUS_MS = 10000
-export const DEMO_BREAK_MS = 4000
-export const FOCUS_STEP_MS = 40
+const REM_TEXT = 0xfff2e0
+const REM_SCROLL_MS = 105
+export const FOCUS_TOTAL_MS = 5 * 60 * 1000 // a 5-minute timer for the preview
+export const REMINDER_AT_MS = 15000
+const REMINDERS = { early: { label: 'Stretch', color: 0x2bd9a8 }, end: { label: 'Break', color: 0x2bd9a8 } }
 
-const isRing = (i: number) => {
-  const x = i % 8
-  const y = Math.floor(i / 8)
-  return x === 0 || y === 0 || x === 7 || y === 7
-}
-
-// Timer screen: ring shows status, the inner 6 × 6 drains as time runs out.
-export function focusTimerCells(t: number): Cells {
-  const cycle = DEMO_FOCUS_MS + DEMO_BREAK_MS
-  const at = t % cycle
-  const focus = at < DEMO_FOCUS_MS
-  const left = focus ? 1 - at / DEMO_FOCUS_MS : 1 - (at - DEMO_FOCUS_MS) / DEMO_BREAK_MS
-  const lit = left * 36
-  const ring = led(focus ? RING_BUSY : RING_AVAIL, 0.55)
-  const fillHex = focus ? FILL_FOCUS : FILL_BREAK
+// Running timer: the inner 6 × 6 drains as time runs out.
+export function focusTimerCells(leftMs: number, totalMs = FOCUS_TOTAL_MS): Cells {
+  const lit = (Math.max(0, leftMs) / totalMs) * 36
   const cells: Cells = Array(64).fill(null)
   let cell = 0
   for (let y = 1; y <= 6; y++)
     for (let x = 1; x <= 6; x++, cell++) {
       const v = lit - cell
-      if (v > 0) cells[y * 8 + x] = led(fillHex, Math.min(1, v))
+      if (v > 0) cells[y * 8 + x] = led(FILL_FOCUS, Math.min(1, v))
     }
-  for (let i = 0; i < 64; i++) if (isRing(i)) cells[i] = ring
   return cells
 }
 
-export type FocusStatus = 'busy' | 'available'
+// Small 5-px font, variable width (rows top to bottom, most significant bit = leftmost column).
+const FONT5: Record<string, [number, number[]]> = {
+  ' ': [2, [0, 0, 0, 0, 0]],
+  A: [3, [0b010, 0b101, 0b111, 0b101, 0b101]], B: [3, [0b110, 0b101, 0b110, 0b101, 0b110]],
+  C: [3, [0b011, 0b100, 0b100, 0b100, 0b011]], D: [3, [0b110, 0b101, 0b101, 0b101, 0b110]],
+  E: [3, [0b111, 0b100, 0b110, 0b100, 0b111]], F: [3, [0b111, 0b100, 0b110, 0b100, 0b100]],
+  G: [3, [0b011, 0b100, 0b101, 0b101, 0b011]], H: [3, [0b101, 0b101, 0b111, 0b101, 0b101]],
+  I: [3, [0b111, 0b010, 0b010, 0b010, 0b111]], J: [3, [0b001, 0b001, 0b001, 0b101, 0b010]],
+  K: [3, [0b101, 0b101, 0b110, 0b101, 0b101]], L: [3, [0b100, 0b100, 0b100, 0b100, 0b111]],
+  M: [5, [0b10001, 0b11011, 0b10101, 0b10001, 0b10001]],
+  N: [4, [0b1001, 0b1101, 0b1011, 0b1001, 0b1001]],
+  O: [3, [0b010, 0b101, 0b101, 0b101, 0b010]], P: [3, [0b110, 0b101, 0b110, 0b100, 0b100]],
+  Q: [3, [0b010, 0b101, 0b101, 0b110, 0b011]], R: [3, [0b110, 0b101, 0b110, 0b101, 0b101]],
+  S: [3, [0b011, 0b100, 0b010, 0b001, 0b110]], T: [3, [0b111, 0b010, 0b010, 0b010, 0b010]],
+  U: [3, [0b101, 0b101, 0b101, 0b101, 0b111]], V: [3, [0b101, 0b101, 0b101, 0b101, 0b010]],
+  W: [5, [0b10001, 0b10001, 0b10101, 0b11011, 0b10001]],
+  X: [3, [0b101, 0b101, 0b010, 0b101, 0b101]], Y: [3, [0b101, 0b101, 0b010, 0b010, 0b010]],
+  Z: [3, [0b111, 0b001, 0b010, 0b100, 0b111]],
+}
+const glyph = (c: string) => FONT5[c.toUpperCase()] ?? FONT5[' ']
+const textWidth5 = (s: string) => s.split('').reduce((w, c) => w + glyph(c)[0] + 1, 0) - 1
 
-// Manual status light: Busy breathes red, Available is steady green.
-export function statusCells(status: FocusStatus, t: number): Cells {
-  if (status === 'available') return fill(led(RING_AVAIL))
-  return fill(led(RING_BUSY, 0.55 + 0.45 * (0.5 + 0.5 * Math.sin(t / 900))))
+// One full pass of the label across the inner window, as on the device.
+export const reminderPassMs = (label: string) => (textWidth5(label) + 6 + 4) * REM_SCROLL_MS
+
+// Reminder alert: border double-pulses in the reminder colour, label scrolls through the inner 6 × 6.
+export function reminderCells(label: string, color: number, t: number): Cells {
+  const cells: Cells = Array(64).fill(null)
+  const phase = t % 1200
+  const ring = phase < 180 ? 1 : phase < 300 ? 0.15 : phase < 480 ? 1 : 0.15
+  for (let i = 0; i < 64; i++) {
+    const x = i % 8
+    const y = Math.floor(i / 8)
+    if (x === 0 || y === 0 || x === 7 || y === 7) cells[i] = led(color, ring)
+  }
+  const period = textWidth5(label) + 6 + 4
+  const pos = Math.floor(t / REM_SCROLL_MS) % period
+  let x = 7 - pos
+  const text = led(REM_TEXT)
+  for (const c of label) {
+    const [w, rows] = glyph(c)
+    for (let col = 0; col < w; col++) {
+      const px = x + col
+      if (px < 1 || px > 6) continue
+      for (let row = 0; row < 5; row++) if (rows[row] & (1 << (w - 1 - col))) cells[(1 + row) * 8 + px] = text
+    }
+    x += w + 1
+  }
+  return cells
+}
+
+// The whole 5-minute preview loop: timer, a reminder at ~15 s, another at 0:00, then restart.
+export function focusPreview(t: number, withReminders = true): { cells: Cells; leftMs: number; key: string } {
+  const endPass = reminderPassMs(REMINDERS.end.label)
+  const cycle = FOCUS_TOTAL_MS + (withReminders ? endPass : 0)
+  const at = t % cycle
+  const leftMs = Math.max(0, FOCUS_TOTAL_MS - at)
+  const earlyPass = reminderPassMs(REMINDERS.early.label)
+  if (withReminders && at >= REMINDER_AT_MS && at < REMINDER_AT_MS + earlyPass) {
+    const rt = at - REMINDER_AT_MS
+    return { cells: reminderCells(REMINDERS.early.label, REMINDERS.early.color, rt), leftMs, key: `a${Math.floor(rt / 35)}` }
+  }
+  if (withReminders && at >= FOCUS_TOTAL_MS) {
+    const rt = at - FOCUS_TOTAL_MS
+    return { cells: reminderCells(REMINDERS.end.label, REMINDERS.end.color, rt), leftMs: 0, key: `e${Math.floor(rt / 35)}` }
+  }
+  // Redraw the draining square in small brightness steps, and the readout once a second.
+  return { cells: focusTimerCells(leftMs), leftMs, key: `t${Math.round((leftMs / FOCUS_TOTAL_MS) * 36 * 16)}:${Math.ceil(leftMs / 1000)}` }
+}
+
+export const formatLeft = (ms: number) => {
+  const s = Math.ceil(ms / 1000)
+  return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`
 }

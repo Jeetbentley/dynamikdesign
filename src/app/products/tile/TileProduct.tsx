@@ -4,21 +4,24 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useEffect, useRef, useState, type PointerEvent, type RefObject } from 'react'
 import TileDevice, { type Lit } from './TileDevice'
+import TileNight from './TileNight'
 import TileWaitlist from './TileWaitlist'
 import {
   amberClock,
   clockGrid,
   dateCells,
   DATE_FLASH_MS,
-  DEMO_FOCUS_MS,
-  FOCUS_STEP_MS,
+  EMBERS_START,
+  embersCells,
+  embersStep,
+  FOCUS_TOTAL_MS,
+  focusPreview,
   focusTimerCells,
+  formatLeft,
+  LAMP_EFFECTS,
   LAMP_STEP_MS,
-  LAMP_SWATCHES,
   lampCells,
-  statusCells,
   type Cells,
-  type FocusStatus,
   type LampId,
 } from './tileSim'
 import { inr, salesOpenLine, tileLaunch } from '@/data/tile-launch'
@@ -46,8 +49,6 @@ const BRUSHES: Brush[] = [
 ]
 
 const LAMP: Lit = { center: '#FFF8EC', edge: '#FFE3B3', glow: 'rgba(255,190,110,0.55)' }
-const NIGHT_H: Lit = { center: '#FF8A4D', edge: '#FF4A00', glow: 'rgba(255,74,0,0.85)' }
-const NIGHT_M: Lit = { center: '#D2421A', edge: '#A81E00', glow: 'rgba(168,30,0,0.75)' }
 
 // "14:39", as on the product photo. Values are BRUSHES indexes, -1 is off.
 const CLOCK: number[] = (() => {
@@ -83,28 +84,42 @@ const HEART = ['........', '.##..##.', '########', '########', '.######.', '..##
   .split('')
   .map((ch) => (ch === '#' ? 4 : -1))
 
-const HERO_HINT = 'Tap to try. The app does a lot more.'
+const HERO_HINT: Record<Mode, string> = {
+  clock: 'Tap to try. The app does a lot more.',
+  lamp: 'Tap to try. The app does a lot more.',
+  canvas: 'Tap to try. The app does a lot more.',
+  focus: 'A 5-minute focus timer, running now. Reminders scroll across the screen.',
+}
 const HERO_ALT: Record<Mode, string> = {
   clock: 'Tile showing the current time in pixel digits. Tap to show the date',
   lamp: 'Tile as a lamp',
   canvas: 'Tile’s 8 by 8 pixel screen. Choose a colour below, then tap pixels to draw',
-  focus: 'Tile as a focus timer: a coloured ring around a draining square',
+  focus: 'Tile as a focus timer: the lit square drains as time runs out, and reminders scroll across the screen',
 }
 
 // Runs `onStep` every `stepMs` with requestAnimationFrame, only while `ref` is on screen.
 // Does nothing for visitors who prefer reduced motion (they see a still frame).
-function useFrameLoop(ref: RefObject<Element>, active: boolean, stepMs: number, onStep: (now: number) => void) {
+// With `reducedStepMs`, reduced-motion visitors still get a slow tick (e.g. a countdown), flagged `reduced`.
+function useFrameLoop(
+  ref: RefObject<Element>,
+  active: boolean,
+  stepMs: number,
+  onStep: (now: number, reduced: boolean) => void,
+  reducedStepMs?: number,
+) {
   const step = useRef(onStep)
   step.current = onStep
   useEffect(() => {
     const el = ref.current
-    if (!active || !el || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (!active || !el || (reduced && !reducedStepMs)) return
+    const every = reduced ? reducedStepMs! : stepMs
     let raf = 0
     let last = 0
     const loop = (now: number) => {
-      if (now - last >= stepMs) {
+      if (now - last >= every) {
         last = now
-        step.current(now)
+        step.current(now, reduced)
       }
       raf = requestAnimationFrame(loop)
     }
@@ -121,11 +136,10 @@ function useFrameLoop(ref: RefObject<Element>, active: boolean, stepMs: number, 
       stop()
       io.disconnect()
     }
-  }, [ref, active, stepMs])
+  }, [ref, active, stepMs, reducedStepMs])
 }
 
 const toCells = (grid: number[]) => grid.map((v) => (v >= 0 ? BRUSHES[v] : null))
-const nightCellsFor = (grid: number[]) => grid.map((v) => (v === 0 ? NIGHT_H : v === 1 ? NIGHT_M : null))
 
 const MODES: { id: Mode; label: string; n: string; text: string; points: string[] }[] = [
   {
@@ -145,10 +159,10 @@ const MODES: { id: Mode; label: string; n: string; text: string; points: string[
   },
   {
     id: 'focus', label: 'Focus', n: '04',
-    text: 'A focus timer and a busy light for your desk.',
+    text: 'A focus timer for your desk, with reminders that scroll across the screen.',
     points: [
       'Focus timer: 25 min focus, 5 min break, longer break every 4 rounds',
-      'Busy / Available light: red ring while you focus, green on breaks',
+      'A countdown you can read at a glance: the lit square drains as time runs out',
       'Up to 15 reminders that scroll their label across the screen (visual only)',
     ],
   },
@@ -157,7 +171,7 @@ const MODES: { id: Mode; label: string; n: string; text: string; points: string[
 const STATS = [
   { value: '64', label: 'RGB pixels', color: '#EDEDEF' },
   { value: '4', label: 'Modes', color: '#EDEDEF' },
-  { value: '5%', label: 'Night brightness', color: '#FF7A3D' },
+  { value: 'Adjustable', label: 'Night mode', color: '#FF7A3D' },
   { value: '0', label: 'Accounts needed', color: '#EDEDEF' },
 ]
 
@@ -203,44 +217,55 @@ export default function TileProduct({ photo }: { photo?: { src: string; alt: str
   }
   useEffect(() => () => clearTimeout(dateTimer.current), [])
 
-  // Lamp: four effects to tap between, opening on Candle.
-  const [lamp, setLamp] = useState<LampId>('candle')
-  const [lampFrame, setLampFrame] = useState<Cells>(() => lampCells('candle', 0, () => 0.5))
+  // Lamp: opens on Embers; five effects to tap between.
+  const [lamp, setLamp] = useState<LampId>('embers')
+  const [lampFrame, setLampFrame] = useState<Cells>(() => embersCells(EMBERS_START))
+  const embers = useRef<number[]>(EMBERS_START)
   const lampStart = useRef(0)
   const pickLamp = (id: LampId) => {
     setLamp(id)
     lampStart.current = performance.now()
-    setLampFrame(lampCells(id, 0, () => 0.5))
+    setLampFrame(id === 'embers' ? embersCells(embers.current) : lampCells(id, 0, () => 0.5))
   }
 
-  // Focus: a looping demo-speed timer, or a manual Busy / Available light.
-  const [focusStatus, setFocusStatus] = useState<FocusStatus | null>(null)
-  const [focusFrame, setFocusFrame] = useState<Cells>(() => focusTimerCells(DEMO_FOCUS_MS * 0.4))
+  // Focus: a 5-minute countdown in real time, with reminder previews at ~15 s and at 0:00.
+  const [focusFrame, setFocusFrame] = useState<Cells>(() => focusTimerCells(FOCUS_TOTAL_MS))
+  const [focusLeft, setFocusLeft] = useState(FOCUS_TOTAL_MS)
   const focusStart = useRef(0)
-  const pickStatus = (st: FocusStatus) => {
-    const next = focusStatus === st ? null : st
-    setFocusStatus(next)
-    focusStart.current = performance.now()
-    setFocusFrame(next ? statusCells(next, 0) : focusTimerCells(DEMO_FOCUS_MS * 0.4))
-  }
+  const focusKey = useRef('')
 
   useEffect(() => {
     lampStart.current = performance.now()
-    focusStart.current = performance.now() - DEMO_FOCUS_MS * 0.6
+    focusStart.current = performance.now()
+    focusKey.current = ''
+    if (heroMode === 'focus') {
+      setFocusFrame(focusTimerCells(FOCUS_TOTAL_MS))
+      setFocusLeft(FOCUS_TOTAL_MS)
+    }
   }, [heroMode])
 
   useFrameLoop(
     heroRef,
     heroMode === 'lamp' || heroMode === 'focus',
-    heroMode === 'lamp' ? LAMP_STEP_MS[lamp] : FOCUS_STEP_MS,
-    (now) => {
-      if (heroMode === 'lamp') setLampFrame(lampCells(lamp, now - lampStart.current))
-      else {
-        const t = now - focusStart.current
-        setFocusFrame(focusStatus ? statusCells(focusStatus, t) : focusTimerCells(t))
+    heroMode === 'lamp' ? LAMP_STEP_MS[lamp] : 35,
+    (now, reduced) => {
+      if (heroMode === 'lamp') {
+        if (lamp === 'embers') {
+          embers.current = embersStep(embers.current)
+          setLampFrame(embersCells(embers.current))
+        } else setLampFrame(lampCells(lamp, now - lampStart.current))
+        return
       }
+      // Reduced motion: the countdown keeps ticking once a second, without the scrolling reminders.
+      const f = focusPreview(now - focusStart.current, !reduced)
+      if (f.key === focusKey.current) return
+      focusKey.current = f.key
+      setFocusFrame(f.cells)
+      setFocusLeft(f.leftMs)
     },
+    heroMode === 'focus' ? 1000 : undefined,
   )
+
   // The hero canvas starts on the heart; Reset brings it back.
   const [edited, setEdited] = useState(false)
   const [paint, setPaint] = useState<number[]>(HEART)
@@ -284,7 +309,7 @@ export default function TileProduct({ photo }: { photo?: { src: string; alt: str
       : mode === 'canvas'
         ? toCells(drewSomething ? paint : HEART)
         : mode === 'focus'
-          ? focusTimerCells(DEMO_FOCUS_MS * 0.4)
+          ? focusTimerCells(FOCUS_TOTAL_MS * 0.6)
           : amberClock(clock)
   const modeText =
     mode === 'canvas' && drewSomething ? 'That’s the drawing you made up top. Tile keeps it on screen until you change it.' : current.text
@@ -368,46 +393,7 @@ export default function TileProduct({ photo }: { photo?: { src: string; alt: str
 
         {/* Fixed height so switching modes doesn't move the price and buttons below */}
         <div className="mt-6 flex min-h-[156px] flex-col sm:min-h-[92px] items-center">
-          <p className={mono}>{HERO_HINT}</p>
-          {heroMode === 'lamp' && (
-            <div role="group" aria-label="Lamp effect" className="mt-4 flex items-center justify-center gap-2.5">
-              {LAMP_SWATCHES.map((l) => (
-                <button
-                  key={l.id}
-                  type="button"
-                  aria-label={l.name}
-                  title={l.name}
-                  aria-pressed={lamp === l.id}
-                  onClick={() => pickLamp(l.id)}
-                  className="h-11 w-11 rounded-full transition-transform hover:scale-110"
-                  style={{
-                    background: l.swatch,
-                    boxShadow: lamp === l.id ? '0 0 0 3px #0B0B0C, 0 0 0 5px #EDEDEF' : 'none',
-                  }}
-                />
-              ))}
-            </div>
-          )}
-          {heroMode === 'focus' && (
-            <div role="group" aria-label="Status light" className="mt-4 inline-flex rounded-full border border-[#26262B] p-1">
-              {(['busy', 'available'] as const).map((st) => (
-                <button
-                  key={st}
-                  type="button"
-                  aria-pressed={focusStatus === st}
-                  onClick={() => pickStatus(st)}
-                  className="min-h-10 rounded-full px-5 font-mono text-[12px] uppercase tracking-[0.12em] transition-colors"
-                  style={
-                    focusStatus === st
-                      ? { background: st === 'busy' ? '#FF1E1E' : '#1ED760', color: '#0B0B0C' }
-                      : { color: '#A3A3AB' }
-                  }
-                >
-                  {st === 'busy' ? 'Busy' : 'Available'}
-                </button>
-              ))}
-            </div>
-          )}
+          <p className={mono}>{HERO_HINT[heroMode]}</p>
           {heroMode === 'canvas' && (
             <div role="group" aria-label="Colour" className="mt-4 flex flex-wrap items-center justify-center gap-2.5">
               {BRUSHES.map((b, i) => (
@@ -446,6 +432,31 @@ export default function TileProduct({ photo }: { photo?: { src: string; alt: str
                 Reset
               </button>
             </div>
+          )}
+          {heroMode === 'lamp' && (
+            <div role="group" aria-label="Lamp effect" className="mt-4 flex flex-wrap items-center justify-center gap-2">
+              {LAMP_EFFECTS.map((l) => (
+                <button
+                  key={l.id}
+                  type="button"
+                  aria-pressed={lamp === l.id}
+                  onClick={() => pickLamp(l.id)}
+                  className="min-h-10 rounded-full border px-4 font-mono text-[12px] uppercase tracking-[0.12em] transition-colors"
+                  style={
+                    lamp === l.id
+                      ? { background: ORANGE, borderColor: ORANGE, color: '#0B0B0C' }
+                      : { borderColor: '#34343A', color: '#A3A3AB' }
+                  }
+                >
+                  {l.name}
+                </button>
+              ))}
+            </div>
+          )}
+          {heroMode === 'focus' && (
+            <p role="timer" aria-label="Time left on the focus timer" className="mt-3 font-mono text-[28px] font-medium tabular-nums text-[#EDEDEF]">
+              {formatLeft(focusLeft)}
+            </p>
           )}
         </div>
 
@@ -512,7 +523,10 @@ export default function TileProduct({ photo }: { photo?: { src: string; alt: str
           {STATS.map((s) => (
             <div key={s.label} className="flex flex-col-reverse border-l border-[#1E1E22] px-6 py-9">
               <dt className={mono}>{s.label}</dt>
-              <dd className="m-0 mb-1.5 text-[clamp(44px,5vw,64px)] font-bold leading-none tracking-[-0.04em]" style={{ color: s.color }}>
+              <dd
+                className={`m-0 mb-1.5 font-bold leading-none tracking-[-0.04em] ${s.value.length > 4 ? 'text-[clamp(26px,3vw,40px)]' : 'text-[clamp(44px,5vw,64px)]'}`}
+                style={{ color: s.color }}
+              >
                 {s.value}
               </dd>
             </div>
@@ -536,42 +550,14 @@ export default function TileProduct({ photo }: { photo?: { src: string; alt: str
           <h2 id="feat-h" className={`mb-14 max-w-[15ch] ${h2}`}>Small on the desk. Thoughtful inside.</h2>
 
           <div className="flex flex-wrap gap-4">
-            <article aria-labelledby="night-h" className={`${card} flex flex-[2_1_560px] flex-wrap items-center gap-10`}>
-              <div className="min-w-0 flex-[1_1_260px]">
-                <p className={`mb-3.5 ${mono}`}>Adaptive brightness</p>
-                <h3 id="night-h" className={`mb-3.5 ${h3}`}>Easy on your eyes after dark.</h3>
-                <p className={`mb-7 max-w-[36ch] ${body}`}>
-                  The clock fades from 20% to 5% at 10 pm, and back at 7 am. Move the slider and it holds until the next switch.
-                </p>
-                <div className="flex gap-9">
-                  <div>
-                    <div className="text-[48px] font-bold leading-none tracking-[-0.04em]">20%</div>
-                    <div className={`mt-1.5 ${mono}`}>Day</div>
-                  </div>
-                  <div>
-                    <div className="text-[48px] font-bold leading-none tracking-[-0.04em] text-[#FF7A3D]">5%</div>
-                    <div className={`mt-1.5 ${mono}`}>10 pm to 7 am</div>
-                  </div>
-                </div>
-              </div>
-              <div className="relative mx-auto flex flex-[0_1_220px] justify-center">
-                <div
-                  aria-hidden="true"
-                  className="absolute bottom-[-30px] left-1/2 h-[120px] w-[320px] -translate-x-1/2"
-                  style={{ background: 'radial-gradient(ellipse at center, rgba(255,74,0,0.28), transparent 70%)' }}
-                />
-                <div className="relative w-full max-w-[220px]">
-                  <TileDevice cells={nightCellsFor(clock)} dim glow={10} alt="Tile at night, dimmed to 5% brightness" />
-                </div>
-              </div>
-            </article>
+            <TileNight clock={clock} />
 
             <article className={`${card} flex-[1_1_340px]`}>
               <p className={`mb-3.5 ${mono}`}>Smart home</p>
               <h3 className={`mb-[22px] ${h3}`}>Works with your home.</h3>
               <dl className="m-0 flex flex-col">
                 {[
-                  ['Alexa', '“Alexa, turn on Tile Focus.” Say Tile, Tile Clock, Tile Lamp, Tile Focus or Tile Busy. Needs an Echo on the same WiFi.'],
+                  ['Alexa', '“Alexa, turn on Tile Focus.” Say Tile, Tile Clock, Tile Lamp or Tile Focus. Needs an Echo on the same WiFi.'],
                   ['Home Assistant', 'Set Tile up over Bluetooth.'],
                 ].map(([k, v], i, arr) => (
                   <div key={k} className={`border-t border-[#26262B] pt-3.5 ${i < arr.length - 1 ? 'pb-3.5' : ''}`}>
