@@ -189,7 +189,18 @@ function PriceLine() {
     <div className="flex flex-col items-center">
       <p className="flex flex-wrap items-baseline justify-center gap-x-3 gap-y-1">
         <span className="sr-only">Regular price</span>
-        <s className="text-[20px] text-[#85858D] decoration-[#F0641E] decoration-2">{inr(tileLaunch.regularPrice)}</s>
+        {/* A diagonal slash instead of a line-through, which sat on the 9s and made ₹3,999 read as ₹3,000 */}
+        <s className="relative inline-block px-0.5 leading-none text-[20px] text-[#85858D] no-underline">
+          {inr(tileLaunch.regularPrice)}
+          <span
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-x-0 top-[22%] bottom-[16%]"
+            style={{
+              background:
+                'linear-gradient(to bottom right, transparent calc(50% - 1px), #F0641E calc(50% - 1px), #F0641E calc(50% + 1px), transparent calc(50% + 1px))',
+            }}
+          />
+        </s>
         <span aria-hidden="true" className="text-[18px] text-[#55555C]">→</span>
         <span className="sr-only">Founders price</span>
         <span className="text-[36px] font-bold leading-none tracking-[-0.02em]">{inr(tileLaunch.foundersPrice)}</span>
