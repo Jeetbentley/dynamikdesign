@@ -7,7 +7,7 @@ export const TILE_SPECS = [
   { k: 'Display', v: '64 RGB pixels, 8 × 8, frosted diffuser' },
   { k: 'Modes', v: 'Clock, lamp, canvas, focus' },
   { k: 'Connectivity', v: '2.4 GHz WiFi + Bluetooth LE (for setup), works offline' },
-  { k: 'Control', v: 'Touch, phone browser, Android app, Alexa' },
+  { k: 'Control', v: 'Phone/PC browser, Android app, Alexa' },
   { k: 'Power', v: 'USB-C, 5 V [CONFIRM ADAPTER RATING]' }, // TODO
   { k: 'Size', v: '[W × H × D] mm, [WEIGHT] g' }, // TODO
   { k: 'In the box', v: 'Tile, USB-C cable, quick start card [CONFIRM]' }, // TODO
