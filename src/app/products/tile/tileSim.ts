@@ -152,7 +152,10 @@ function heat(l: number): number {
   const mixc = (p: number, q: number) => Math.round(p + (q - p) * f)
   return (mixc(r1, r2) << 16) | (mixc(g1, g2) << 8) | mixc(b1, b2)
 }
-export const embersCells = (levels: number[]): Cells => levels.map((l) => led(heat(l), embersOnScreen(l)))
+// The flames above the glowing pyramid get an extra 20% on screen.
+const isPyramid = (i: number) => (i >= 58 && i <= 61) || i === 51 || i === 52
+export const embersCells = (levels: number[]): Cells =>
+  levels.map((l, i) => led(heat(l), Math.min(1, embersOnScreen(l) * (isPyramid(i) ? 1 : 1.2))))
 
 // Deterministic warmed-up first frame so the server and the browser render the same thing.
 export const EMBERS_START: number[] = (() => {
