@@ -33,3 +33,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts.bak
+
+# Firmware reference for development only — never commit or serve
+/reference/
