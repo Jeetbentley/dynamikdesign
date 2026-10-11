@@ -3,6 +3,7 @@ import Logo from './Logo'
 import WhatsAppIcon from './WhatsAppIcon'
 import CopyButton from './CopyButton'
 import { site } from '@/config/site'
+import { POLICY_LINKS } from '@/data/legal'
 import { FOOTER_EXPLORE as EXPLORE, FOOTER_SERVICES as SERVICES } from '@/data/navigation'
 
 function SocialIcon({ children, label, href }: { children: React.ReactNode; label: string; href: string }) {
@@ -22,7 +23,7 @@ function SocialIcon({ children, label, href }: { children: React.ReactNode; labe
 export default function Footer() {
   return (
     <footer className="bg-bg-dark text-white">
-      <div className="container-x pt-20 pb-10">
+      <div className="container-x pt-20 pb-28 sm:pb-10">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8">
           <div>
             <h4 className="text-[11px] font-medium tracking-[0.18em] uppercase text-white/45 mb-5">
@@ -121,11 +122,15 @@ export default function Footer() {
           <div className="flex items-center gap-4">
             <Logo light />
           </div>
-          <div className="flex items-center gap-6 text-[13px] text-white/55">
+          <div className="flex flex-col lg:flex-row items-start lg:items-center gap-x-6 gap-y-2 text-[13px] text-white/55">
             <span>© Dynamik Design Lab {new Date().getFullYear()}</span>
-            <Link href="/privacy" className="hover:text-white transition-colors">
-              Privacy Policy
-            </Link>
+            <nav aria-label="Legal" className="flex flex-wrap items-center gap-x-6 gap-y-2">
+              {POLICY_LINKS.map((l) => (
+                <Link key={l.href} href={l.href} className="hover:text-white transition-colors">
+                  {l.label}
+                </Link>
+              ))}
+            </nav>
           </div>
         </div>
       </div>

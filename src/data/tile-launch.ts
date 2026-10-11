@@ -3,7 +3,7 @@
 
 export const tileLaunch = {
   mode: 'waitlist' as 'waitlist' | 'sales', // "sales" later restores a Buy flow
-  foundersBatchSize: 50,
+  foundersBatchSize: 101,
   foundersPrice: 2999,
   regularPrice: 3999,
   salesOpenDate: '2026-10-25', // YYYY-MM-DD
@@ -28,4 +28,4 @@ export const salesOpenLabel = (() => {
 
 export const salesOpenLine = `Sales open to the list on ${salesOpenLabel}.`
 
-export const shareText = `Just joined the Tile Founders Batch, a 64-pixel desk clock, lamp and canvas made in Pune by Dynamik Design Lab. First ${tileLaunch.foundersBatchSize} get it at ${inr(tileLaunch.foundersPrice)}. 👉 ${TILE_SHARE_URL}`
+export const shareText = `Just joined the Tile Founders Batch, a 64-pixel desk clock, lamp and canvas made in India by Dynamik Design Lab. First ${tileLaunch.foundersBatchSize} get it at ${inr(tileLaunch.foundersPrice)}. 👉 ${TILE_SHARE_URL}`

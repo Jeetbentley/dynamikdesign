@@ -2,7 +2,7 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
-import { useEffect, useRef, useState, type PointerEvent, type RefObject } from 'react'
+import { useEffect, useRef, useState, type PointerEvent, type ReactNode, type RefObject } from 'react'
 import TileDevice, { type Lit } from './TileDevice'
 import TileNight from './TileNight'
 import TileWaitlist from './TileWaitlist'
@@ -26,6 +26,7 @@ import {
 } from './tileSim'
 import { inr, salesOpenLine, tileLaunch } from '@/data/tile-launch'
 import { visibleFaqs, visibleSpecs } from '@/data/tile'
+import { legal, telHref, warrantyLabel } from '@/data/legal'
 
 const IS_SALES = tileLaunch.mode === 'sales'
 const CTA = IS_SALES
@@ -184,6 +185,38 @@ const body = 'lowercase text-[17px] leading-[1.6] text-[#A3A3AB]'
 const card = 'rounded-[28px] border border-[#1E1E22] bg-[#141416] p-8 sm:p-10 box-border min-w-0'
 const pill = 'inline-flex items-center rounded-full font-semibold uppercase tracking-[0.1em] !text-[#0B0B0C]'
 
+const TRUST = [
+  legal.freeShipping && { label: 'Free shipping', href: '/shipping-policy' },
+  legal.codAvailable && { label: 'COD available', href: '/shipping-policy' },
+  { label: `${legal.returnWindowDays}-day returns`, href: '/refund-policy' },
+  { label: `${warrantyLabel} warranty`, href: '/warranty' },
+].filter((t): t is { label: string; href: string } => !!t)
+
+const SELLER: [string, ReactNode][] = [
+  ['Product', 'Tile'],
+  ['MRP', `${inr(tileLaunch.regularPrice)} (inclusive of all taxes)`],
+  ['Founders price', `${inr(tileLaunch.foundersPrice)} for the first ${tileLaunch.foundersBatchSize} orders`],
+  ['Country of origin', 'India'],
+  ['Manufactured & sold by', `${legal.businessName}, ${legal.entity}, ${legal.registeredAddress}`],
+  ['GSTIN', legal.gstin],
+  [
+    'Customer care',
+    <>
+      <a href={`mailto:${legal.email}`} className="text-[#EDEDEF] underline decoration-[#34343A] underline-offset-4 hover:decoration-[#F0641E]">{legal.email}</a>
+      {' · '}
+      <a href={telHref(legal.phone)} className="text-[#EDEDEF] underline decoration-[#34343A] underline-offset-4 hover:decoration-[#F0641E]">{legal.phone}</a>
+      {' · '}
+      {legal.supportHours}
+    </>,
+  ],
+  [
+    'Grievance officer',
+    <Link key="g" href="/terms#grievance" className="text-[#EDEDEF] underline decoration-[#34343A] underline-offset-4 hover:decoration-[#F0641E]">
+      {legal.grievanceOfficer.name}, {legal.grievanceOfficer.designation}
+    </Link>,
+  ],
+]
+
 function PriceLine() {
   return (
     <div className="flex flex-col items-center">
@@ -207,6 +240,16 @@ function PriceLine() {
         <span className="text-[16px] lowercase text-[#C9C9CF]">for the first {tileLaunch.foundersBatchSize} customers</span>
       </p>
       <p className="mt-2 font-mono text-[11px] uppercase tracking-[0.12em] text-[#85858D]">Inclusive of all taxes</p>
+      <ul aria-label="Buying terms" className="mt-4 flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-[13px] text-[#A3A3AB]">
+        {TRUST.map((t, i) => (
+          <li key={t.href} className="flex items-center gap-x-2">
+            {i > 0 && <span aria-hidden="true" className="text-[#55555C]">·</span>}
+            <Link href={t.href} className="underline decoration-[#34343A] underline-offset-4 transition-colors hover:text-[#EDEDEF] hover:decoration-[#F0641E]">
+              {t.label}
+            </Link>
+          </li>
+        ))}
+      </ul>
     </div>
   )
 }
@@ -624,7 +667,17 @@ export default function TileProduct({ photo }: { photo?: { src: string; alt: str
                   {f.q}
                   <span aria-hidden="true" className="font-mono text-[#F0641E] transition-transform group-open:rotate-45">+</span>
                 </summary>
-                <p className={`mt-3 max-w-[60ch] ${body}`}>{f.a}</p>
+                <p className={`mt-3 max-w-[60ch] ${body}`}>
+                  {f.a}
+                  {f.link && (
+                    <>
+                      {' '}
+                      <Link href={f.link.href} className="text-[#EDEDEF] underline decoration-[#F0641E] underline-offset-4">
+                        {f.link.label}
+                      </Link>
+                    </>
+                  )}
+                </p>
               </details>
             ))}
           </div>
@@ -652,6 +705,26 @@ export default function TileProduct({ photo }: { photo?: { src: string; alt: str
       ) : (
         <TileWaitlist device={<TileDevice cells={drewSomething ? toCells(paint) : amberClock(clock)} glow={10} />} />
       )}
+
+      {/* Seller & product information (legal disclosures) */}
+      <section aria-label="Seller and product information" className="border-t border-[#1E1E22] px-6 py-6">
+        <div className="mx-auto max-w-[1240px]">
+          <details className="group">
+            <summary className="flex cursor-pointer list-none items-center justify-between gap-4 py-2 font-mono text-[12px] uppercase tracking-[0.12em] text-[#85858D] [&::-webkit-details-marker]:hidden">
+              Seller &amp; product information
+              <span aria-hidden="true" className="text-[16px] text-[#F0641E] transition-transform group-open:rotate-45">+</span>
+            </summary>
+            <dl className="m-0 mt-4 grid grid-cols-1 gap-x-8 gap-y-3 pb-4 text-[14px] leading-[1.6] text-[#A3A3AB] sm:grid-cols-[200px_1fr]">
+              {SELLER.map(([k, v]) => (
+                <div key={k} className="contents">
+                  <dt className="pt-[2px] font-mono text-[11px] uppercase tracking-[0.12em] text-[#85858D]">{k}</dt>
+                  <dd className="m-0 mb-2 sm:mb-0">{v}</dd>
+                </div>
+              ))}
+            </dl>
+          </details>
+        </div>
+      </section>
 
       {/* Credit strip above the site footer */}
       <section className="border-t border-[#1E1E22] px-6 py-10">

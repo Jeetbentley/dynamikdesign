@@ -157,7 +157,7 @@ export default function TileWaitlist({ device }: { device: ReactNode }) {
             </div>
             <div>
               <label htmlFor="wl-city" className={label}>City</label>
-              <input id="wl-city" autoComplete="address-level2" className={input} placeholder="Pune" {...register('city')} />
+              <input id="wl-city" autoComplete="address-level2" className={input} placeholder="Your city" {...register('city')} />
               {errors.city && <p className={errorText}>{errors.city.message}</p>}
             </div>
             <div>
