@@ -2,9 +2,25 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
-import { useEffect, useRef, useState, type PointerEvent } from 'react'
+import { useEffect, useRef, useState, type PointerEvent, type RefObject } from 'react'
 import TileDevice, { type Lit } from './TileDevice'
 import TileWaitlist from './TileWaitlist'
+import {
+  amberClock,
+  clockGrid,
+  dateCells,
+  DATE_FLASH_MS,
+  DEMO_FOCUS_MS,
+  FOCUS_STEP_MS,
+  focusTimerCells,
+  LAMP_STEP_MS,
+  LAMP_SWATCHES,
+  lampCells,
+  statusCells,
+  type Cells,
+  type FocusStatus,
+  type LampId,
+} from './tileSim'
 import { inr, salesOpenLine, tileLaunch } from '@/data/tile-launch'
 import { visibleFaqs, visibleSpecs } from '@/data/tile'
 
@@ -15,7 +31,7 @@ const CTA = IS_SALES
 
 const ORANGE = '#F0641E'
 
-type Mode = 'clock' | 'lamp' | 'canvas'
+type Mode = 'clock' | 'lamp' | 'canvas' | 'focus'
 interface Brush extends Lit {
   name: string
   swatch: string
@@ -43,40 +59,6 @@ const CLOCK: number[] = (() => {
   return a
 })()
 
-// Tile's clock digits, copied from FONT_NUM in the firmware (tile_combined.ino v1.3.0).
-// 4 rows × 4 columns per digit; column 4 is always the gap.
-const FONT_NUM: number[][][] = [
-  [[1,1,0,0],[1,0,1,0],[1,0,1,0],[1,1,1,0]], // 0
-  [[0,1,0,0],[1,1,0,0],[0,1,0,0],[0,1,0,0]], // 1
-  [[1,1,0,0],[0,1,0,0],[1,0,0,0],[1,1,0,0]], // 2
-  [[1,1,0,0],[0,1,1,0],[0,0,1,0],[1,1,0,0]], // 3
-  [[1,0,1,0],[1,0,1,0],[1,1,0,0],[0,0,1,0]], // 4
-  [[1,1,1,0],[1,0,0,0],[0,1,0,0],[1,1,0,0]], // 5
-  [[1,0,0,0],[1,1,1,0],[1,0,1,0],[0,1,1,0]], // 6
-  [[1,1,1,0],[0,0,1,0],[0,1,0,0],[0,1,0,0]], // 7
-  [[1,1,1,0],[1,1,1,0],[1,0,1,0],[1,1,1,0]], // 8
-  [[1,1,0,0],[1,0,1,0],[1,1,1,0],[0,0,1,0]], // 9
-]
-
-// Glance face layout from renderGlanceFace(): hours at cols 0/4 rows 0–3, minutes at cols 1/5 rows 4–7, 24-hour (firmware default).
-const clockGrid = (h: number, m: number): number[] => {
-  const a = Array(64).fill(-1)
-  const hh = String(h).padStart(2, '0')
-  const mm = String(m).padStart(2, '0')
-  // Same as stampNumDigit() in the firmware, clipped to the 8×8 matrix.
-  const place = (digit: string, row: number, col: number, colour: number) =>
-    FONT_NUM[Number(digit)].forEach((line, y) =>
-      line.forEach((on, x) => {
-        if (on && col + x < 8 && row + y < 8) a[(row + y) * 8 + col + x] = colour
-      }),
-    )
-  place(hh[0], 0, 0, 0)
-  place(hh[1], 0, 4, 0)
-  place(mm[0], 4, 1, 1)
-  place(mm[1], 4, 5, 1)
-  return a
-}
-
 // Visitor's local time, updated when the minute changes. Starts on the photo's 14:39 so server and client match.
 function useLiveClock() {
   const [grid, setGrid] = useState<number[]>(CLOCK)
@@ -101,68 +83,45 @@ const HEART = ['........', '.##..##.', '########', '########', '.######.', '..##
   .split('')
   .map((ch) => (ch === '#' ? 4 : -1))
 
-// Lamp mode in the hero: a small pixel flame. Heat rises from the base, cools as it climbs and is
-// clipped to a cone that sways a little, then blended with the last frame so it flickers instead of strobing.
-const FLAME: Lit[] = [
-  { center: '#FFF7DC', edge: '#FFD36B', glow: 'rgba(255,190,80,0.85)' },
-  { center: '#FFD27A', edge: '#FF9A2E', glow: 'rgba(255,140,40,0.8)' },
-  { center: '#FF9A4D', edge: '#F0641E', glow: 'rgba(240,100,30,0.75)' },
-  { center: '#E0461A', edge: '#A8240A', glow: 'rgba(168,36,10,0.6)' },
-]
-
-const flameFrame = (prev: number[], sway: number, rand: () => number) => {
-  const next = Array(64).fill(0)
-  for (let y = 7; y >= 0; y--) {
-    const half = 1 + y * 0.42
-    for (let x = 0; x < 8; x++) {
-      const row = (y + 1) * 8
-      const below =
-        y === 7
-          ? 0.92 + rand() * 0.08
-          : next[row + x] * 0.6 + ((x > 0 ? next[row + x - 1] : 0) + (x < 7 ? next[row + x + 1] : 0)) * 0.2
-      const cone = Math.min(1, Math.max(0, (half - Math.abs(x - 3.5 - sway)) / 1.1))
-      const heat = Math.max(0, below * cone - (y === 7 ? 0 : 0.07 + rand() * 0.09))
-      next[y * 8 + x] = prev[y * 8 + x] * 0.35 + heat * 0.65
-    }
-  }
-  return next
-}
-
-// Deterministic first frame so the server and client render the same thing.
-const FLAME_STILL = (() => {
-  let seed = 7
-  const rand = () => ((seed = (seed * 16807) % 2147483647) / 2147483647)
-  let f = Array(64).fill(0)
-  for (let n = 0; n < 12; n++) f = flameFrame(f, 0, rand)
-  return f
-})()
-
-const flameCells = (heat: number[]) =>
-  heat.map((h) => (h > 0.8 ? FLAME[0] : h > 0.52 ? FLAME[1] : h > 0.34 ? FLAME[2] : h > 0.17 ? FLAME[3] : null))
-
-function useFlame(on: boolean) {
-  const [heat, setHeat] = useState<number[]>(FLAME_STILL)
-  useEffect(() => {
-    if (!on || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
-    let sway = 0
-    const id = setInterval(() => {
-      sway = Math.max(-0.7, Math.min(0.7, sway + (Math.random() - 0.5) * 0.5))
-      setHeat((prev) => flameFrame(prev, sway, Math.random))
-    }, 90)
-    return () => clearInterval(id)
-  }, [on])
-  return flameCells(heat)
-}
-
-const HERO_HINT: Record<Mode, string> = {
-  clock: 'Your local time, live',
-  lamp: 'Candle glow, one of the lamp effects',
-  canvas: 'Make it yours — tap or drag on the screen',
-}
+const HERO_HINT = 'Tap to try. The app does a lot more.'
 const HERO_ALT: Record<Mode, string> = {
-  clock: 'Tile showing the current time in pixel digits',
-  lamp: 'Tile as a lamp, showing a flickering pixel flame',
+  clock: 'Tile showing the current time in pixel digits. Tap to show the date',
+  lamp: 'Tile as a lamp',
   canvas: 'Tile’s 8 by 8 pixel screen. Choose a colour below, then tap pixels to draw',
+  focus: 'Tile as a focus timer: a coloured ring around a draining square',
+}
+
+// Runs `onStep` every `stepMs` with requestAnimationFrame, only while `ref` is on screen.
+// Does nothing for visitors who prefer reduced motion (they see a still frame).
+function useFrameLoop(ref: RefObject<Element>, active: boolean, stepMs: number, onStep: (now: number) => void) {
+  const step = useRef(onStep)
+  step.current = onStep
+  useEffect(() => {
+    const el = ref.current
+    if (!active || !el || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    let raf = 0
+    let last = 0
+    const loop = (now: number) => {
+      if (now - last >= stepMs) {
+        last = now
+        step.current(now)
+      }
+      raf = requestAnimationFrame(loop)
+    }
+    const start = () => {
+      if (!raf) raf = requestAnimationFrame(loop)
+    }
+    const stop = () => {
+      cancelAnimationFrame(raf)
+      raf = 0
+    }
+    const io = new IntersectionObserver(([entry]) => (entry.isIntersecting ? start() : stop()))
+    io.observe(el)
+    return () => {
+      stop()
+      io.disconnect()
+    }
+  }, [ref, active, stepMs])
 }
 
 const toCells = (grid: number[]) => grid.map((v) => (v >= 0 ? BRUSHES[v] : null))
@@ -172,23 +131,32 @@ const MODES: { id: Mode; label: string; n: string; text: string; points: string[
   {
     id: 'clock', label: 'Clock', n: '01',
     text: 'Big, chunky digits you can read from across the room, in your colours.',
-    points: ['Glance and Blocks faces', '12 or 24 hour', 'Amber, Ice, Mono or your own colours'],
+    points: ['Glance and Blocks faces', '12 or 24 hour', 'Amber, Ice, Mono or your own colours', 'Optional warm-red digits at night'],
   },
   {
     id: 'lamp', label: 'Lamp', n: '02',
     text: 'A soft desk light, warm to cool white or any colour you like.',
-    points: ['Warm, cool and daylight whites', 'Focus, relax and night light presets', 'Candle, rain and other glow effects'],
+    points: ['White light (Cool, Warm, Daylight)', '12 colours', 'Glow and Pixel effects'],
   },
   {
     id: 'canvas', label: 'Canvas', n: '03',
-    text: 'Draw in the app and Tile shows it. Chain frames into a little animation.',
-    points: ['Up to 8 frames', '12 animation effects', 'Saved on Tile, even after a power cut'],
+    text: 'Draw in the app and Tile shows it. Keep your favourites on Tile.',
+    points: ['Save up to 10 drawings on Tile', 'Double-tap to clear', 'Saved on Tile, even after a power cut'],
+  },
+  {
+    id: 'focus', label: 'Focus', n: '04',
+    text: 'A focus timer and a busy light for your desk.',
+    points: [
+      'Focus timer: 25 min focus, 5 min break, longer break every 4 rounds',
+      'Busy / Available light: red ring while you focus, green on breaks',
+      'Up to 15 reminders that scroll their label across the screen (visual only)',
+    ],
   },
 ]
 
 const STATS = [
   { value: '64', label: 'RGB pixels', color: '#EDEDEF' },
-  { value: '3', label: 'Modes', color: '#EDEDEF' },
+  { value: '4', label: 'Modes', color: '#EDEDEF' },
   { value: '5%', label: 'Night brightness', color: '#FF7A3D' },
   { value: '0', label: 'Accounts needed', color: '#EDEDEF' },
 ]
@@ -223,7 +191,56 @@ export default function TileProduct({ photo }: { photo?: { src: string; alt: str
   const [heroMode, setHeroMode] = useState<Mode>('clock')
   const [brush, setBrush] = useState(1)
   const clock = useLiveClock()
-  const flame = useFlame(heroMode === 'lamp')
+  const heroRef = useRef<HTMLDivElement>(null)
+
+  // Clock: a tap shows the date for 3 s, as on the device.
+  const [dateShown, setDateShown] = useState<Cells | null>(null)
+  const dateTimer = useRef<ReturnType<typeof setTimeout>>()
+  const showDate = () => {
+    clearTimeout(dateTimer.current)
+    setDateShown(dateCells(new Date()))
+    dateTimer.current = setTimeout(() => setDateShown(null), DATE_FLASH_MS)
+  }
+  useEffect(() => () => clearTimeout(dateTimer.current), [])
+
+  // Lamp: four effects to tap between, opening on Candle.
+  const [lamp, setLamp] = useState<LampId>('candle')
+  const [lampFrame, setLampFrame] = useState<Cells>(() => lampCells('candle', 0, () => 0.5))
+  const lampStart = useRef(0)
+  const pickLamp = (id: LampId) => {
+    setLamp(id)
+    lampStart.current = performance.now()
+    setLampFrame(lampCells(id, 0, () => 0.5))
+  }
+
+  // Focus: a looping demo-speed timer, or a manual Busy / Available light.
+  const [focusStatus, setFocusStatus] = useState<FocusStatus | null>(null)
+  const [focusFrame, setFocusFrame] = useState<Cells>(() => focusTimerCells(DEMO_FOCUS_MS * 0.4))
+  const focusStart = useRef(0)
+  const pickStatus = (st: FocusStatus) => {
+    const next = focusStatus === st ? null : st
+    setFocusStatus(next)
+    focusStart.current = performance.now()
+    setFocusFrame(next ? statusCells(next, 0) : focusTimerCells(DEMO_FOCUS_MS * 0.4))
+  }
+
+  useEffect(() => {
+    lampStart.current = performance.now()
+    focusStart.current = performance.now() - DEMO_FOCUS_MS * 0.6
+  }, [heroMode])
+
+  useFrameLoop(
+    heroRef,
+    heroMode === 'lamp' || heroMode === 'focus',
+    heroMode === 'lamp' ? LAMP_STEP_MS[lamp] : FOCUS_STEP_MS,
+    (now) => {
+      if (heroMode === 'lamp') setLampFrame(lampCells(lamp, now - lampStart.current))
+      else {
+        const t = now - focusStart.current
+        setFocusFrame(focusStatus ? statusCells(focusStatus, t) : focusTimerCells(t))
+      }
+    },
+  )
   // The hero canvas starts on the heart; Reset brings it back.
   const [edited, setEdited] = useState(false)
   const [paint, setPaint] = useState<number[]>(HEART)
@@ -250,7 +267,14 @@ export default function TileProduct({ photo }: { photo?: { src: string; alt: str
     onKey: (i: number) => set(i, paint[i] === brush ? -1 : brush),
   }
 
-  const heroCells = heroMode === 'lamp' ? flame : toCells(heroMode === 'canvas' ? paint : clock)
+  const heroCells: Cells =
+    heroMode === 'lamp'
+      ? lampFrame
+      : heroMode === 'focus'
+        ? focusFrame
+        : heroMode === 'canvas'
+          ? toCells(paint)
+          : (dateShown ?? amberClock(clock))
 
   const drewSomething = edited && paint.some((v) => v >= 0)
   const current = MODES.find((m) => m.id === mode)!
@@ -259,7 +283,9 @@ export default function TileProduct({ photo }: { photo?: { src: string; alt: str
       ? Array(64).fill(LAMP)
       : mode === 'canvas'
         ? toCells(drewSomething ? paint : HEART)
-        : toCells(clock)
+        : mode === 'focus'
+          ? focusTimerCells(DEMO_FOCUS_MS * 0.4)
+          : amberClock(clock)
   const modeText =
     mode === 'canvas' && drewSomething ? 'That’s the drawing you made up top. Tile keeps it on screen until you change it.' : current.text
 
@@ -306,13 +332,19 @@ export default function TileProduct({ photo }: { photo?: { src: string; alt: str
             className="pointer-events-none absolute bottom-[-60px] left-1/2 h-[280px] w-[min(900px,180%)] -translate-x-1/2"
             style={{ background: 'radial-gradient(ellipse at center, rgba(95,217,250,0.22), rgba(240,100,30,0.14) 40%, transparent 70%)' }}
           />
-          <div className="relative w-full drop-shadow-[0_50px_60px_rgba(240,100,30,0.28)]">
-            <TileDevice
-              cells={heroCells}
-              interactive={heroMode === 'canvas' ? canvas : undefined}
-              glow={heroMode === 'lamp' ? 18 : 16}
-              alt={HERO_ALT[heroMode]}
-            />
+          <div ref={heroRef} className="relative w-full drop-shadow-[0_50px_60px_rgba(240,100,30,0.28)]">
+            {heroMode === 'clock' ? (
+              <button type="button" onClick={showDate} aria-label="Tap Tile to show today’s date" className="block w-full cursor-pointer rounded-[8%] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#F0641E]">
+                <TileDevice cells={heroCells} glow={16} alt={HERO_ALT.clock} />
+              </button>
+            ) : (
+              <TileDevice
+                cells={heroCells}
+                interactive={heroMode === 'canvas' ? canvas : undefined}
+                glow={heroMode === 'lamp' ? 18 : 16}
+                alt={HERO_ALT[heroMode]}
+              />
+            )}
           </div>
         </div>
 
@@ -325,7 +357,7 @@ export default function TileProduct({ photo }: { photo?: { src: string; alt: str
                 type="button"
                 aria-pressed={on}
                 onClick={() => setHeroMode(m.id)}
-                className="min-h-11 min-w-[96px] rounded-full px-5 font-mono text-[12px] uppercase tracking-[0.12em] transition-colors"
+                className="min-h-11 min-w-[70px] rounded-full px-3 font-mono text-[11px] uppercase tracking-[0.1em] transition-colors sm:min-w-[96px] sm:px-5 sm:text-[12px] sm:tracking-[0.12em]"
                 style={on ? { background: ORANGE, color: '#0B0B0C' } : { color: '#A3A3AB' }}
               >
                 {m.label}
@@ -336,7 +368,46 @@ export default function TileProduct({ photo }: { photo?: { src: string; alt: str
 
         {/* Fixed height so switching modes doesn't move the price and buttons below */}
         <div className="mt-6 flex min-h-[156px] flex-col sm:min-h-[92px] items-center">
-          <p className={mono} aria-live="polite">{HERO_HINT[heroMode]}</p>
+          <p className={mono}>{HERO_HINT}</p>
+          {heroMode === 'lamp' && (
+            <div role="group" aria-label="Lamp effect" className="mt-4 flex items-center justify-center gap-2.5">
+              {LAMP_SWATCHES.map((l) => (
+                <button
+                  key={l.id}
+                  type="button"
+                  aria-label={l.name}
+                  title={l.name}
+                  aria-pressed={lamp === l.id}
+                  onClick={() => pickLamp(l.id)}
+                  className="h-11 w-11 rounded-full transition-transform hover:scale-110"
+                  style={{
+                    background: l.swatch,
+                    boxShadow: lamp === l.id ? '0 0 0 3px #0B0B0C, 0 0 0 5px #EDEDEF' : 'none',
+                  }}
+                />
+              ))}
+            </div>
+          )}
+          {heroMode === 'focus' && (
+            <div role="group" aria-label="Status light" className="mt-4 inline-flex rounded-full border border-[#26262B] p-1">
+              {(['busy', 'available'] as const).map((st) => (
+                <button
+                  key={st}
+                  type="button"
+                  aria-pressed={focusStatus === st}
+                  onClick={() => pickStatus(st)}
+                  className="min-h-10 rounded-full px-5 font-mono text-[12px] uppercase tracking-[0.12em] transition-colors"
+                  style={
+                    focusStatus === st
+                      ? { background: st === 'busy' ? '#FF1E1E' : '#1ED760', color: '#0B0B0C' }
+                      : { color: '#A3A3AB' }
+                  }
+                >
+                  {st === 'busy' ? 'Busy' : 'Available'}
+                </button>
+              ))}
+            </div>
+          )}
           {heroMode === 'canvas' && (
             <div role="group" aria-label="Colour" className="mt-4 flex flex-wrap items-center justify-center gap-2.5">
               {BRUSHES.map((b, i) => (
@@ -398,7 +469,7 @@ export default function TileProduct({ photo }: { photo?: { src: string; alt: str
       <section id="modes" className="scroll-mt-[132px] border-t border-[#1E1E22] px-6 py-28 sm:py-32">
         <div className="mx-auto max-w-[1240px]">
           <p className={eyebrow}>/ 01 Modes</p>
-          <h2 className={`mb-14 max-w-[14ch] ${h2}`}>One little screen. Three jobs.</h2>
+          <h2 className={`mb-14 max-w-[14ch] ${h2}`}>One little screen. Four jobs.</h2>
           <div className="flex flex-wrap items-center gap-12 lg:gap-14">
             <div role="group" aria-label="Choose a mode" className="flex max-w-[300px] flex-[1_1_220px] flex-col gap-1">
               {MODES.map((m) => {
@@ -470,7 +541,7 @@ export default function TileProduct({ photo }: { photo?: { src: string; alt: str
                 <p className={`mb-3.5 ${mono}`}>Adaptive brightness</p>
                 <h3 id="night-h" className={`mb-3.5 ${h3}`}>Easy on your eyes after dark.</h3>
                 <p className={`mb-7 max-w-[36ch] ${body}`}>
-                  The clock fades from 20% to 5% at 10 pm, and back at 7 am. Move the slider and it holds until morning.
+                  The clock fades from 20% to 5% at 10 pm, and back at 7 am. Move the slider and it holds until the next switch.
                 </p>
                 <div className="flex gap-9">
                   <div>
@@ -500,9 +571,8 @@ export default function TileProduct({ photo }: { photo?: { src: string; alt: str
               <h3 className={`mb-[22px] ${h3}`}>Works with your home.</h3>
               <dl className="m-0 flex flex-col">
                 {[
-                  ['Alexa', '“Alexa, turn on Tile Lamp.” Needs an Echo on the same WiFi.'],
-                  ['Home Assistant', 'Appears on its own over MQTT.'],
-                  ['Google Home', 'Through Home Assistant.'],
+                  ['Alexa', '“Alexa, turn on Tile Focus.” Say Tile, Tile Clock, Tile Lamp, Tile Focus or Tile Busy. Needs an Echo on the same WiFi.'],
+                  ['Home Assistant', 'Set Tile up over Bluetooth.'],
                 ].map(([k, v], i, arr) => (
                   <div key={k} className={`border-t border-[#26262B] pt-3.5 ${i < arr.length - 1 ? 'pb-3.5' : ''}`}>
                     <dt className="text-[15px] font-semibold uppercase tracking-[0.06em]">{k}</dt>
@@ -521,6 +591,7 @@ export default function TileProduct({ photo }: { photo?: { src: string; alt: str
                 <p className="m-0">Runs on your own WiFi. No sign-up, no subscription.</p>
                 <p className="m-0">No internet? Your phone connects to Tile directly.</p>
                 <p className="m-0">Any phone browser, or the Tile app for Android.</p>
+                <p className="m-0">Bluetooth is used only for setup and turns itself off afterwards.</p>
               </div>
             </article>
           </div>
@@ -572,7 +643,7 @@ export default function TileProduct({ photo }: { photo?: { src: string; alt: str
             style={{ background: 'radial-gradient(ellipse at center, rgba(240,100,30,0.18), transparent 65%)' }}
           />
           <div className="relative mx-auto mb-10 w-full max-w-[200px]">
-            <TileDevice cells={toCells(drewSomething ? paint : clock)} glow={10} />
+            <TileDevice cells={drewSomething ? toCells(paint) : amberClock(clock)} glow={10} />
           </div>
           <h2 id="buy-h" className="relative mb-8 text-[clamp(52px,9vw,128px)] font-bold uppercase leading-[0.9] tracking-[-0.04em]">Get Tile.</h2>
           <div className="relative mb-9">
@@ -583,7 +654,7 @@ export default function TileProduct({ photo }: { photo?: { src: string; alt: str
           </Link>
         </section>
       ) : (
-        <TileWaitlist device={<TileDevice cells={toCells(drewSomething ? paint : clock)} glow={10} />} />
+        <TileWaitlist device={<TileDevice cells={drewSomething ? toCells(paint) : amberClock(clock)} glow={10} />} />
       )}
 
       {/* Credit strip above the site footer */}
