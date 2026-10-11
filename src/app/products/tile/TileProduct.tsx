@@ -24,7 +24,7 @@ import {
   type Cells,
   type LampId,
 } from './tileSim'
-import { inr, salesOpenLine, tileLaunch } from '@/data/tile-launch'
+import { inr, salesOpenLabel, shipsFromLine, tileLaunch } from '@/data/tile-launch'
 import { visibleFaqs, visibleSpecs } from '@/data/tile'
 import { legal, telHref, warrantyLabel } from '@/data/legal'
 
@@ -195,7 +195,14 @@ const TRUST = [
 const SELLER: [string, ReactNode][] = [
   ['Product', 'Tile'],
   ['MRP', `${inr(tileLaunch.regularPrice)} (inclusive of all taxes)`],
-  ['Founders price', `${inr(tileLaunch.foundersPrice)} for the first ${tileLaunch.foundersBatchSize} orders`],
+  [
+    'Founders price',
+    <>
+      {inr(tileLaunch.foundersPrice)} for the first {tileLaunch.foundersBatchSize} orders
+      <br />
+      <span className="text-[13px] text-[#85858D]">{shipsFromLine}</span>
+    </>,
+  ],
   ['Country of origin', 'India'],
   ['Manufactured & sold by', `${legal.businessName}, ${legal.entity}, ${legal.registeredAddress}`],
   ['GSTIN', legal.gstin],
@@ -239,6 +246,7 @@ function PriceLine() {
         <span className="text-[36px] font-bold leading-none tracking-[-0.02em]">{inr(tileLaunch.foundersPrice)}</span>
         <span className="text-[16px] lowercase text-[#C9C9CF]">for the first {tileLaunch.foundersBatchSize} customers</span>
       </p>
+      <p className="mt-2 text-[14px] text-[#C9C9CF]">{shipsFromLine}</p>
       <p className="mt-2 font-mono text-[11px] uppercase tracking-[0.12em] text-[#85858D]">Inclusive of all taxes</p>
       <ul aria-label="Buying terms" className="mt-4 flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-[13px] text-[#A3A3AB]">
         {TRUST.map((t, i) => (
@@ -525,8 +533,18 @@ export default function TileProduct({ photo }: { photo?: { src: string; alt: str
             See what it does
           </a>
         </div>
-        <p className={`relative mt-[22px] ${mono}`}>
-          {salesOpenLine.replace(/\.$/, '')}&nbsp;&nbsp;/&nbsp;&nbsp;No account&nbsp;&nbsp;/&nbsp;&nbsp;No subscription
+        {/* One slashed line on desktop; on phones and tablets it breaks into three lines with no stray slashes */}
+        <p className={`relative mt-[22px] leading-[1.9] ${mono}`}>
+          {[[`Sales open ${salesOpenLabel}`], [shipsFromLine], ['No account', 'No subscription']].map((group, i) => (
+            <span key={group[0]} className="block lg:inline whitespace-nowrap">
+              {i > 0 && (
+                <span aria-hidden="true" className="hidden lg:inline">
+                  &nbsp;&nbsp;/&nbsp;&nbsp;
+                </span>
+              )}
+              {group.join('  /  ')}
+            </span>
+          ))}
         </p>
       </section>
 

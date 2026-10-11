@@ -4,7 +4,7 @@ import { useEffect, useState, type ReactNode } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import WhatsAppIcon from '@/components/WhatsAppIcon'
-import { inr, salesOpenLine, shareText, tileLaunch } from '@/data/tile-launch'
+import { inr, salesOpenLabel, salesOpenLine, shareText, shipsFromLine, tileLaunch } from '@/data/tile-launch'
 import { waitlistSchema, type WaitlistInput } from '@/data/tile-waitlist-schema'
 
 type Status = 'idle' | 'submitting' | 'success' | 'duplicate' | 'error'
@@ -133,7 +133,7 @@ export default function TileWaitlist({ device }: { device: ReactNode }) {
               {status === 'duplicate' ? "You're already on the list." : "You're in."}
             </p>
             <p className="mx-auto mt-3 max-w-[40ch] text-[17px] lowercase leading-[1.6] text-[#A3A3AB]">
-              We&apos;ll message you before anyone else when sales open.
+              We&apos;ll message you before sales open on {salesOpenLabel}.
             </p>
             <p className="mt-8 font-mono text-[12px] uppercase tracking-[0.12em] text-[#85858D]">Tell a friend</p>
             <ShareButtons />
@@ -218,7 +218,7 @@ export default function TileWaitlist({ device }: { device: ReactNode }) {
                 {status === 'submitting' ? 'Joining…' : 'Join the Founders Batch'}
               </button>
               <p className="font-mono text-[11px] uppercase tracking-[0.12em] text-[#55555C]">
-                No payment now · {salesOpenLine.replace(/\.$/, '')}
+                No payment now · Sales open {salesOpenLabel} · {shipsFromLine}
               </p>
             </div>
           </form>

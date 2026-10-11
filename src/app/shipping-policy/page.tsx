@@ -1,6 +1,6 @@
 import LegalPage, { H2 } from '@/components/LegalPage'
 import { legal } from '@/data/legal'
-import { inr } from '@/data/tile-launch'
+import { foundersDispatchByLabel, inr, qualityCheckLabel, salesOpenLabel, shipStartLabel, tileLaunch } from '@/data/tile-launch'
 
 export const metadata = {
   title: 'Shipping & Delivery — Dynamik Design Lab',
@@ -14,6 +14,14 @@ export default function ShippingPolicyPage() {
       <p>
         {legal.freeShipping ? 'Shipping is free across India. ' : ''}We ship within India only and don&apos;t offer
         international shipping yet.
+      </p>
+
+      <H2>Founders batch</H2>
+      <p>
+        Founders batch (first {tileLaunch.foundersBatchSize} orders): orders placed from {salesOpenLabel} are confirmed and
+        quality-checked on {qualityCheckLabel}. Dispatch begins {shipStartLabel}, in the order orders were placed, and all
+        founders batch orders are dispatched by {foundersDispatchByLabel}. Orders after the founders batch follow our standard
+        dispatch time of {legal.dispatchWorkingDays} working days.
       </p>
 
       <H2>Dispatch</H2>
