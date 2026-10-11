@@ -129,10 +129,30 @@ export function embersStep(levels: number[], random: () => number = Math.random)
     return level + (target - level) * 0.35
   })
 }
-// LEDs look far brighter in a room than their raw level suggests; lift the levels for screens
-// (same animation, just a display curve) so the embers read as glowing rather than dim.
-const embersOnScreen = (l: number) => Math.min(1, Math.pow(Math.max(0, l), 0.55) * 1.15)
-export const embersCells = (levels: number[]): Cells => levels.map((l) => led(0xff4500, embersOnScreen(l)))
+// LEDs look far brighter in a room than their raw level suggests, and the hottest ones read as yellow.
+// On screen the same animation gets a display curve and a heat tint: yellow core, orange flames, red sparks.
+const embersOnScreen = (l: number) => Math.min(1, Math.pow(Math.max(0, l), 0.45) * 1.35)
+const HEAT: [number, number][] = [
+  [0, 0x9a0e00],
+  [0.08, 0xe62200],
+  [0.18, 0xff5a00],
+  [0.3, 0xffa000],
+  [0.45, 0xffcc1a],
+  [1, 0xffe65a],
+]
+function heat(l: number): number {
+  const v = Math.max(0, Math.min(1, l))
+  const k = HEAT.findIndex(([at]) => at >= v)
+  if (k <= 0) return HEAT[0][1]
+  const [a, ca] = HEAT[k - 1]
+  const [b, cb] = HEAT[k]
+  const f = (v - a) / (b - a)
+  const [r1, g1, b1] = rgbOf(ca)
+  const [r2, g2, b2] = rgbOf(cb)
+  const mixc = (p: number, q: number) => Math.round(p + (q - p) * f)
+  return (mixc(r1, r2) << 16) | (mixc(g1, g2) << 8) | mixc(b1, b2)
+}
+export const embersCells = (levels: number[]): Cells => levels.map((l) => led(heat(l), embersOnScreen(l)))
 
 // Deterministic warmed-up first frame so the server and the browser render the same thing.
 export const EMBERS_START: number[] = (() => {
