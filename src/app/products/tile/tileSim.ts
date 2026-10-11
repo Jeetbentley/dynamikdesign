@@ -129,7 +129,10 @@ export function embersStep(levels: number[], random: () => number = Math.random)
     return level + (target - level) * 0.35
   })
 }
-export const embersCells = (levels: number[]): Cells => levels.map((l) => led(0xff4500, l))
+// LEDs look far brighter in a room than their raw level suggests; lift the levels for screens
+// (same animation, just a display curve) so the embers read as glowing rather than dim.
+const embersOnScreen = (l: number) => Math.min(1, Math.pow(Math.max(0, l), 0.55) * 1.15)
+export const embersCells = (levels: number[]): Cells => levels.map((l) => led(0xff4500, embersOnScreen(l)))
 
 // Deterministic warmed-up first frame so the server and the browser render the same thing.
 export const EMBERS_START: number[] = (() => {
