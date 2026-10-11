@@ -558,7 +558,6 @@ export default function TileProduct({ photo }: { photo?: { src: string; alt: str
               <dl className="m-0 flex flex-col">
                 {[
                   ['Alexa', '“Alexa, turn on Tile Focus.” Say Tile, Tile Clock, Tile Lamp or Tile Focus. Needs an Echo on the same WiFi.'],
-                  ['Home Assistant', 'Set Tile up over Bluetooth.'],
                 ].map(([k, v], i, arr) => (
                   <div key={k} className={`border-t border-[#26262B] pt-3.5 ${i < arr.length - 1 ? 'pb-3.5' : ''}`}>
                     <dt className="text-[15px] font-semibold uppercase tracking-[0.06em]">{k}</dt>
