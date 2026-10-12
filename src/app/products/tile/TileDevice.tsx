@@ -39,18 +39,18 @@ const CHIN_STYLE: CSSProperties = {
   background: CHIN_COLOR,
   boxShadow: '0 -0.2cqw 0.5cqw rgba(60,20,0,0.22)',
 }
-// The Tile mark: three squares over one, ~17% of the chin width, centred vertically, set in from the right
-// by 1.5× its own width.
+// The Tile mark, measured from the product photo: three squares over one, ~22% of the chin width
+// (~half its height), gap 15% of a square, right margin 7.5% of the chin width, centred vertically.
+// Chin width is 82.54cqw, so width 18.16cqw = 3 squares of 5.5cqw + 2 gaps of 0.83cqw.
 const MARK: CSSProperties = {
   position: 'absolute',
-  right: '25.5%',
+  right: '7.5%',
   top: '50%',
   transform: 'translateY(-50%)',
-  width: '17%',
+  width: '18.16cqw',
   display: 'grid',
   gridTemplateColumns: 'repeat(3, 1fr)',
-  columnGap: '6%',
-  rowGap: '6%',
+  gap: '0.83cqw',
 }
 // Each square is a soft pocket: rounded corners, orange fill, a subtle shadow inside it.
 const MARK_SQUARE: CSSProperties = {
