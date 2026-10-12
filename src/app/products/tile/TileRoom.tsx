@@ -13,7 +13,7 @@ export default function TileRoom({ photos }: { photos: RoomPhoto[] }) {
   return (
     <section aria-labelledby="room-h" className="border-t border-[#1E1E22] px-6 py-28 sm:py-32">
       <div className="mx-auto max-w-[1240px]">
-        <p className={eyebrow}>/ In the room</p>
+        <p className={eyebrow}>In the room</p>
         <h2 id="room-h" className={`mb-12 ${h2}`}>Made for real rooms.</h2>
         <div className={`grid grid-cols-2 gap-4 ${cols === 3 ? 'md:grid-cols-3' : cols === 2 ? 'md:grid-cols-2' : 'md:grid-cols-1'}`}>
           {photos.map((p, i) => (
