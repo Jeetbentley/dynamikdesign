@@ -6,8 +6,8 @@ export type Cells = (Lit | null)[]
 
 const rgbOf = (hex: number) => [(hex >> 16) & 255, (hex >> 8) & 255, hex & 255]
 
-// One LED at a brightness level (0–1). Behind the frosted diffuser a dimmer LED shows as a fainter
-// patch of the same colour, so the level sets how strongly it shows rather than darkening it.
+// One LED at a brightness level (0–1): saturated colour with a slightly brighter centre and a soft
+// glow in its own colour. The level fades the pixel into the dark screen.
 export function led(hex: number, level = 1): Lit {
   // A colour like rgb(189,66,0) is orange light at ~74% strength, not brown: show the hue at full
   // brightness and fold the rest into the level.
@@ -15,11 +15,11 @@ export function led(hex: number, level = 1): Lit {
   const peak = Math.max(...raw, 1)
   const l = Math.max(0, Math.min(1, level * (peak / 255)))
   const [r, g, b] = raw.map((v) => Math.round((v * 255) / peak))
-  const mix = (v: number) => Math.round(v + (255 - v) * 0.45)
+  const mix = (v: number) => Math.round(v + (255 - v) * 0.25)
   return {
     center: `rgb(${mix(r)},${mix(g)},${mix(b)})`,
     edge: `rgb(${r},${g},${b})`,
-    glow: `rgba(${r},${g},${b},0.75)`,
+    glow: `rgba(${r},${g},${b},0.45)`,
     level: l,
   }
 }
@@ -137,8 +137,7 @@ export function embersStep(levels: number[], random: () => number = Math.random)
 }
 // LEDs look brighter in a room than their raw level suggests, and the hottest ones read as yellow.
 // On screen the same animation gets a display curve and a heat tint: yellow core, orange flames, red sparks.
-// The curve is gentle at the low end so faint sparks stay faint tints on the frosted diffuser.
-const embersOnScreen = (l: number) => Math.min(1, Math.pow(Math.max(0, l), 1.2) * 1.3)
+const embersOnScreen = (l: number) => Math.min(1, Math.pow(Math.max(0, l), 0.45) * 1.35)
 const HEAT: [number, number][] = [
   [0, 0x9a0e00],
   [0.08, 0xe62200],
