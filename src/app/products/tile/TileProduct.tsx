@@ -385,7 +385,7 @@ export default function TileProduct({ photos }: { photos: RoomPhoto[] }) {
       {/* Hero — the live canvas */}
       <section id="top" className="relative scroll-mt-[132px] overflow-hidden px-6 pb-24 pt-16 sm:pt-20 text-center">
         <p className={`mb-[22px] ${mono}`}>Retro pixels. Modern focus.</p>
-        <h1 className="mx-auto mb-5 max-w-[12ch] text-[clamp(21px,3.7vw,52px)] font-bold uppercase leading-[0.92] tracking-[-0.035em]">
+        <h1 className="mx-auto mb-5 max-w-[12ch] text-[clamp(32px,9vw,52px)] font-bold uppercase leading-[0.92] tracking-[-0.035em]">
           Your desk, in 64&nbsp;pixels.
         </h1>
         <p className={`mx-auto mb-12 max-w-[38ch] !text-[clamp(17px,1.8vw,21px)] ${body}`}>
