@@ -12,64 +12,81 @@ export interface Lit {
 export type Chin = 'purple' | 'navy'
 
 // Matte chin colours, muted so they sit with the orange body.
-export const CHINS: Record<Chin, { label: string; color: string }> = {
-  purple: { label: 'Purple', color: '#5A4794' },
-  navy: { label: 'Navy', color: '#26334F' },
+export const CHINS: Record<Chin, { label: string; color: string; wall: string }> = {
+  purple: { label: 'Purple', color: '#5A4794', wall: '#45367A' },
+  navy: { label: 'Navy', color: '#26334F', wall: '#1B253C' },
 }
 
 // Geometry, as percentages of the container (1212 × 1298) so the device keeps its size everywhere.
-// Corner radii use container-width units (cqw) so they stay circular at any size.
+// Radii, chamfers and the chin ledge use container-width units (cqw), so they scale with the device.
 const R = '5.5cqw' // outer corner radius: top of the orange body, bottom of the chin
-const SIDES = { left: '9.74%', width: '80.53%' }
-const ORANGE_BOX = { ...SIDES, top: '1.39%', height: '74.33%' } // ends in a straight edge where the chin starts
-const CHIN_BOX = { ...SIDES, top: '75.72%', height: '20.97%' } // ~22% of the front
-const SCREEN = { left: '14.02%', top: '5.5%', width: '71.96%', height: '69.6%' } // the diffuser opening
-const SCREEN_R = '1cqw' // ~18% of the outer radius
-const BEVEL = '3.5px' // inner chamfer from the bezel down to the diffuser
+const ORANGE_BOX = { left: '9.74%', width: '80.53%', top: '1.39%', height: '69.11%' } // straight bottom edge, hidden by the chin
+// The chin: ~27.5% of the front height, and 2.5% of the body width proud of the orange on each side.
+const CHIN_BOX = { left: '7.73%', width: '84.55%', top: '70.5%', height: '26.19%' }
+const LEDGE = '2.4cqw' // top face of the chin, ~3% of the body width
+// The diffuser opening runs straight down to the chin.
+const SCREEN = { left: '14.02%', top: '5.5%', width: '71.96%', height: '65%' }
+const SCREEN_R = '1cqw' // ~18% of the outer radius, top corners only
+const BEVEL = '1.6cqw' // inner chamfer, ~6px at desktop size
+const CHAMFER = '1.45cqw' // outer chamfer on the orange, ~5–6px at desktop size
 
-// Flat matte orange with a fine outer chamfer: catching light along the top, a touch darker down the sides.
+// Flat matte orange with an outer chamfer: lighter where the top edge catches the light, darker down the sides.
 const ORANGE_STYLE: CSSProperties = {
   ...ORANGE_BOX,
   borderRadius: `${R} ${R} 0 0`,
   background: 'linear-gradient(180deg, #F48C40 0%, #F08235 100%)',
-  boxShadow: 'inset 0 2.5px 0 #F9A66A, inset 2.5px 0 0 #E2732A, inset -2.5px 0 0 #E2732A',
+  boxShadow: `inset 0 ${CHAMFER} 0.3cqw -0.1cqw #F9A86C, inset ${CHAMFER} 0 0.3cqw -0.1cqw #DF7029, inset -${CHAMFER} 0 0.3cqw -0.1cqw #DF7029`,
 }
-// Flat matte chin, square at the top (flush with the orange), rounded at the bottom; a fine seam where they meet.
+// Flat matte chin: square at the top, rounded at the bottom, sitting proud of the face. Its shadow falls
+// up onto the orange sides just above where it sticks out.
 const CHIN_STYLE: CSSProperties = {
   ...CHIN_BOX,
   borderRadius: `0 0 ${R} ${R}`,
   backgroundImage: 'linear-gradient(180deg, rgba(0,0,0,0) 70%, rgba(0,0,0,0.12) 100%)',
-  boxShadow: 'inset 0 1px 0 rgba(0,0,0,0.45), inset 0 2px 0 rgba(255,255,255,0.06)',
+  boxShadow: '0 -0.5cqw 1.2cqw rgba(60,20,0,0.45)',
 }
-// The Tile mark on the chin: three squares over one, slightly recessed, bottom-right.
+// The ledge along the top of the chin, lit from above, with a fine edge where it turns down into the face.
+const LEDGE_STYLE: CSSProperties = {
+  position: 'absolute',
+  left: 0,
+  right: 0,
+  top: 0,
+  height: LEDGE,
+  background: 'linear-gradient(180deg, rgba(255,255,255,0.20), rgba(255,255,255,0.12))',
+  boxShadow: '0 1px 0 rgba(0,0,0,0.30)',
+}
+// The Tile mark: ~17% of the chin width, right side, a little above the middle of the chin face.
+// Square s and gap g = 0.18s: width 3.36s; right margin 3g.
 const MARK: CSSProperties = {
   position: 'absolute',
-  right: '7.5%',
-  top: '23%',
-  width: '23%',
+  right: '2.75%',
+  top: '35%',
+  width: '17%',
   display: 'grid',
   gridTemplateColumns: 'repeat(3, 1fr)',
-  gap: '4.5%',
+  columnGap: '5.4%',
+  rowGap: '5.4%',
 }
-const MARK_SQUARE: CSSProperties = {
+// Each square is a pocket: chin-coloured walls on the top and left, a shadow into it, orange at the bottom.
+const markSquare = (wall: string): CSSProperties => ({
   aspectRatio: '1',
-  borderRadius: '12%',
-  background: '#F2843A',
-  boxShadow: '0 1.5px 1.5px rgba(0,0,0,0.35) inset, 0 -0.5px 0 rgba(255,255,255,0.12)',
-}
-// The screen opening: a chamfer stepping down from the bezel (shadowed top and left, lit bottom and right),
-// then the dark diffuser, recessed with a thin inner shadow.
+  borderRadius: '10%',
+  background: '#E87A33',
+  boxShadow: `inset 0.45cqw 0.45cqw 0 ${wall}, inset 0.7cqw 0.7cqw 0.6cqw rgba(0,0,0,0.38), inset -1px -1px 0 rgba(255,255,255,0.14)`,
+})
+// The screen opening: a chamfer stepping down from the bezel (shadowed top and left, lit right), then the
+// dark diffuser, recessed with a thin inner shadow. No border at the bottom: the diffuser meets the chin.
 const OPENING_STYLE: CSSProperties = {
   position: 'absolute',
   left: `calc(${SCREEN.left} - ${BEVEL})`,
   top: `calc(${SCREEN.top} - ${BEVEL})`,
   width: `calc(${SCREEN.width} + 2 * ${BEVEL})`,
-  height: `calc(${SCREEN.height} + 2 * ${BEVEL})`,
+  height: `calc(${SCREEN.height} + ${BEVEL})`,
   boxSizing: 'border-box',
   borderStyle: 'solid',
-  borderWidth: BEVEL,
-  borderColor: '#C9631F #F7A060 #F7A060 #CF6822', // top right bottom left
-  borderRadius: `calc(${SCREEN_R} + ${BEVEL})`,
+  borderWidth: `${BEVEL} ${BEVEL} 0 ${BEVEL}`,
+  borderColor: '#B85619 #F9A462 transparent #C25C1C', // top right bottom left
+  borderRadius: `calc(${SCREEN_R} + ${BEVEL}) calc(${SCREEN_R} + ${BEVEL}) 0 0`,
   background: '#17181B',
   boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.7), inset 0 0 0 1px rgba(0,0,0,0.5)',
 }
@@ -119,9 +136,13 @@ export default function TileDevice({
         className="absolute motion-safe:transition-colors motion-safe:duration-300"
         style={{ ...CHIN_STYLE, backgroundColor: CHINS[chin].color, ...(dim ? { filter: DIM } : null) }}
       >
+        <div style={LEDGE_STYLE} />
         <div style={MARK}>
           {[0, 1, 2, 4].map((n) => (
-            <span key={n} style={{ ...MARK_SQUARE, gridColumn: (n % 3) + 1, gridRow: Math.floor(n / 3) + 1 }} />
+            <span
+              key={n}
+              style={{ ...markSquare(CHINS[chin].wall), gridColumn: (n % 3) + 1, gridRow: Math.floor(n / 3) + 1 }}
+            />
           ))}
         </div>
       </div>
@@ -130,7 +151,7 @@ export default function TileDevice({
         className="absolute grid grid-cols-8 grid-rows-8 overflow-hidden"
         style={{
           ...SCREEN,
-          borderRadius: SCREEN_R,
+          borderRadius: `${SCREEN_R} ${SCREEN_R} 0 0`,
           padding: '1.2%',
           columnGap: '0.95%',
           rowGap: '0.95%',
