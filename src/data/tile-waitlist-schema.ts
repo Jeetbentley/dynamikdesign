@@ -18,6 +18,7 @@ export const waitlistSchema = z.object({
     .trim()
     .refine((v) => normaliseWhatsapp(v) !== null, 'Enter a 10-digit Indian mobile number (+91 optional)'),
   city: z.string().trim().min(2, 'Please enter your city').max(60),
+  colour: z.string().max(40).optional(), // anything outside tileLaunch.colours falls back to the default on the server
   mode: z.string().refine((v) => tileLaunch.modes.includes(v), 'Please choose a mode'),
   consent: z.literal(true, { errorMap: () => ({ message: 'Please tick to get launch updates' }) }),
   website: z.string().max(0).optional(), // honeypot — must stay empty

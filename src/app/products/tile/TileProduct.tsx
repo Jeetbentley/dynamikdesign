@@ -3,7 +3,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { useEffect, useRef, useState, type PointerEvent, type ReactNode, type RefObject } from 'react'
-import TileDevice, { type Lit } from './TileDevice'
+import TileDevice, { ChinSwatches, type Chin, type Lit } from './TileDevice'
 import TileNight from './TileNight'
 import TileWaitlist from './TileWaitlist'
 import {
@@ -265,6 +265,8 @@ function PriceLine() {
 export default function TileProduct({ photo }: { photo?: { src: string; alt: string } }) {
   const [mode, setMode] = useState<Mode>('clock')
   const [heroMode, setHeroMode] = useState<Mode>('clock')
+  // One chin colour for every simulated Tile on the page; it also pre-selects the waitlist colour.
+  const [chin, setChin] = useState<Chin>('blue')
   const [brush, setBrush] = useState(1)
   const clock = useLiveClock()
   const heroRef = useRef<HTMLDivElement>(null)
@@ -422,11 +424,12 @@ export default function TileProduct({ photo }: { photo?: { src: string; alt: str
           <div ref={heroRef} className="relative w-full drop-shadow-[0_50px_60px_rgba(240,100,30,0.28)]">
             {heroMode === 'clock' ? (
               <button type="button" onClick={showDate} aria-label="Tap Tile to show today’s date" className="block w-full cursor-pointer rounded-[8%] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#F0641E]">
-                <TileDevice cells={heroCells} glow={16} alt={HERO_ALT.clock} />
+                <TileDevice cells={heroCells} chin={chin} glow={16} alt={HERO_ALT.clock} />
               </button>
             ) : (
               <TileDevice
                 cells={heroCells}
+                chin={chin}
                
                 interactive={heroMode === 'canvas' ? canvas : undefined}
                 glow={heroMode === 'lamp' ? 18 : 16}
@@ -436,7 +439,11 @@ export default function TileProduct({ photo }: { photo?: { src: string; alt: str
           </div>
         </div>
 
-        <div role="group" aria-label="Mode" className="relative mx-auto mt-10 inline-flex rounded-full border border-[#26262B] bg-[#141416] p-1">
+        <div className="relative mt-5">
+          <ChinSwatches value={chin} onChange={setChin} />
+        </div>
+
+        <div role="group" aria-label="Mode" className="relative mx-auto mt-6 inline-flex rounded-full border border-[#26262B] bg-[#141416] p-1">
           {MODES.map((m) => {
             const on = heroMode === m.id
             return (
@@ -575,7 +582,7 @@ export default function TileProduct({ photo }: { photo?: { src: string; alt: str
             </div>
             <div className="flex flex-[1_1_320px] justify-center">
               <div className="w-full max-w-[360px]">
-                <TileDevice cells={modeCells} glow={mode === 'lamp' ? 10 : 14} />
+                <TileDevice cells={modeCells} chin={chin} glow={mode === 'lamp' ? 10 : 14} />
               </div>
             </div>
             <div className="min-w-0 flex-[1_1_280px]">
@@ -623,7 +630,7 @@ export default function TileProduct({ photo }: { photo?: { src: string; alt: str
           <h2 id="feat-h" className={`mb-14 max-w-[15ch] ${h2}`}>Small on the desk. Thoughtful inside.</h2>
 
           <div className="flex flex-wrap gap-4">
-            <TileNight clock={clock} />
+            <TileNight clock={clock} chin={chin} />
 
             <article className={`${card} flex-[1_1_340px]`}>
               <p className={`mb-3.5 ${mono}`}>Smart home</p>
@@ -711,7 +718,7 @@ export default function TileProduct({ photo }: { photo?: { src: string; alt: str
             style={{ background: 'radial-gradient(ellipse at center, rgba(240,100,30,0.18), transparent 65%)' }}
           />
           <div className="relative mx-auto mb-10 w-full max-w-[200px]">
-            <TileDevice cells={drewSomething ? toCells(paint) : amberClock(clock)} glow={10} />
+            <TileDevice cells={drewSomething ? toCells(paint) : amberClock(clock)} chin={chin} glow={10} />
           </div>
           <h2 id="buy-h" className="relative mb-8 text-[clamp(52px,9vw,128px)] font-bold uppercase leading-[0.9] tracking-[-0.04em]">Get Tile.</h2>
           <div className="relative mb-9">
@@ -722,7 +729,7 @@ export default function TileProduct({ photo }: { photo?: { src: string; alt: str
           </Link>
         </section>
       ) : (
-        <TileWaitlist device={<TileDevice cells={drewSomething ? toCells(paint) : amberClock(clock)} glow={10} />} />
+        <TileWaitlist chin={chin} device={<TileDevice cells={drewSomething ? toCells(paint) : amberClock(clock)} chin={chin} glow={10} />} />
       )}
 
       {/* Seller & product information (legal disclosures) */}

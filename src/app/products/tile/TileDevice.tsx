@@ -9,8 +9,16 @@ export interface Lit {
   level?: number // 0–1; how strongly the pixel shows through the diffuser (default 1)
 }
 
-// Matte purple chin: the one colourway.
-const CHIN_COLOR = '#5A4794'
+export type Chin = 'blue' | 'purple'
+
+// The two colourways, in display order: blue is the default.
+export const CHINS: Record<Chin, { label: string; color: string }> = {
+  blue: { label: 'Blue', color: '#2C5CD6' },
+  purple: { label: 'Purple', color: '#7B5EC6' },
+}
+// A fine, even grain over the matte chin (static noise, no sheen).
+const GRAIN =
+  "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='96' height='96'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.3' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.14 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")"
 
 // Geometry, as percentages of the container (1212 × 1298) so the device keeps its size everywhere.
 // Radii and chamfers use container-width units (cqw), so they scale with the device.
@@ -28,15 +36,16 @@ const CHAMFER = '1.45cqw' // outer chamfer on the orange, ~5–6px at desktop si
 const ORANGE_STYLE: CSSProperties = {
   ...ORANGE_BOX,
   borderRadius: `${R} ${R} 0 0`,
-  background: 'linear-gradient(180deg, #F48C40 0%, #F08235 100%)',
+  background: 'linear-gradient(180deg, #F29242 0%, #EE8336 100%)', // averages #F08A3C
   boxShadow: `inset 0 ${CHAMFER} 0.3cqw -0.1cqw #F9A86C, inset ${CHAMFER} 0 0.3cqw -0.1cqw #DF7029, inset -${CHAMFER} 0 0.3cqw -0.1cqw #DF7029`,
 }
-// Flat matte purple chin: no chamfer, gradient or sheen. Square at the top, rounded at the bottom, with a
+// Flat matte chin with a fine grain: no chamfer, gradient or sheen. Square at the top, rounded at the bottom, with a
 // very soft shadow where it meets the orange sides.
 const CHIN_STYLE: CSSProperties = {
   ...CHIN_BOX,
   borderRadius: `0 0 ${R} ${R}`,
-  background: CHIN_COLOR,
+  backgroundImage: GRAIN,
+  backgroundSize: '96px 96px',
   boxShadow: '0 -0.2cqw 0.5cqw rgba(60,20,0,0.22)',
 }
 // The Tile mark, measured from the product photo: three squares over one, ~22% of the chin width
@@ -56,7 +65,7 @@ const MARK: CSSProperties = {
 const MARK_SQUARE: CSSProperties = {
   aspectRatio: '1',
   borderRadius: '25%',
-  background: '#EE8035',
+  background: '#EC853A',
   boxShadow: 'inset 0.3cqw 0.35cqw 0.45cqw rgba(0,0,0,0.32)',
 }
 // The screen opening: a chamfer stepping down from the bezel (shadowed top and left, lit right), then the
@@ -91,6 +100,7 @@ interface Interactive {
 
 interface Props {
   cells: (Lit | null)[]
+  chin?: Chin
   dim?: boolean
   glow?: number
   interactive?: Interactive
@@ -99,22 +109,27 @@ interface Props {
 
 export default function TileDevice({
   cells,
+  chin = 'blue',
   dim = false,
   glow = 14,
   interactive,
-  alt = 'Tile, a desk display with an 8 by 8 pixel screen, orange body and purple chin',
+  alt,
 }: Props) {
   // Mouse paints on press (so drag-painting works); touch paints on tap so scrolling past doesn't.
   const lastPointer = useRef('mouse')
   return (
     <div
       role={interactive ? 'group' : 'img'}
-      aria-label={alt}
+      aria-label={alt ?? `Tile, a desk display with an 8 by 8 pixel screen, orange body and ${CHINS[chin].label.toLowerCase()} chin`}
       className="relative w-full select-none"
       style={{ aspectRatio: '1212 / 1298', containerType: 'inline-size' }}
     >
       <div aria-hidden="true" className="absolute" style={dim ? { ...ORANGE_STYLE, filter: DIM } : ORANGE_STYLE} />
-      <div aria-hidden="true" className="absolute" style={dim ? { ...CHIN_STYLE, filter: DIM } : CHIN_STYLE}>
+      <div
+        aria-hidden="true"
+        className="absolute"
+        style={{ ...CHIN_STYLE, backgroundColor: CHINS[chin].color, ...(dim ? { filter: DIM } : null) }}
+      >
         <div style={MARK}>
           {[0, 1, 2, 4].map((n) => (
             <span key={n} style={{ ...MARK_SQUARE, gridColumn: (n % 3) + 1, gridRow: Math.floor(n / 3) + 1 }} />
@@ -170,6 +185,37 @@ export default function TileDevice({
           style={{ background: 'linear-gradient(155deg, rgba(255,255,255,0.07) 0%, rgba(255,255,255,0.02) 38%, rgba(255,255,255,0) 38.5%)' }}
         />
       </div>
+    </div>
+  )
+}
+
+// Swatches that switch the chin colour on every simulated Tile on the page. Instant, no animation.
+export function ChinSwatches({ value, onChange }: { value: Chin; onChange: (c: Chin) => void }) {
+  return (
+    <div role="group" aria-label="Chin colour" className="inline-flex items-center gap-4">
+      {(Object.keys(CHINS) as Chin[]).map((k) => {
+        const on = value === k
+        return (
+          <button
+            key={k}
+            type="button"
+            aria-pressed={on}
+            onClick={() => onChange(k)}
+            className="inline-flex min-h-[44px] items-center gap-2 rounded-full px-2 font-mono text-[11px] uppercase tracking-[0.12em] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#F0641E]"
+            style={{ color: on ? '#EDEDEF' : '#85858D' }}
+          >
+            <span
+              aria-hidden="true"
+              className="h-[18px] w-[18px] rounded-full"
+              style={{
+                background: `linear-gradient(180deg, #F08A3C 0 50%, ${CHINS[k].color} 50% 100%)`,
+                boxShadow: on ? '0 0 0 2px #0B0B0C, 0 0 0 3.5px #EDEDEF' : '0 0 0 1px #34343A',
+              }}
+            />
+            {CHINS[k].label}
+          </button>
+        )
+      })}
     </div>
   )
 }

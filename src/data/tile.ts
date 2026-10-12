@@ -13,8 +13,9 @@ export const TILE_SPECS = [
   { k: 'Power', v: 'USB-C, 5 V [CONFIRM ADAPTER RATING]' }, // TODO
   { k: 'Size', v: '[W × H × D] mm, [WEIGHT] g' }, // TODO
   { k: 'In the box', v: 'Tile, USB-C cable, quick start card [CONFIRM]' }, // TODO
-  { k: 'Body', v: 'PETG, matte finish' },
-  { k: 'Colour', v: 'Orange with purple chin' },
+  { k: 'Body', v: 'PETG' },
+  { k: 'Colours', v: 'Orange with blue or purple chin' },
+  { k: 'Finish', v: 'Matte' },
   { k: 'Made in', v: 'India' },
 ]
 
