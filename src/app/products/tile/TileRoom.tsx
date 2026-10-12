@@ -31,7 +31,11 @@ export default function TileRoom({ photos }: { photos: RoomPhoto[] }) {
                 sizes={i === 0 ? '(min-width: 768px) 33vw, 100vw' : '(min-width: 768px) 33vw, 50vw'}
                 className="object-cover"
               />
-              <figcaption className={`absolute bottom-3 left-3 right-3 w-fit rounded-full bg-[rgba(11,11,12,0.72)] px-3 py-1.5 backdrop-blur-[6px] ${mono} !text-[#EDEDEF]`}>
+              <figcaption
+                className={`absolute bottom-3 left-3 right-3 w-fit rounded-full bg-[rgba(11,11,12,0.72)] px-3 py-1.5 backdrop-blur-[6px] ${mono} !text-[#EDEDEF] ${
+                  i > 0 && photos.length > 1 ? 'max-md:bottom-2 max-md:left-2 max-md:right-2 max-md:px-2.5 max-md:py-1 max-md:!text-[9px] max-md:!tracking-[0.08em]' : ''
+                }`}
+              >
                 {p.caption}
               </figcaption>
             </figure>

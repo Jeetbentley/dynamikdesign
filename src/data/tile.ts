@@ -44,15 +44,15 @@ export const TILE_CONTEXT_PHOTOS: { file: string; chin: 'blue' | 'purple'; capti
     alt: 'Tile with a blue chin on a wooden desk at night, its screen glowing pink beside a desk lamp, laptop and phone',
   },
   {
-    file: '/products/tile/context-focus-desk-purple.webp',
-    chin: 'purple',
-    caption: 'Focus timer · Ready',
-    alt: 'Tile with a purple chin on a dark wooden desk, showing the focus hourglass in warm light, a keyboard and mug behind',
+    file: '/products/tile/context-clock-evening-blue.webp',
+    chin: 'blue',
+    caption: 'Clock · Evening',
+    alt: 'Tile with a dark blue chin on a wooden desk in the evening, showing the time in lilac and blue pixel digits beside a table lamp',
   },
   {
     file: '/products/tile/context-focus-shelf-purple.webp',
     chin: 'purple',
-    caption: 'Focus timer · On the shelf',
+    caption: 'Focus timer · Shelf',
     alt: 'Tile with a purple chin on a shelf lit in orange, showing the focus hourglass in coral beside a plant and headphones',
   },
 ]
