@@ -31,7 +31,7 @@ export default function TilePage() {
   // Checked at build time: each context photo appears once its file is added to /public. Blue-chin photos first.
   const photos: RoomPhoto[] = TILE_CONTEXT_PHOTOS.filter((p) => fs.existsSync(path.join(process.cwd(), 'public', p.file)))
     .sort((a, b) => Number(a.chin !== 'blue') - Number(b.chin !== 'blue'))
-    .map(({ file, caption, alt }) => ({ file, caption, alt }))
+    .map(({ file, alt }) => ({ file, alt }))
   return (
     <div className={grotesk.variable}>
       <TileProduct photos={photos} />
