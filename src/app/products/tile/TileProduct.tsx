@@ -572,7 +572,7 @@ export default function TileProduct({ photos }: { photos: RoomPhoto[] }) {
       </section>
 
       {/* Context photos — hidden until their files exist (see data/tile.ts) */}
-      <TileRoom photos={photos} chin={chin} />
+      <TileRoom photos={photos} />
 
       {/* Details */}
       <section aria-labelledby="feat-h" className="px-6 py-28 sm:py-32">

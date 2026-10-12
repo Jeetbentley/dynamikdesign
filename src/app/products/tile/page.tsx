@@ -3,7 +3,7 @@ import path from 'node:path'
 import type { Metadata } from 'next'
 import localFont from 'next/font/local'
 import TileProduct from './TileProduct'
-import { contextFile, TILE_CONTEXT_PHOTOS } from '@/data/tile'
+import { TILE_CONTEXT_PHOTOS } from '@/data/tile'
 import type { RoomPhoto } from './TileRoom'
 import { inr, tileLaunch } from '@/data/tile-launch'
 
@@ -28,13 +28,10 @@ export const metadata: Metadata = {
 }
 
 export default function TilePage() {
-  // Checked at build time: each context photo appears once its file is added to /public.
-  const exists = (src: string) => fs.existsSync(path.join(process.cwd(), 'public', src))
-  const photos: RoomPhoto[] = TILE_CONTEXT_PHOTOS.filter((p) => exists(contextFile(p.slot))).map((p) => ({
-    ...p,
-    src: contextFile(p.slot),
-    purpleSrc: exists(contextFile(p.slot, true)) ? contextFile(p.slot, true) : undefined,
-  }))
+  // Checked at build time: each context photo appears once its file is added to /public. Blue-chin photos first.
+  const photos: RoomPhoto[] = TILE_CONTEXT_PHOTOS.filter((p) => fs.existsSync(path.join(process.cwd(), 'public', p.file)))
+    .sort((a, b) => Number(a.chin !== 'blue') - Number(b.chin !== 'blue'))
+    .map(({ file, caption, alt }) => ({ file, caption, alt }))
   return (
     <div className={grotesk.variable}>
       <TileProduct photos={photos} />
