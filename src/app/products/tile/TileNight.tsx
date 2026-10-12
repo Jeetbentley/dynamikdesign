@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import TileDevice, { type Chin } from './TileDevice'
+import { h3 } from './tileStyles'
 import { AMBER_HOUR, AMBER_MIN, brightnessOnScreen, led, NIGHT_HOUR, NIGHT_MIN, type Cells } from './tileSim'
 
 // Firmware defaults: day 20%, night 5%, night 22:00–07:00, warm digits off.
@@ -40,7 +41,7 @@ export default function TileNight({ clock, chin }: { clock: number[]; chin: Chin
     <article aria-labelledby="night-h" className="rounded-[28px] border border-[#1E1E22] bg-[#141416] p-8 sm:p-10 box-border min-w-0 flex flex-[2_1_560px] flex-wrap items-center gap-10">
       <div className="min-w-0 flex-[1_1_280px]">
         <p className={`mb-3.5 ${mono}`}>Adaptive brightness</p>
-        <h3 id="night-h" className="mb-3.5 uppercase font-bold tracking-[-0.02em] leading-[1.02] text-[30px]">
+        <h3 id="night-h" className={`mb-3.5 ${h3}`}>
           Bright by day. Gentle by night. Your call.
         </h3>
         <p className="mb-8 max-w-[40ch] text-[17px] leading-[1.6] text-[#A3A3AB]">

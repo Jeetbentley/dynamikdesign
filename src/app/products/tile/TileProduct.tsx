@@ -537,7 +537,7 @@ export default function TileProduct({ photos }: { photos: RoomPhoto[] }) {
       <section id="modes" className="scroll-mt-[132px] border-t border-[#1E1E22] px-6 py-28 sm:py-32">
         <div className="mx-auto max-w-[1240px]">
           <p className={eyebrow}>Modes</p>
-          <h2 className={`mb-14 max-w-[14ch] ${h2}`}>One little screen. Four jobs.</h2>
+          <h2 className={`mb-12 max-w-[14ch] ${h2}`}>One little screen. Four jobs.</h2>
           <div className="flex flex-wrap items-center gap-12 lg:gap-14">
             <div role="group" aria-label="Choose a mode" className="flex max-w-[300px] flex-[1_1_220px] flex-col gap-1">
               {MODES.map((m) => {
@@ -578,14 +578,14 @@ export default function TileProduct({ photos }: { photos: RoomPhoto[] }) {
       <section aria-labelledby="feat-h" className="px-6 py-28 sm:py-32">
         <div className="mx-auto max-w-[1240px]">
           <p className={eyebrow}>Details</p>
-          <h2 id="feat-h" className={`mb-14 max-w-[15ch] ${h2}`}>Small on the desk. Thoughtful inside.</h2>
+          <h2 id="feat-h" className={`mb-12 max-w-[15ch] ${h2}`}>Small on the desk. Thoughtful inside.</h2>
 
           <div className="flex flex-wrap gap-4">
             <TileNight clock={clock} chin={chin} />
 
             <article className={`${card} flex-[1_1_340px]`}>
               <p className={`mb-3.5 ${mono}`}>Smart home</p>
-              <h3 className={`mb-[22px] ${h3}`}>Works with your home.</h3>
+              <h3 className={`mb-3.5 ${h3}`}>Works with your home.</h3>
               <dl className="m-0 flex flex-col">
                 {[
                   ['Alexa', '“Alexa, turn on Tile Focus.” Say Tile, Tile Clock, Tile Lamp or Tile Focus. Needs an Echo on the same WiFi.'],
@@ -601,7 +601,7 @@ export default function TileProduct({ photos }: { photos: RoomPhoto[] }) {
             <article className="box-border flex min-w-0 flex-[1_1_100%] flex-wrap items-end gap-8 rounded-[28px] bg-[#E9EBEE] p-8 sm:p-10 text-[#0B0B0C]">
               <div className="min-w-0 flex-[1_1_280px]">
                 <p className="mb-3.5 font-mono text-[12px] uppercase tracking-[0.12em] text-[#55555C]">Privacy</p>
-                <h3 className="m-0 text-[clamp(34px,4.5vw,56px)] font-bold uppercase leading-[0.95] tracking-[-0.03em]">No account. No&nbsp;cloud.</h3>
+                <h3 className={`m-0 ${h3}`}>No account. No&nbsp;cloud.</h3>
               </div>
               <div className="flex min-w-0 flex-[1_1_260px] flex-col gap-3 text-[17px] leading-normal text-[#33343A]">
                 <p className="m-0">Runs on your own WiFi. No sign-up, no subscription.</p>
@@ -615,7 +615,7 @@ export default function TileProduct({ photos }: { photos: RoomPhoto[] }) {
       </section>
 
       {/* Specs */}
-      <section id="specs" aria-labelledby="specs-h" className="scroll-mt-[132px] px-6 pb-28 sm:pb-32">
+      <section id="specs" aria-labelledby="specs-h" className="scroll-mt-[132px] border-t border-[#1E1E22] px-6 py-28 sm:py-32">
         <div className="mx-auto max-w-[1240px]">
           <p className={eyebrow}>Specs</p>
           <h2 id="specs-h" className={`mb-12 ${h2}`}>The details.</h2>
@@ -631,7 +631,7 @@ export default function TileProduct({ photos }: { photos: RoomPhoto[] }) {
       </section>
 
       {/* FAQ */}
-      <section id="faq" aria-labelledby="faq-h" className="scroll-mt-[132px] px-6 pb-28 sm:pb-32">
+      <section id="faq" aria-labelledby="faq-h" className="scroll-mt-[132px] border-t border-[#1E1E22] px-6 py-28 sm:py-32">
         <div className="mx-auto flex max-w-[1240px] flex-wrap gap-12">
           <div className="flex-[1_1_300px]">
             <p className={eyebrow}>Questions</p>
@@ -662,7 +662,7 @@ export default function TileProduct({ photos }: { photos: RoomPhoto[] }) {
       </section>
 
       {IS_SALES ? (
-        <section id="buy" aria-labelledby="buy-h" className="relative scroll-mt-[132px] overflow-hidden border-t border-[#1E1E22] px-6 pb-[140px] pt-28 text-center">
+        <section id="buy" aria-labelledby="buy-h" className="relative scroll-mt-[132px] overflow-hidden border-t border-[#1E1E22] px-6 py-28 sm:py-32 text-center">
           <div
             aria-hidden="true"
             className="absolute left-1/2 top-[40%] h-[420px] w-[900px] -translate-x-1/2"
@@ -671,7 +671,7 @@ export default function TileProduct({ photos }: { photos: RoomPhoto[] }) {
           <div className="relative mx-auto mb-10 w-full max-w-[200px]">
             <TileDevice cells={drewSomething ? toCells(paint) : amberClock(clock)} chin={chin} glow={10} />
           </div>
-          <h2 id="buy-h" className="relative mb-8 text-[clamp(52px,9vw,128px)] font-bold uppercase leading-[0.9] tracking-[-0.04em]">Get Tile.</h2>
+          <h2 id="buy-h" className={`relative mb-8 ${h2}`}>Get Tile.</h2>
           <div className="relative mb-9">
             <PriceLine />
           </div>

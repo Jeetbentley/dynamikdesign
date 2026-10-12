@@ -5,6 +5,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import WhatsAppIcon from '@/components/WhatsAppIcon'
 import type { Chin } from './TileDevice'
+import { h2 } from './tileStyles'
 import { chinColour, inr, salesOpenLabel, salesOpenLine, shareText, shipsFromLine, tileLaunch } from '@/data/tile-launch'
 import { waitlistSchema, type WaitlistInput } from '@/data/tile-waitlist-schema'
 
@@ -117,7 +118,7 @@ export default function TileWaitlist({ device, chin }: { device: ReactNode; chin
   const done = status === 'success' || status === 'duplicate'
 
   return (
-    <section id="waitlist" aria-labelledby="waitlist-h" className="relative scroll-mt-[132px] overflow-hidden border-t border-[#1E1E22] px-6 pb-[120px] pt-28">
+    <section id="waitlist" aria-labelledby="waitlist-h" className="relative scroll-mt-[132px] overflow-hidden border-t border-[#1E1E22] px-6 py-28 sm:py-32">
       <div
         aria-hidden="true"
         className="pointer-events-none absolute left-1/2 top-[30%] h-[420px] w-[900px] -translate-x-1/2"
@@ -126,7 +127,7 @@ export default function TileWaitlist({ device, chin }: { device: ReactNode; chin
       <div className="relative mx-auto max-w-[640px] text-center">
         <div className="mx-auto mb-10 w-full max-w-[180px]">{device}</div>
         <SpotsCounter />
-        <h2 id="waitlist-h" className="mb-5 text-[clamp(44px,7.5vw,96px)] font-bold uppercase leading-[0.92] tracking-[-0.04em]">
+        <h2 id="waitlist-h" className={`mb-5 ${h2}`}>
           Be one of the first {tileLaunch.foundersBatchSize}.
         </h2>
         <p className="mx-auto max-w-[46ch] text-[17px] leading-[1.6] text-[#A3A3AB]">

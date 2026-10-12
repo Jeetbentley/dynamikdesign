@@ -132,7 +132,7 @@ export default function TileDay({ chin }: { chin: Chin }) {
     <section ref={sectionRef} id="day" aria-labelledby="day-h" className="scroll-mt-[132px] overflow-hidden border-t border-[#1E1E22] px-6 py-28 sm:py-32">
       <div className="mx-auto max-w-[1240px]">
         <p className={eyebrow}>A day</p>
-        <h2 id="day-h" className={`mb-14 ${h2}`}>A day with Tile.</h2>
+        <h2 id="day-h" className={`mb-12 ${h2}`}>A day with Tile.</h2>
 
         <div className="flex flex-col items-center">
           <div className="relative w-full max-w-[380px]">

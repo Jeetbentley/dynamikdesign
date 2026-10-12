@@ -4,7 +4,7 @@ import { useEffect, useRef, useState, type RefObject } from 'react'
 import TileDevice, { CHINS, ChinSwatches, DEVICE_ASPECT, SHAPE, type Chin } from './TileDevice'
 import { devicePixels } from './devicePixels'
 import type { Cells } from './tileSim'
-import { body, card, eyebrow, h3, mono } from './tileStyles'
+import { body, card, eyebrow, h2, h3, mono } from './tileStyles'
 
 // Pixel-to-product reveal: 8 × 8 → 16 × 16 → 32 × 32 → the full device, in steps (never a smooth blur).
 const STAGES = [8, 16, 32] as const
@@ -150,7 +150,7 @@ export default function TileDesign({ chin, onChin, cells }: { chin: Chin; onChin
               {!sharp && <PixelCanvas n={STAGES[stage]} chin={chin} cells={cells} />}
             </div>
           </div>
-          <h2 id="design-h" className="m-0 flex flex-col gap-3 text-center text-[clamp(34px,5vw,64px)] font-bold uppercase leading-[0.98] tracking-[-0.03em] md:text-left">
+          <h2 id="design-h" className={`m-0 flex flex-col gap-3 text-center md:text-left ${h2}`}>
             {LINES.map((line, i) => {
               const shown = stage >= FULL - 1 + i
               return (
@@ -171,7 +171,7 @@ export default function TileDesign({ chin, onChin, cells }: { chin: Chin; onChin
           {pillars.map((p) => (
             <article key={p.title} className={card}>
               {p.icon}
-              <h3 className={`mb-3 mt-7 !text-[24px] ${h3}`}>{p.title}</h3>
+              <h3 className={`mb-3.5 mt-7 ${h3}`}>{p.title}</h3>
               <p className={`m-0 max-w-[36ch] ${body}`}>{p.text}</p>
               {p.extra}
             </article>
