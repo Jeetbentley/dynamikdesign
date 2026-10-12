@@ -85,6 +85,16 @@ export function clockGrid(h: number, m: number): number[] {
 export const amberClock = (grid: number[]): Cells =>
   grid.map((v) => (v === 0 ? led(AMBER_HOUR) : v === 1 ? led(AMBER_MIN) : null))
 
+// Night: warm-red digits (firmware night colours) at the night brightness.
+export const NIGHT_HOUR = 0xff4a00
+export const NIGHT_MIN = 0xa81e00
+// LEDs look much brighter than their duty cycle; this keeps 5% visible on screen while 100% stays full.
+export const brightnessOnScreen = (pct: number) => 0.22 + 0.78 * Math.sqrt(pct / 100)
+export const nightClock = (grid: number[], pct = 5): Cells => {
+  const l = brightnessOnScreen(pct)
+  return grid.map((v) => (v === 0 ? led(NIGHT_HOUR, l) : v === 1 ? led(NIGHT_MIN, l) : null))
+}
+
 // Tap in Clock: day of the month on top, two-letter weekday below.
 export function dateCells(d: Date): Cells {
   const a = Array(64).fill(-1)
@@ -195,6 +205,7 @@ const REM_TEXT = 0xfff2e0
 const REM_SCROLL_MS = 105
 export const FOCUS_TOTAL_MS = 5 * 60 * 1000 // a 5-minute timer for the preview
 export const REMINDER_AT_MS = 15000
+export const REMINDER_COLOR = 0x2bd9a8
 const REMINDERS = { early: { label: 'Stretch', color: 0x2bd9a8 }, end: { label: 'Break', color: 0x2bd9a8 } }
 
 // Running timer: the inner 6 × 6 drains as time runs out.

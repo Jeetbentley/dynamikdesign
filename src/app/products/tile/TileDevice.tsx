@@ -20,14 +20,31 @@ export const CHINS: Record<Chin, { label: string; color: string }> = {
 const GRAIN =
   "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='96' height='96'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.3' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.14 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")"
 
-// Geometry, as percentages of the container (1212 × 1298) so the device keeps its size everywhere.
+// Geometry, as fractions of the container (1212 × 1298) so the device keeps its size everywhere. Also used to
+// draw the low-res versions of the device (devicePixels.ts), so both always match.
+export const DEVICE_ASPECT = 1212 / 1298
+export const SHAPE = {
+  orange: { x: 0.0974, y: 0.0139, w: 0.8053, h: 0.7148 }, // straight bottom edge, meets the chin
+  // The chin: ~25% of the device height, barely proud of the orange (~1.25% of the body width each side).
+  chin: { x: 0.0873, y: 0.7287, w: 0.8254, h: 0.2382 },
+  // The diffuser opening runs straight down to the chin.
+  screen: { x: 0.1402, y: 0.055, w: 0.7196, h: 0.6737 },
+  radius: 0.055, // outer corner radius, as a fraction of the container width
+  orangeColor: '#F08A3C',
+  screenColor: '#17181B',
+  offColor: '#22232A',
+} as const
+const box = (b: { x: number; y: number; w: number; h: number }) => ({
+  left: `${(b.x * 100).toFixed(2)}%`,
+  top: `${(b.y * 100).toFixed(2)}%`,
+  width: `${(b.w * 100).toFixed(2)}%`,
+  height: `${(b.h * 100).toFixed(2)}%`,
+})
 // Radii and chamfers use container-width units (cqw), so they scale with the device.
-const R = '5.5cqw' // outer corner radius: top of the orange body, bottom of the chin
-const ORANGE_BOX = { left: '9.74%', width: '80.53%', top: '1.39%', height: '71.48%' } // straight bottom edge, meets the chin
-// The chin: ~25% of the device height, barely proud of the orange (~1.25% of the body width each side).
-const CHIN_BOX = { left: '8.73%', width: '82.54%', top: '72.87%', height: '23.82%' }
-// The diffuser opening runs straight down to the chin.
-const SCREEN = { left: '14.02%', top: '5.5%', width: '71.96%', height: '67.37%' }
+const R = `${SHAPE.radius * 100}cqw` // outer corner radius: top of the orange body, bottom of the chin
+const ORANGE_BOX = box(SHAPE.orange)
+const CHIN_BOX = box(SHAPE.chin)
+const SCREEN = box(SHAPE.screen)
 const SCREEN_R = '1cqw' // ~18% of the outer radius, top corners only
 const BEVEL = '1.6cqw' // inner chamfer, ~6px at desktop size
 const CHAMFER = '1.45cqw' // outer chamfer on the orange, ~5–6px at desktop size

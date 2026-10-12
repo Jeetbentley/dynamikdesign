@@ -1,11 +1,13 @@
 'use client'
 
-import Image from 'next/image'
 import Link from 'next/link'
 import { useEffect, useRef, useState, type PointerEvent, type ReactNode, type RefObject } from 'react'
 import TileDevice, { ChinSwatches, type Chin, type Lit } from './TileDevice'
 import TileNight from './TileNight'
 import TileWaitlist from './TileWaitlist'
+import TileDesign from './TileDesign'
+import TileDay from './TileDay'
+import TileRoom, { type RoomPhoto } from './TileRoom'
 import {
   amberClock,
   clockGrid,
@@ -27,6 +29,7 @@ import {
 import { inr, salesOpenLabel, shipsFromLine, tileLaunch } from '@/data/tile-launch'
 import { visibleFaqs, visibleSpecs } from '@/data/tile'
 import { legal, telHref, warrantyLabel } from '@/data/legal'
+import { body, card, eyebrow, h2, h3, mono } from './tileStyles'
 
 const IS_SALES = tileLaunch.mode === 'sales'
 const CTA = IS_SALES
@@ -149,17 +152,7 @@ const MODES: { id: Mode; label: string; n: string; text: string; points: string[
     points: ['Glance and Blocks faces', '12 or 24 hour', 'Amber, Ice, Mono or your own colours', 'Optional warm-red digits at night'],
   },
   {
-    id: 'lamp', label: 'Lamp', n: '02',
-    text: 'A soft desk light, warm to cool white or any colour you like.',
-    points: ['White light (Cool, Warm, Daylight)', '12 colours', 'Glow and Pixel effects'],
-  },
-  {
-    id: 'canvas', label: 'Canvas', n: '03',
-    text: 'Draw in the app and Tile shows it. Keep your favourites on Tile.',
-    points: ['Save up to 10 drawings on Tile', 'Double-tap to clear', 'Saved on Tile, even after a power cut'],
-  },
-  {
-    id: 'focus', label: 'Focus', n: '04',
+    id: 'focus', label: 'Focus', n: '02',
     text: 'A focus timer for your desk, with reminders that scroll across the screen.',
     points: [
       'Focus timer: 25 min focus, 5 min break, longer break every 4 rounds',
@@ -167,22 +160,18 @@ const MODES: { id: Mode; label: string; n: string; text: string; points: string[
       'Up to 15 reminders that scroll their label across the screen (visual only)',
     ],
   },
+  {
+    id: 'lamp', label: 'Lamp', n: '03',
+    text: 'A soft desk light, warm to cool white or any colour you like.',
+    points: ['White light (Cool, Warm, Daylight)', '12 colours', 'Glow and Pixel effects'],
+  },
+  {
+    id: 'canvas', label: 'Canvas', n: '04',
+    text: 'Draw in the app and Tile shows it. Keep your favourites on Tile.',
+    points: ['Save up to 10 drawings on Tile', 'Double-tap to clear', 'Saved on Tile, even after a power cut'],
+  },
 ]
 
-const STATS = [
-  { value: '64', label: 'RGB pixels', color: '#EDEDEF' },
-  { value: '4', label: 'Modes', color: '#EDEDEF' },
-  { value: 'Adjustable', label: 'Night mode', color: '#FF7A3D' },
-  { value: '0', label: 'Accounts needed', color: '#EDEDEF' },
-]
-
-// Caps for headings, labels and clickables; lowercase for descriptive copy.
-const mono = 'font-mono text-[12px] uppercase tracking-[0.12em] text-[#85858D]'
-const eyebrow = 'mb-[18px] font-mono text-[12px] uppercase tracking-[0.12em] text-[#F0641E]'
-const h2 = 'uppercase font-bold tracking-[-0.03em] leading-[0.95] text-[clamp(36px,5.4vw,72px)]'
-const h3 = 'uppercase font-bold tracking-[-0.02em] leading-[1.02] text-[30px]'
-const body = 'lowercase text-[17px] leading-[1.6] text-[#A3A3AB]'
-const card = 'rounded-[28px] border border-[#1E1E22] bg-[#141416] p-8 sm:p-10 box-border min-w-0'
 const pill = 'inline-flex items-center rounded-full font-semibold uppercase tracking-[0.1em] !text-[#0B0B0C]'
 
 const TRUST = [
@@ -262,7 +251,7 @@ function PriceLine() {
   )
 }
 
-export default function TileProduct({ photo }: { photo?: { src: string; alt: string } }) {
+export default function TileProduct({ photos }: { photos: RoomPhoto[] }) {
   const [mode, setMode] = useState<Mode>('clock')
   const [heroMode, setHeroMode] = useState<Mode>('clock')
   // One chin colour for every simulated Tile on the page; it also pre-selects the waitlist colour.
@@ -407,7 +396,7 @@ export default function TileProduct({ photo }: { photo?: { src: string; alt: str
 
       {/* Hero — the live canvas */}
       <section id="top" className="relative scroll-mt-[132px] overflow-hidden px-6 pb-24 pt-16 sm:pt-20 text-center">
-        <p className={`mb-[22px] ${mono}`}>/ New from Dynamik Design Lab</p>
+        <p className={`mb-[22px] ${mono}`}>Retro pixels. Modern focus.</p>
         <h1 className="mx-auto mb-5 max-w-[12ch] text-[clamp(21px,3.7vw,52px)] font-bold uppercase leading-[0.92] tracking-[-0.035em]">
           Your desk, in 64&nbsp;pixels.
         </h1>
@@ -556,10 +545,14 @@ export default function TileProduct({ photo }: { photo?: { src: string; alt: str
         </p>
       </section>
 
+      <TileDesign chin={chin} onChin={setChin} cells={amberClock(clock)} />
+
+      <TileDay chin={chin} />
+
       {/* Modes */}
       <section id="modes" className="scroll-mt-[132px] border-t border-[#1E1E22] px-6 py-28 sm:py-32">
         <div className="mx-auto max-w-[1240px]">
-          <p className={eyebrow}>/ 01 Modes</p>
+          <p className={eyebrow}>/ 03 Modes</p>
           <h2 className={`mb-14 max-w-[14ch] ${h2}`}>One little screen. Four jobs.</h2>
           <div className="flex flex-wrap items-center gap-12 lg:gap-14">
             <div role="group" aria-label="Choose a mode" className="flex max-w-[300px] flex-[1_1_220px] flex-col gap-1">
@@ -597,36 +590,13 @@ export default function TileProduct({ photo }: { photo?: { src: string; alt: str
         </div>
       </section>
 
-      {/* Stats */}
-      <section aria-label="Tile in numbers" className="border-y border-[#1E1E22]">
-        <dl className="mx-auto grid max-w-[1240px] grid-cols-2 md:grid-cols-4">
-          {STATS.map((s) => (
-            <div key={s.label} className="flex flex-col-reverse border-l border-[#1E1E22] px-6 py-9">
-              <dt className={mono}>{s.label}</dt>
-              <dd
-                className={`m-0 mb-1.5 font-bold leading-none tracking-[-0.04em] ${s.value.length > 4 ? 'text-[clamp(26px,3vw,40px)]' : 'text-[clamp(44px,5vw,64px)]'}`}
-                style={{ color: s.color }}
-              >
-                {s.value}
-              </dd>
-            </div>
-          ))}
-        </dl>
-      </section>
-
-      {/* Product photo — only rendered once the image file exists (see data/tile.ts) */}
-      {photo && (
-        <section aria-label="Product photo" className="p-6">
-          <div className="relative mx-auto h-[min(640px,70vw)] min-h-[320px] max-w-[1240px] overflow-hidden rounded-[28px] border border-[#1E1E22] bg-[#141416]">
-            <Image src={photo.src} alt={photo.alt} fill sizes="(min-width: 1280px) 1240px, 100vw" className="object-cover" />
-          </div>
-        </section>
-      )}
+      {/* Context photos — hidden until their files exist (see data/tile.ts) */}
+      <TileRoom photos={photos} chin={chin} />
 
       {/* Details */}
       <section aria-labelledby="feat-h" className="px-6 py-28 sm:py-32">
         <div className="mx-auto max-w-[1240px]">
-          <p className={eyebrow}>/ 02 Details</p>
+          <p className={eyebrow}>/ 04 Details</p>
           <h2 id="feat-h" className={`mb-14 max-w-[15ch] ${h2}`}>Small on the desk. Thoughtful inside.</h2>
 
           <div className="flex flex-wrap gap-4">
@@ -666,7 +636,7 @@ export default function TileProduct({ photo }: { photo?: { src: string; alt: str
       {/* Specs */}
       <section id="specs" aria-labelledby="specs-h" className="scroll-mt-[132px] px-6 pb-28 sm:pb-32">
         <div className="mx-auto max-w-[1240px]">
-          <p className={eyebrow}>/ 03 Specs</p>
+          <p className={eyebrow}>/ 05 Specs</p>
           <h2 id="specs-h" className={`mb-12 ${h2}`}>The details.</h2>
           <dl className="m-0 grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-x-12">
             {visibleSpecs.map((s) => (
@@ -683,7 +653,7 @@ export default function TileProduct({ photo }: { photo?: { src: string; alt: str
       <section id="faq" aria-labelledby="faq-h" className="scroll-mt-[132px] px-6 pb-28 sm:pb-32">
         <div className="mx-auto flex max-w-[1240px] flex-wrap gap-12">
           <div className="flex-[1_1_300px]">
-            <p className={eyebrow}>/ 04 Questions</p>
+            <p className={eyebrow}>/ 06 Questions</p>
             <h2 id="faq-h" className={h2}>Good to know.</h2>
           </div>
           <div className="min-w-0 flex-[2_1_480px]">

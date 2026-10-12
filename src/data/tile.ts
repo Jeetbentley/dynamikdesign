@@ -7,9 +7,9 @@ export const hasPlaceholder = (text: string) => /\[[^\]]*\]/.test(text)
 
 export const TILE_SPECS = [
   { k: 'Display', v: '64 RGB pixels, 8 × 8, frosted diffuser' },
-  { k: 'Modes', v: 'Clock, lamp, canvas, focus' },
+  { k: 'Modes', v: 'Clock, focus, lamp, canvas' },
   { k: 'Connectivity', v: '2.4 GHz WiFi + Bluetooth LE (for setup), works offline' },
-  { k: 'Control', v: 'Phone/PC browser, Android app, Alexa' },
+  { k: 'Control', v: 'Touch, phone browser, Android app, Alexa' },
   { k: 'Power', v: 'USB-C, 5 V [CONFIRM ADAPTER RATING]' }, // TODO
   { k: 'Size', v: '[W × H × D] mm, [WEIGHT] g' }, // TODO
   { k: 'In the box', v: 'Tile, USB-C cable, quick start card [CONFIRM]' }, // TODO
@@ -33,9 +33,16 @@ export const TILE_FAQS: { q: string; a: string; link?: { href: string; label: st
 export const visibleSpecs = TILE_SPECS.filter((s) => !hasPlaceholder(s.k + s.v))
 export const visibleFaqs = TILE_FAQS.filter((f) => !hasPlaceholder(f.q + f.a))
 
-// Night photo block. Hidden until this file exists in /public (checked at build time).
-export const TILE_PHOTO = {
-  slot: 'tile-desk-night',
-  file: '/images/tile/desk-night.jpg',
-  alt: 'Tile on a desk at night beside a laptop, clock glowing, room lit only by the screens',
-}
+// Context photos ("In the room"). Each slot appears once its file exists in /public/products/tile/ (checked at build
+// time); the section stays hidden until at least one does. Files are blue-chin photos: context-living.webp etc.
+// An optional purple-chin version (context-living-purple.webp) is shown instead while Purple is picked on the page.
+// Update `alt` to describe the actual photo when you add it.
+export type ContextSlot = 'living' | 'lamp' | 'clock' | 'focus' | 'night'
+export const TILE_CONTEXT_PHOTOS: { slot: ContextSlot; caption: string; alt: string }[] = [
+  { slot: 'living', caption: 'Clock · Living room', alt: 'Tile on a coffee table in a living room, showing the time in pixel digits' },
+  { slot: 'lamp', caption: 'Lamp · Warm evening', alt: 'Tile glowing warm as a lamp on a wooden desk in the evening' },
+  { slot: 'clock', caption: 'Clock · After dark', alt: 'Tile showing the time on a desk lit by a warm table lamp' },
+  { slot: 'focus', caption: 'Focus timer · At the desk', alt: 'Tile running the focus timer on a desk next to a laptop' },
+  { slot: 'night', caption: 'Clock · Late at night', alt: 'Tile on a desk at night, the clock glowing softly in a dark room' },
+]
+export const contextFile = (slot: ContextSlot, purple = false) => `/products/tile/context-${slot}${purple ? '-purple' : ''}.webp`

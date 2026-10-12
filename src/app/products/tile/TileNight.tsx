@@ -2,18 +2,15 @@
 
 import { useEffect, useState } from 'react'
 import TileDevice, { type Chin } from './TileDevice'
-import { AMBER_HOUR, AMBER_MIN, led, type Cells } from './tileSim'
+import { AMBER_HOUR, AMBER_MIN, brightnessOnScreen, led, NIGHT_HOUR, NIGHT_MIN, type Cells } from './tileSim'
 
 // Firmware defaults: day 20%, night 5%, night 22:00–07:00, warm digits off.
 const DEFAULTS = { day: 20, night: 5, start: 22, end: 7, warm: false }
-const NIGHT_HOUR = 0xff4a00
-const NIGHT_MIN = 0xa81e00
 const START_HOURS = [18, 19, 20, 21, 22, 23, 0]
 const END_HOURS = [5, 6, 7, 8, 9, 10]
 
 const hh = (h: number) => `${String(h).padStart(2, '0')}:00`
-// LEDs look much brighter than their duty cycle; this keeps 5% visible on screen while 100% stays full.
-const visual = (pct: number) => 0.22 + 0.78 * Math.sqrt(pct / 100)
+const visual = brightnessOnScreen
 const inNight = (hour: number, start: number, end: number) =>
   start === end ? false : start < end ? hour >= start && hour < end : hour >= start || hour < end
 

@@ -11,7 +11,7 @@ export const tileLaunch = {
   foundersDispatchBy: '2026-10-31', // all founders batch orders dispatched by
   showSpotsCounter: false, // true → shows the real signup count from the Apps Script
   colours: ['Orange / Blue', 'Orange / Purple'], // first is the default
-  modes: ['Clock', 'Lamp', 'Canvas', 'Focus'],
+  modes: ['Clock', 'Focus', 'Lamp', 'Canvas'],
 }
 
 // Waitlist colour for each chin swatch on the page
