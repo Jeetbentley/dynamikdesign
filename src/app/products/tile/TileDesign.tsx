@@ -138,7 +138,7 @@ export default function TileDesign({ chin, onChin, cells }: { chin: Chin; onChin
   return (
     <section ref={sectionRef} id="design" aria-labelledby="design-h" className="scroll-mt-[132px] border-t border-[#1E1E22] px-6 py-28 sm:py-32">
       <div className="mx-auto max-w-[1240px]">
-        <p className={eyebrow}>/ 01 Design</p>
+        <p className={eyebrow}>Design</p>
 
         {/* Reveal: the device box has a fixed aspect ratio, so nothing moves as the stages change */}
         <div className="flex flex-col items-center gap-12 md:flex-row md:gap-16">

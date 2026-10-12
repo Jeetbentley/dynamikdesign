@@ -129,7 +129,7 @@ export default function TileWaitlist({ device, chin }: { device: ReactNode; chin
         <h2 id="waitlist-h" className="mb-5 text-[clamp(44px,7.5vw,96px)] font-bold uppercase leading-[0.92] tracking-[-0.04em]">
           Be one of the first {tileLaunch.foundersBatchSize}.
         </h2>
-        <p className="mx-auto max-w-[46ch] text-[17px] lowercase leading-[1.6] text-[#A3A3AB]">
+        <p className="mx-auto max-w-[46ch] text-[17px] leading-[1.6] text-[#A3A3AB]">
           Founders get Tile at {inr(tileLaunch.foundersPrice)} instead of {inr(tileLaunch.regularPrice)}, first place in the shipping queue,
           and a say in what Tile does next. {salesOpenLine}
         </p>
@@ -146,7 +146,7 @@ export default function TileWaitlist({ device, chin }: { device: ReactNode; chin
             <p className="text-[24px] font-bold uppercase leading-tight tracking-[-0.01em]">
               {status === 'duplicate' ? "You're already on the list." : "You're in."}
             </p>
-            <p className="mx-auto mt-3 max-w-[40ch] text-[17px] lowercase leading-[1.6] text-[#A3A3AB]">
+            <p className="mx-auto mt-3 max-w-[40ch] text-[17px] leading-[1.6] text-[#A3A3AB]">
               We&apos;ll message you before sales open on {salesOpenLabel}.
             </p>
             <p className="mt-8 font-mono text-[12px] uppercase tracking-[0.12em] text-[#85858D]">Tell a friend</p>
