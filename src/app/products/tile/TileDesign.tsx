@@ -87,7 +87,8 @@ function PixelCanvas({ n, chin, cells }: { n: number; chin: Chin; cells: Cells }
 const ICONS: Record<string, string[]> = {
   clock: ['..####..', '.#....#.', '#..a...#', '#..a...#', '#..aaa.#', '#......#', '.#....#.', '..####..'],
   object: ['.oooooo.', '.o....o.', '.o....o.', '.o....o.', '.oooooo.', '.cccccc.', '.cccccc.', '........'],
-  moon: ['..#.....', '.##.....', '##......', '##......', '###....#', '.###..##', '..#####.', '........'],
+  // Focus hourglass: the firmware's FOCUS_IDLE_ICON, row by row (leftmost bit = column 0)
+  hourglass: ['........', '.######.', '..#..#..', '...##...', '...##...', '..#..#..', '.######.', '........'],
 }
 
 function PixelIcon({ rows, colors, label }: { rows: string[]; colors: Record<string, string>; label: string }) {
@@ -130,7 +131,7 @@ export default function TileDesign({ chin, onChin, cells }: { chin: Chin; onChin
     {
       title: 'Calm productivity',
       text: 'A focus timer, quiet reminders and a night mode you set yourself. Help without the noise.',
-      icon: <PixelIcon rows={ICONS.moon} colors={{ '#': '#F7D9A0' }} label="Crescent moon" />,
+      icon: <PixelIcon rows={ICONS.hourglass} colors={{ '#': '#FF9A1F' }} label="Focus hourglass" />,
     },
   ]
 
