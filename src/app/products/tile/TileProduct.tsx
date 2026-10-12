@@ -11,8 +11,6 @@ import TileRoom, { type RoomPhoto } from './TileRoom'
 import {
   amberClock,
   clockGrid,
-  dateCells,
-  DATE_FLASH_MS,
   EMBERS_START,
   embersCells,
   embersStep,
@@ -95,7 +93,7 @@ const HERO_HINT: Record<Mode, string> = {
   focus: 'A 5-minute focus timer, running now. Reminders scroll across the screen.',
 }
 const HERO_ALT: Record<Mode, string> = {
-  clock: 'Tile showing the current time in pixel digits. Tap to show the date',
+  clock: 'Tile showing the current time in pixel digits',
   lamp: 'Tile as a lamp',
   canvas: 'Tile’s 8 by 8 pixel screen. Choose a colour below, then tap pixels to draw',
   focus: 'Tile as a focus timer: the lit square drains as time runs out, and reminders scroll across the screen',
@@ -168,7 +166,7 @@ const MODES: { id: Mode; label: string; n: string; text: string; points: string[
   {
     id: 'canvas', label: 'Canvas', n: '04',
     text: 'Draw in the app and Tile shows it. Keep your favourites on Tile.',
-    points: ['Save up to 10 drawings on Tile', 'Double-tap to clear', 'Saved on Tile, even after a power cut'],
+    points: ['Save up to 10 drawings on Tile', 'Clear the screen from the app', 'Saved on Tile, even after a power cut'],
   },
 ]
 
@@ -260,16 +258,6 @@ export default function TileProduct({ photos }: { photos: RoomPhoto[] }) {
   const clock = useLiveClock()
   const heroRef = useRef<HTMLDivElement>(null)
 
-  // Clock: a tap shows the date for 3 s, as on the device.
-  const [dateShown, setDateShown] = useState<Cells | null>(null)
-  const dateTimer = useRef<ReturnType<typeof setTimeout>>()
-  const showDate = () => {
-    clearTimeout(dateTimer.current)
-    setDateShown(dateCells(new Date()))
-    dateTimer.current = setTimeout(() => setDateShown(null), DATE_FLASH_MS)
-  }
-  useEffect(() => () => clearTimeout(dateTimer.current), [])
-
   // Lamp: opens on Embers; five effects to tap between.
   const [lamp, setLamp] = useState<LampId>('embers')
   const [lampFrame, setLampFrame] = useState<Cells>(() => embersCells(EMBERS_START))
@@ -352,7 +340,7 @@ export default function TileProduct({ photos }: { photos: RoomPhoto[] }) {
         ? focusFrame
         : heroMode === 'canvas'
           ? toCells(paint)
-          : (dateShown ?? amberClock(clock))
+          : amberClock(clock)
 
   const drewSomething = edited && paint.some((v) => v >= 0)
   const current = MODES.find((m) => m.id === mode)!
@@ -411,20 +399,13 @@ export default function TileProduct({ photos }: { photos: RoomPhoto[] }) {
             style={{ background: 'radial-gradient(ellipse at center, rgba(95,217,250,0.22), rgba(240,100,30,0.14) 40%, transparent 70%)' }}
           />
           <div ref={heroRef} className="relative w-full drop-shadow-[0_50px_60px_rgba(240,100,30,0.28)]">
-            {heroMode === 'clock' ? (
-              <button type="button" onClick={showDate} aria-label="Tap Tile to show today’s date" className="block w-full cursor-pointer rounded-[8%] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#F0641E]">
-                <TileDevice cells={heroCells} chin={chin} glow={16} alt={HERO_ALT.clock} />
-              </button>
-            ) : (
-              <TileDevice
-                cells={heroCells}
-                chin={chin}
-               
-                interactive={heroMode === 'canvas' ? canvas : undefined}
-                glow={heroMode === 'lamp' ? 18 : 16}
-                alt={HERO_ALT[heroMode]}
-              />
-            )}
+            <TileDevice
+              cells={heroCells}
+              chin={chin}
+              interactive={heroMode === 'canvas' ? canvas : undefined}
+              glow={heroMode === 'lamp' ? 18 : 16}
+              alt={HERO_ALT[heroMode]}
+            />
           </div>
         </div>
 

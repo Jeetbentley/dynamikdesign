@@ -120,7 +120,7 @@ export default function TileDesign({ chin, onChin, cells }: { chin: Chin; onChin
     },
     {
       title: 'Minimal object',
-      text: 'A two-tone matte body, a frosted screen and one touch surface. No buttons, nothing extra.',
+      text: 'A two-tone matte body and a frosted screen. No buttons. You control it from your phone or with your voice.',
       icon: <PixelIcon rows={ICONS.object} colors={{ o: SHAPE.orangeColor, c: CHINS[chin].color }} label="Two-tone rectangle" />,
       extra: (
         <div className="mt-5 -ml-2">

@@ -29,9 +29,6 @@ const fill = (cell: Lit): Cells => Array(64).fill(cell)
 // ---------- Clock (Glance face) ----------
 export const AMBER_HOUR = 0xef9f27
 export const AMBER_MIN = 0x5dcaa5
-const DATE_COLOR = 0xf0a8a0
-const DAY_COLOR = 0xe8c98a
-export const DATE_FLASH_MS = 3000
 
 // 4 rows × 4 columns; column 4 is always the gap.
 const FONT_NUM: number[][][] = [
@@ -47,22 +44,6 @@ const FONT_NUM: number[][][] = [
   [[1,1,0,0],[1,0,1,0],[1,1,1,0],[0,0,1,0]], // 9
 ]
 
-// Day-of-week letters, 4 × 4 row-major.
-const L = {
-  M: [1,0,1,0, 1,1,1,0, 1,0,1,0, 1,0,1,0],
-  o: [0,0,0,0, 0,1,1,0, 1,0,0,1, 0,1,1,0],
-  T: [1,1,1,0, 0,1,0,0, 0,1,0,0, 0,1,0,0],
-  u: [0,0,0,0, 1,0,0,1, 1,0,0,1, 0,1,1,0],
-  W: [1,0,1,0, 1,1,1,0, 1,1,1,0, 0,1,0,0],
-  e: [0,1,1,0, 1,1,1,0, 1,0,0,0, 0,1,1,0],
-  h: [1,0,0,0, 1,1,1,0, 1,0,1,0, 1,0,1,0],
-  F: [1,1,1,0, 1,0,0,0, 1,1,0,0, 1,0,0,0],
-  r: [0,0,0,0, 1,1,1,0, 1,0,0,0, 1,0,0,0],
-  S: [0,1,1,1, 1,1,0,0, 0,0,1,1, 1,1,1,0],
-  a: [0,1,1,1, 1,0,0,1, 1,0,1,1, 1,1,0,1],
-}
-// JavaScript getDay(): 0 = Sunday
-const DAY_LETTERS = [[L.S, L.u], [L.M, L.o], [L.T, L.u], [L.W, L.e], [L.T, L.h], [L.F, L.r], [L.S, L.a]]
 
 const stamp = (grid: number[], bits: (row: number, col: number) => boolean, top: number, left: number, value: number) => {
   for (let y = 0; y < 4; y++)
@@ -95,16 +76,6 @@ export const nightClock = (grid: number[], pct = 5): Cells => {
   return grid.map((v) => (v === 0 ? led(NIGHT_HOUR, l) : v === 1 ? led(NIGHT_MIN, l) : null))
 }
 
-// Tap in Clock: day of the month on top, two-letter weekday below.
-export function dateCells(d: Date): Cells {
-  const a = Array(64).fill(-1)
-  stampDigit(a, Math.floor(d.getDate() / 10), 0, 0, 0)
-  stampDigit(a, d.getDate() % 10, 0, 4, 0)
-  const [first, second] = DAY_LETTERS[d.getDay()]
-  stamp(a, (y, x) => first[y * 4 + x] === 1, 4, 0, 1)
-  stamp(a, (y, x) => second[y * 4 + x] === 1, 4, 4, 1)
-  return a.map((v) => (v === 0 ? led(DATE_COLOR) : v === 1 ? led(DAY_COLOR) : null))
-}
 
 // ---------- Lamp ----------
 export type LampId = 'embers' | 'candle' | 'calm' | 'spectrum' | 'warm'
