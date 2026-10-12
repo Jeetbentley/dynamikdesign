@@ -10,9 +10,12 @@ export const tileLaunch = {
   shipStartDate: '2026-10-23', // founders batch dispatch begins
   foundersDispatchBy: '2026-10-31', // all founders batch orders dispatched by
   showSpotsCounter: false, // true → shows the real signup count from the Apps Script
-  colours: ['Orange'], // TODO: add others
+  colours: ['Orange / Purple', 'Orange / Navy'], // first is the default
   modes: ['Clock', 'Lamp', 'Canvas', 'Focus'],
 }
+
+// Waitlist colour for each chin swatch on the page
+export const chinColour = { purple: 'Orange / Purple', navy: 'Orange / Navy' } as const
 
 export const TILE_URL = 'https://www.dynamikdesignlab.in/products/tile'
 export const TILE_SHARE_URL = `${TILE_URL}?ref=share`

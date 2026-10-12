@@ -1,10 +1,11 @@
 'use client'
 
-import { useEffect, useState, type ReactNode } from 'react'
+import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import WhatsAppIcon from '@/components/WhatsAppIcon'
-import { inr, salesOpenLabel, salesOpenLine, shareText, shipsFromLine, tileLaunch } from '@/data/tile-launch'
+import type { Chin } from './TileDevice'
+import { chinColour, inr, salesOpenLabel, salesOpenLine, shareText, shipsFromLine, tileLaunch } from '@/data/tile-launch'
 import { waitlistSchema, type WaitlistInput } from '@/data/tile-waitlist-schema'
 
 type Status = 'idle' | 'submitting' | 'success' | 'duplicate' | 'error'
@@ -60,7 +61,7 @@ function SpotsCounter() {
   )
 }
 
-export default function TileWaitlist({ device }: { device: ReactNode }) {
+export default function TileWaitlist({ device, chin }: { device: ReactNode; chin: Chin }) {
   const [status, setStatus] = useState<Status>('idle')
   const [message, setMessage] = useState('')
   const {
@@ -68,10 +69,22 @@ export default function TileWaitlist({ device }: { device: ReactNode }) {
     handleSubmit,
     setError,
     getValues,
+    setValue,
     formState: { errors },
   } = useForm<WaitlistInput>({
     resolver: zodResolver(waitlistSchema),
-    defaultValues: { colour: tileLaunch.colours.length === 1 ? tileLaunch.colours[0] : '', mode: '', website: '' },
+    defaultValues: { colour: chinColour[chin], mode: '', website: '' },
+  })
+
+  // The chin swatches pre-select the colour, until the visitor picks one here by hand.
+  const colourPicked = useRef(false)
+  useEffect(() => {
+    if (!colourPicked.current) setValue('colour', chinColour[chin])
+  }, [chin, setValue])
+  const colourField = register('colour', {
+    onChange: () => {
+      colourPicked.current = true
+    },
   })
 
   const submit = async (values: WaitlistInput) => {
@@ -162,8 +175,7 @@ export default function TileWaitlist({ device }: { device: ReactNode }) {
             </div>
             <div>
               <label htmlFor="wl-colour" className={label}>Colour</label>
-              <select id="wl-colour" className={`${input} [&>option]:bg-[#141416]`} {...register('colour')}>
-                {tileLaunch.colours.length > 1 && <option value="">Choose a colour</option>}
+              <select id="wl-colour" className={`${input} [&>option]:bg-[#141416]`} {...colourField}>
                 {tileLaunch.colours.map((c) => (
                   <option key={c} value={c}>{c}</option>
                 ))}

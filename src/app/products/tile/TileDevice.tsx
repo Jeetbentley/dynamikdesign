@@ -6,44 +6,69 @@ export interface Lit {
   center: string
   edge: string
   glow: string
+  level?: number // 0–1; how strongly the pixel shows through the diffuser (default 1)
 }
 
-// Proportions of the original product render (1212 × 1298), as percentages, so the device keeps its size everywhere.
+export type Chin = 'purple' | 'navy'
+
+// Matte chin colours, muted so they sit with the orange body.
+export const CHINS: Record<Chin, { label: string; color: string }> = {
+  purple: { label: 'Purple', color: '#5A4794' },
+  navy: { label: 'Navy', color: '#26334F' },
+}
+
+// Proportions of the product, as percentages of the container (1212 × 1298), so the device keeps its size everywhere.
 const BODY = { left: '9.74%', top: '1.39%', width: '80.53%', height: '95.3%' }
-const RECESS = { left: '14.03%', top: '5.86%', width: '72.03%', height: '64.1%' }
-const SCREEN = { left: '14.686%', top: '6.549%', width: '70.71%', height: '62.635%' }
+const CHIN_HEIGHT = '22%' // of the front
+// The frosted diffuser: a thin orange bezel at the sides and top, ending just above the chin.
+const SCREEN = { left: '14.02%', top: '5.5%', width: '71.96%', height: '69.6%' }
 
-// Anodised orange aluminium: a lit chamfer, a face with fine brushing and a soft top-left sheen.
-const CHAMFER: CSSProperties = {
+// Two-tone matte body: orange shell, coloured chin. Soft light from above, no gloss.
+const BODY_STYLE: CSSProperties = {
   ...BODY,
-  borderRadius: '8.7% / 6.9%',
-  background: 'linear-gradient(160deg, #FFC9A0 0%, #F58A47 18%, #D9561A 55%, #9E3A0C 100%)',
-  boxShadow: '0 1.5px 0 rgba(255,255,255,0.18) inset, 0 -2px 3px rgba(0,0,0,0.35) inset',
+  borderRadius: '7% / 5.4%',
+  background: 'linear-gradient(180deg, #F7944C 0%, #F2843A 45%, #E9772E 100%)',
+  boxShadow: '0 1px 0 rgba(255,236,220,0.45) inset, 0 -2px 3px rgba(90,30,0,0.25) inset',
+  overflow: 'hidden',
 }
-const FACE: CSSProperties = {
+const CHIN_STYLE: CSSProperties = {
   position: 'absolute',
-  inset: '0.75% 0.9%',
-  borderRadius: '8% / 6.3%',
-  background: [
-    'linear-gradient(135deg, rgba(255,255,255,0.32) 0%, rgba(255,255,255,0.06) 28%, rgba(255,255,255,0) 45%, rgba(0,0,0,0.08) 70%, rgba(0,0,0,0.26) 100%)',
-    'radial-gradient(120% 60% at 30% 0%, rgba(255,226,200,0.35), rgba(255,226,200,0) 60%)',
-    'repeating-linear-gradient(90deg, rgba(255,255,255,0.035) 0 1px, rgba(0,0,0,0.035) 1px 2px, rgba(0,0,0,0) 2px 4px)',
-    'linear-gradient(180deg, #F57A34 0%, #E8611F 40%, #D4500F 100%)',
-  ].join(', '),
-  boxShadow: '0 1px 1px rgba(255,236,220,0.55) inset, 0 -1px 2px rgba(80,20,0,0.35) inset',
+  left: 0,
+  right: 0,
+  bottom: 0,
+  height: CHIN_HEIGHT,
+  backgroundImage:
+    'linear-gradient(180deg, rgba(255,255,255,0.10) 0%, rgba(255,255,255,0.03) 30%, rgba(0,0,0,0) 60%, rgba(0,0,0,0.16) 100%)',
+  boxShadow: '0 1px 0 rgba(255,255,255,0.12) inset, 0 -1px 0 rgba(0,0,0,0.25)',
 }
-// The bevel the screen sits in: shaded at the top, catching light at the bottom lip.
-const RECESS_STYLE: CSSProperties = {
-  ...RECESS,
-  borderRadius: '5.4% / 5.8%',
-  background: 'linear-gradient(180deg, #7A2A06 0%, #B6460F 60%, #F08A4E 100%)',
-  boxShadow: '0 2px 4px rgba(0,0,0,0.55) inset',
+// The Tile mark on the chin: three squares over one, slightly recessed, bottom-right.
+const MARK: CSSProperties = {
+  position: 'absolute',
+  right: '7.5%',
+  top: '23%',
+  width: '23%',
+  display: 'grid',
+  gridTemplateColumns: 'repeat(3, 1fr)',
+  gap: '4.5%',
+}
+const MARK_SQUARE: CSSProperties = {
+  aspectRatio: '1',
+  borderRadius: '12%',
+  background: '#F2843A',
+  boxShadow: '0 1.5px 1.5px rgba(0,0,0,0.35) inset, 0 -0.5px 0 rgba(255,255,255,0.12)',
+}
+// Frosted white diffuser, set into the bezel.
+const PANEL_STYLE: CSSProperties = {
+  ...SCREEN,
+  borderRadius: '3.6% / 3.6%',
+  background: 'radial-gradient(120% 90% at 50% 30%, #EEF0F1 0%, #E1E4E6 55%, #D3D7DA 100%)',
+  boxShadow: '0 2px 4px rgba(90,30,0,0.35) inset, 0 0 0 1px rgba(120,50,10,0.25) inset',
 }
 const DIM = 'brightness(0.34) saturate(0.85)'
 
+// An unlit pixel: just the diffuser, with the faintest hint of the grid behind it.
 const OFF: CSSProperties = {
-  background: 'radial-gradient(circle at 50% 40%, #1E1E21 0%, #161618 100%)',
-  boxShadow: '0 0 0 1px rgba(255,255,255,0.025) inset',
+  background: 'rgba(120,128,134,0.025)',
 }
 
 interface Interactive {
@@ -54,6 +79,7 @@ interface Interactive {
 
 interface Props {
   cells: (Lit | null)[]
+  chin?: Chin
   dim?: boolean
   glow?: number
   interactive?: Interactive
@@ -62,10 +88,11 @@ interface Props {
 
 export default function TileDevice({
   cells,
+  chin = 'purple',
   dim = false,
   glow = 14,
   interactive,
-  alt = 'Tile, an orange desk display with an 8 by 8 pixel screen',
+  alt = 'Tile, a desk display with a frosted 8 by 8 pixel screen, orange body and coloured chin',
 }: Props) {
   // Mouse paints on press (so drag-painting works); touch paints on tap so scrolling past doesn't.
   const lastPointer = useRef('mouse')
@@ -76,27 +103,32 @@ export default function TileDevice({
       className="relative w-full select-none"
       style={{ aspectRatio: '1212 / 1298' }}
     >
-      <div aria-hidden="true" className="absolute" style={dim ? { ...CHAMFER, filter: DIM } : CHAMFER}>
-        <div style={FACE} />
+      <div aria-hidden="true" className="absolute" style={dim ? { ...BODY_STYLE, filter: DIM } : BODY_STYLE}>
+        <div className="motion-safe:transition-colors motion-safe:duration-300" style={{ ...CHIN_STYLE, backgroundColor: CHINS[chin].color }}>
+          <div style={MARK}>
+            {[0, 1, 2, 4].map((n) => (
+              <span key={n} style={{ ...MARK_SQUARE, gridColumn: (n % 3) + 1, gridRow: Math.floor(n / 3) + 1 }} />
+            ))}
+          </div>
+        </div>
       </div>
-      <div aria-hidden="true" className="absolute" style={dim ? { ...RECESS_STYLE, filter: DIM } : RECESS_STYLE} />
+      <div aria-hidden="true" className="absolute" style={dim ? { ...PANEL_STYLE, filter: DIM } : PANEL_STYLE} />
       <div
         className="absolute grid grid-cols-8 grid-rows-8 overflow-hidden"
         style={{
           ...SCREEN,
-          borderRadius: '4.2% / 4.43%',
-          padding: '1.17%',
-          columnGap: '0.93%',
-          rowGap: '0.98%',
-          background: 'radial-gradient(120% 90% at 50% 35%, #141416 0%, #0A0A0B 100%)',
-          boxShadow: '0 3px 8px rgba(0,0,0,0.85) inset, 0 0 0 1px rgba(0,0,0,0.6) inset',
+          borderRadius: '3.6% / 3.6%',
+          padding: '1.2%',
+          columnGap: '0.95%',
+          rowGap: '0.95%',
         }}
       >
         {cells.map((c, i) => {
           const style: CSSProperties = c
             ? {
-                background: `radial-gradient(circle at 50% 45%, ${c.center} 0%, ${c.center} 38%, ${c.edge} 100%)`,
+                background: `radial-gradient(circle at 50% 45%, ${c.center} 0%, ${c.edge} 55%, ${c.edge} 100%)`,
                 boxShadow: `0 0 ${glow}px ${Math.round(glow / 5)}px ${c.glow}`,
+                opacity: c.level ?? 1,
               }
             : OFF
           if (!interactive) return <div key={i} aria-hidden="true" className="rounded-[9%]" style={style} />
@@ -114,20 +146,51 @@ export default function TileDevice({
               onClick={(e) => {
                 if (e.detail === 0 || lastPointer.current !== 'mouse') interactive.onKey(i)
               }}
-              className={`rounded-[9%] border-0 p-0 cursor-crosshair focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[#EDEDEF] ${
-                c ? '' : 'hover:!bg-[#2A2A2E]'
+              className={`rounded-[9%] border-0 p-0 cursor-crosshair focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[#0B0B0C] ${
+                c ? '' : 'hover:!bg-[rgba(60,66,72,0.16)]'
               }`}
               style={style}
             />
           )
         })}
-        {/* Cover glass: a faint diagonal reflection over the pixels */}
+        {/* Soft sheen across the frosted cover */}
         <div
           aria-hidden="true"
           className="pointer-events-none absolute inset-0"
-          style={{ background: 'linear-gradient(155deg, rgba(255,255,255,0.09) 0%, rgba(255,255,255,0.03) 38%, rgba(255,255,255,0) 38.5%)' }}
+          style={{ background: 'linear-gradient(160deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0) 45%)' }}
         />
       </div>
+    </div>
+  )
+}
+
+// Swatches that switch the chin colour on every simulated Tile on the page.
+export function ChinSwatches({ value, onChange, className = '' }: { value: Chin; onChange: (c: Chin) => void; className?: string }) {
+  return (
+    <div role="group" aria-label="Chin colour" className={`inline-flex items-center gap-4 ${className}`}>
+      {(Object.keys(CHINS) as Chin[]).map((k) => {
+        const on = value === k
+        return (
+          <button
+            key={k}
+            type="button"
+            aria-pressed={on}
+            onClick={() => onChange(k)}
+            className="group inline-flex min-h-[44px] items-center gap-2 px-1 font-mono text-[11px] uppercase tracking-[0.12em] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#F0641E]"
+            style={{ color: on ? '#EDEDEF' : '#85858D' }}
+          >
+            <span
+              aria-hidden="true"
+              className="relative h-[18px] w-[18px] overflow-hidden rounded-full"
+              style={{
+                background: `linear-gradient(180deg, #F2843A 0 50%, ${CHINS[k].color} 50% 100%)`,
+                boxShadow: on ? '0 0 0 2px #0B0B0C, 0 0 0 3.5px #EDEDEF' : '0 0 0 1px #34343A',
+              }}
+            />
+            {CHINS[k].label}
+          </button>
+        )
+      })}
     </div>
   )
 }

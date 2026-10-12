@@ -6,15 +6,21 @@ export type Cells = (Lit | null)[]
 
 const rgbOf = (hex: number) => [(hex >> 16) & 255, (hex >> 8) & 255, hex & 255]
 
-// One LED at a brightness level (0–1), drawn with the same lit-pixel look as the rest of the page.
+// One LED at a brightness level (0–1). Behind the frosted diffuser a dimmer LED shows as a fainter
+// patch of the same colour, so the level sets how strongly it shows rather than darkening it.
 export function led(hex: number, level = 1): Lit {
-  const l = Math.max(0, Math.min(1, level))
-  const [r, g, b] = rgbOf(hex).map((v) => Math.round(v * l))
-  const mix = (v: number) => Math.round(v + (255 - v) * 0.45 * l)
+  // A colour like rgb(189,66,0) is orange light at ~74% strength, not brown: show the hue at full
+  // brightness and fold the rest into the level.
+  const raw = rgbOf(hex)
+  const peak = Math.max(...raw, 1)
+  const l = Math.max(0, Math.min(1, level * (peak / 255)))
+  const [r, g, b] = raw.map((v) => Math.round((v * 255) / peak))
+  const mix = (v: number) => Math.round(v + (255 - v) * 0.45)
   return {
     center: `rgb(${mix(r)},${mix(g)},${mix(b)})`,
     edge: `rgb(${r},${g},${b})`,
-    glow: `rgba(${rgbOf(hex).join(',')},${(0.75 * l).toFixed(2)})`,
+    glow: `rgba(${r},${g},${b},0.75)`,
+    level: l,
   }
 }
 
@@ -129,9 +135,10 @@ export function embersStep(levels: number[], random: () => number = Math.random)
     return level + (target - level) * 0.35
   })
 }
-// LEDs look far brighter in a room than their raw level suggests, and the hottest ones read as yellow.
+// LEDs look brighter in a room than their raw level suggests, and the hottest ones read as yellow.
 // On screen the same animation gets a display curve and a heat tint: yellow core, orange flames, red sparks.
-const embersOnScreen = (l: number) => Math.min(1, Math.pow(Math.max(0, l), 0.45) * 1.35)
+// The curve is gentle at the low end so faint sparks stay faint tints on the frosted diffuser.
+const embersOnScreen = (l: number) => Math.min(1, Math.pow(Math.max(0, l), 1.2) * 1.3)
 const HEAT: [number, number][] = [
   [0, 0x9a0e00],
   [0.08, 0xe62200],

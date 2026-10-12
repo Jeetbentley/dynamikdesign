@@ -25,11 +25,11 @@ export default function ProductsPage() {
               <Link href="/products/tile" className="group block">
                 <div className="relative aspect-[3/2] bg-[#0B0B0C] overflow-hidden mb-5">
                   <Image
-                    src="/products/tile/tile-device.webp"
-                    alt="Tile"
+                    src="/products/tile/tile-purple.webp"
+                    alt="Tile desk display with a frosted 8×8 pixel screen, orange body and purple chin"
                     fill
                     sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
-                    className="object-contain py-[8%] transition-transform duration-500 group-hover:scale-[1.04]"
+                    className="object-contain transition-transform duration-500 group-hover:scale-[1.04]"
                   />
                 </div>
                 <div className="flex flex-wrap gap-2 mb-3">
