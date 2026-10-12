@@ -14,7 +14,7 @@ export const TILE_SPECS = [
   { k: 'Size', v: '[W × H × D] mm, [WEIGHT] g' }, // TODO
   { k: 'In the box', v: 'Tile, USB-C cable, quick start card [CONFIRM]' }, // TODO
   { k: 'Body', v: 'PETG, matte finish' },
-  { k: 'Colours', v: 'Orange with purple or navy chin' },
+  { k: 'Colour', v: 'Orange with purple chin' },
   { k: 'Made in', v: 'India' },
 ]
 

@@ -106,7 +106,7 @@ export async function POST(req: Request) {
     email: d.email,
     whatsapp: normaliseWhatsapp(d.whatsapp)!,
     city: d.city,
-    colour: d.colour,
+    colour: tileLaunch.colour, // fixed: one colourway, so the sheet's Colour column stays filled
     mode: d.mode,
     consent: true,
     referrer: (d.referrer || 'direct').slice(0, 300),

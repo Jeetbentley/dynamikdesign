@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import TileDevice, { type Chin } from './TileDevice'
+import TileDevice from './TileDevice'
 import { AMBER_HOUR, AMBER_MIN, led, type Cells } from './tileSim'
 
 // Firmware defaults: day 20%, night 5%, night 22:00–07:00, warm digits off.
@@ -22,7 +22,7 @@ const label = 'flex items-baseline justify-between font-mono text-[11px] upperca
 const select =
   'mt-2 w-full rounded-full border border-[#34343A] bg-[#0B0B0C] px-4 py-2.5 font-mono text-[13px] text-[#EDEDEF] focus:border-[#F0641E] focus:outline-none'
 
-export default function TileNight({ clock, chin }: { clock: number[]; chin: Chin }) {
+export default function TileNight({ clock }: { clock: number[] }) {
   const [day, setDay] = useState(DEFAULTS.day)
   const [night, setNight] = useState(DEFAULTS.night)
   const [start, setStart] = useState(DEFAULTS.start)
@@ -151,7 +151,6 @@ export default function TileNight({ clock, chin }: { clock: number[]; chin: Chin
         <div className="relative w-full max-w-[220px]">
           <TileDevice
             cells={cells}
-            chin={chin}
             dim={isNight}
             glow={isNight ? 8 : 12}
             alt={isNight ? `Tile at night, ${night}% brightness` : `Tile by day, ${day}% brightness`}
