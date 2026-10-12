@@ -131,7 +131,7 @@ export default function TileDay({ chin }: { chin: Chin }) {
   return (
     <section ref={sectionRef} id="day" aria-labelledby="day-h" className="scroll-mt-[132px] overflow-hidden border-t border-[#1E1E22] px-6 py-28 sm:py-32">
       <div className="mx-auto max-w-[1240px]">
-        <p className={eyebrow}>A day</p>
+        <p className={eyebrow}>/ 02 A day</p>
         <h2 id="day-h" className={`mb-14 ${h2}`}>A day with Tile.</h2>
 
         <div className="flex flex-col items-center">
@@ -152,7 +152,7 @@ export default function TileDay({ chin }: { chin: Chin }) {
             </div>
           </div>
           {/* Fixed height so the line changing never moves the timeline */}
-          <p aria-live="polite" className="mt-8 flex min-h-[40px] items-center text-center text-[clamp(22px,2.6vw,30px)] font-semibold tracking-[-0.01em]">
+          <p aria-live="polite" className="mt-8 flex min-h-[40px] items-center text-center text-[clamp(22px,2.6vw,30px)] font-semibold uppercase tracking-[-0.01em]">
             {stop.line}
           </p>
         </div>
@@ -173,11 +173,11 @@ export default function TileDay({ chin }: { chin: Chin }) {
                 aria-label={`${s.time}, ${s.mode}`}
                 aria-pressed={on}
                 onClick={() => jump(i)}
-                className="relative flex min-w-[150px] flex-none snap-center flex-col items-start gap-1.5 rounded-[18px] border bg-[#141416] px-4 pb-5 pt-4 text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#F0641E] md:min-w-0"
+                className="relative flex min-w-[150px] flex-none snap-center flex-col items-start gap-1.5 rounded-[18px] border bg-[#141416] px-4 pb-4 pt-5 text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#F0641E] md:min-w-0"
                 style={{ borderColor: on ? '#3A3A40' : '#1E1E22' }}
               >
-                {/* Progress along the bottom edge of the active stop */}
-                <span aria-hidden="true" className="absolute inset-x-4 bottom-0 h-[3px] overflow-hidden rounded-full bg-[#26262B]">
+                {/* Progress along the top edge of the active stop */}
+                <span aria-hidden="true" className="absolute inset-x-4 top-0 h-[3px] overflow-hidden rounded-full bg-[#26262B]">
                   <span className="block h-full rounded-full bg-[#F0641E]" style={{ width: on ? `${progress * 100}%` : '0%' }} />
                 </span>
                 <span className="font-mono text-[13px] tabular-nums tracking-[0.08em]" style={{ color: on ? '#F0641E' : '#85858D' }}>

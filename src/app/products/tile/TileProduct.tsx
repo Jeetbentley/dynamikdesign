@@ -231,7 +231,7 @@ function PriceLine() {
         <span aria-hidden="true" className="text-[18px] text-[#55555C]">→</span>
         <span className="sr-only">Founders price</span>
         <span className="text-[36px] font-bold leading-none tracking-[-0.02em]">{inr(tileLaunch.foundersPrice)}</span>
-        <span className="text-[16px] text-[#C9C9CF]">for the first {tileLaunch.foundersBatchSize} customers</span>
+        <span className="text-[16px] lowercase text-[#C9C9CF]">for the first {tileLaunch.foundersBatchSize} customers</span>
       </p>
       <p className="mt-2 text-[14px] text-[#C9C9CF]">{shipsFromLine}</p>
       <p className="mt-2 font-mono text-[11px] uppercase tracking-[0.12em] text-[#85858D]">Inclusive of all taxes</p>
@@ -526,9 +526,6 @@ export default function TileProduct({ photos }: { photos: RoomPhoto[] }) {
         </p>
       </section>
 
-      {/* Context photos — hidden until their files exist (see data/tile.ts) */}
-      <TileRoom photos={photos} />
-
       <TileDesign chin={chin} onChin={setChin} cells={amberClock(clock)} />
 
       <TileDay chin={chin} />
@@ -536,7 +533,7 @@ export default function TileProduct({ photos }: { photos: RoomPhoto[] }) {
       {/* Modes */}
       <section id="modes" className="scroll-mt-[132px] border-t border-[#1E1E22] px-6 py-28 sm:py-32">
         <div className="mx-auto max-w-[1240px]">
-          <p className={eyebrow}>Modes</p>
+          <p className={eyebrow}>/ 03 Modes</p>
           <h2 className={`mb-14 max-w-[14ch] ${h2}`}>One little screen. Four jobs.</h2>
           <div className="flex flex-wrap items-center gap-12 lg:gap-14">
             <div role="group" aria-label="Choose a mode" className="flex max-w-[300px] flex-[1_1_220px] flex-col gap-1">
@@ -563,10 +560,10 @@ export default function TileProduct({ photos }: { photos: RoomPhoto[] }) {
               </div>
             </div>
             <div className="min-w-0 flex-[1_1_280px]">
-              <p className="mb-[22px] max-w-[30ch] text-[21px] leading-normal text-[#C9C9CF]">{modeText}</p>
+              <p className="mb-[22px] max-w-[30ch] text-[21px] lowercase leading-normal text-[#C9C9CF]">{modeText}</p>
               <ul className="m-0 flex list-none flex-col gap-2.5 p-0">
                 {current.points.map((p) => (
-                  <li key={p} className="font-mono text-[14px] text-[#A3A3AB]">+ {p}</li>
+                  <li key={p} className="font-mono text-[14px] lowercase text-[#A3A3AB]">+ {p}</li>
                 ))}
               </ul>
             </div>
@@ -574,10 +571,13 @@ export default function TileProduct({ photos }: { photos: RoomPhoto[] }) {
         </div>
       </section>
 
+      {/* Context photos — hidden until their files exist (see data/tile.ts) */}
+      <TileRoom photos={photos} />
+
       {/* Details */}
       <section aria-labelledby="feat-h" className="px-6 py-28 sm:py-32">
         <div className="mx-auto max-w-[1240px]">
-          <p className={eyebrow}>Details</p>
+          <p className={eyebrow}>/ 04 Details</p>
           <h2 id="feat-h" className={`mb-14 max-w-[15ch] ${h2}`}>Small on the desk. Thoughtful inside.</h2>
 
           <div className="flex flex-wrap gap-4">
@@ -592,7 +592,7 @@ export default function TileProduct({ photos }: { photos: RoomPhoto[] }) {
                 ].map(([k, v], i, arr) => (
                   <div key={k} className={`border-t border-[#26262B] pt-3.5 ${i < arr.length - 1 ? 'pb-3.5' : ''}`}>
                     <dt className="text-[15px] font-semibold uppercase tracking-[0.06em]">{k}</dt>
-                    <dd className="m-0 mt-1 text-[15px] leading-normal text-[#A3A3AB]">{v}</dd>
+                    <dd className="m-0 mt-1 text-[15px] lowercase leading-normal text-[#A3A3AB]">{v}</dd>
                   </div>
                 ))}
               </dl>
@@ -603,7 +603,7 @@ export default function TileProduct({ photos }: { photos: RoomPhoto[] }) {
                 <p className="mb-3.5 font-mono text-[12px] uppercase tracking-[0.12em] text-[#55555C]">Privacy</p>
                 <h3 className="m-0 text-[clamp(34px,4.5vw,56px)] font-bold uppercase leading-[0.95] tracking-[-0.03em]">No account. No&nbsp;cloud.</h3>
               </div>
-              <div className="flex min-w-0 flex-[1_1_260px] flex-col gap-3 text-[17px] leading-normal text-[#33343A]">
+              <div className="flex min-w-0 flex-[1_1_260px] flex-col gap-3 text-[17px] lowercase leading-normal text-[#33343A]">
                 <p className="m-0">Runs on your own WiFi. No sign-up, no subscription.</p>
                 <p className="m-0">No internet? Your phone connects to Tile directly.</p>
                 <p className="m-0">Any phone browser, or the Tile app for Android.</p>
@@ -617,13 +617,13 @@ export default function TileProduct({ photos }: { photos: RoomPhoto[] }) {
       {/* Specs */}
       <section id="specs" aria-labelledby="specs-h" className="scroll-mt-[132px] px-6 pb-28 sm:pb-32">
         <div className="mx-auto max-w-[1240px]">
-          <p className={eyebrow}>Specs</p>
+          <p className={eyebrow}>/ 05 Specs</p>
           <h2 id="specs-h" className={`mb-12 ${h2}`}>The details.</h2>
           <dl className="m-0 grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-x-12">
             {visibleSpecs.map((s) => (
               <div key={s.k} className="flex gap-5 border-t border-[#1E1E22] py-[22px]">
                 <dt className={`flex-[0_0_120px] pt-[4px] ${mono}`}>{s.k}</dt>
-                <dd className="m-0 text-[18px] leading-[1.45]">{s.v}</dd>
+                <dd className="m-0 text-[18px] lowercase leading-[1.45]">{s.v}</dd>
               </div>
             ))}
           </dl>
@@ -634,13 +634,13 @@ export default function TileProduct({ photos }: { photos: RoomPhoto[] }) {
       <section id="faq" aria-labelledby="faq-h" className="scroll-mt-[132px] px-6 pb-28 sm:pb-32">
         <div className="mx-auto flex max-w-[1240px] flex-wrap gap-12">
           <div className="flex-[1_1_300px]">
-            <p className={eyebrow}>Questions</p>
+            <p className={eyebrow}>/ 06 Questions</p>
             <h2 id="faq-h" className={h2}>Good to know.</h2>
           </div>
           <div className="min-w-0 flex-[2_1_480px]">
             {visibleFaqs.map((f) => (
               <details key={f.q} className="group border-t border-[#1E1E22] py-[22px]">
-                <summary className="flex cursor-pointer list-none justify-between gap-4 text-[17px] font-normal leading-[1.6] text-[#EDEDEF] [&::-webkit-details-marker]:hidden">
+                <summary className="flex cursor-pointer list-none justify-between gap-4 text-[17px] font-semibold uppercase tracking-[0.04em] [&::-webkit-details-marker]:hidden">
                   {f.q}
                   <span aria-hidden="true" className="font-mono text-[#F0641E] transition-transform group-open:rotate-45">+</span>
                 </summary>
