@@ -31,8 +31,8 @@ export const SHAPE = {
   screen: { x: 0.1402, y: 0.055, w: 0.7196, h: 0.6737 },
   radius: 0.055, // outer corner radius, as a fraction of the container width
   orangeColor: '#F08A3C',
-  screenColor: '#17181B',
-  offColor: '#22232A',
+  screenColor: '#636462', // mid-grey diffuser, as the real screen looks when unlit
+  offColor: '#686968',
 } as const
 const box = (b: { x: number; y: number; w: number; h: number }) => ({
   left: `${(b.x * 100).toFixed(2)}%`,
@@ -86,7 +86,7 @@ const MARK_SQUARE: CSSProperties = {
   boxShadow: 'inset 0.3cqw 0.35cqw 0.45cqw rgba(0,0,0,0.32)',
 }
 // The screen opening: a chamfer stepping down from the bezel (shadowed top and left, lit right), then the
-// dark diffuser, recessed with a thin inner shadow. No border at the bottom: the diffuser meets the chin.
+// mid-grey diffuser, recessed with a thin inner shadow. No border at the bottom: the diffuser meets the chin.
 const OPENING_STYLE: CSSProperties = {
   position: 'absolute',
   left: `calc(${SCREEN.left} - ${BEVEL})`,
@@ -98,15 +98,15 @@ const OPENING_STYLE: CSSProperties = {
   borderWidth: `${BEVEL} ${BEVEL} 0 ${BEVEL}`,
   borderColor: '#B85619 #F9A462 transparent #C25C1C', // top right bottom left
   borderRadius: `calc(${SCREEN_R} + ${BEVEL}) calc(${SCREEN_R} + ${BEVEL}) 0 0`,
-  background: '#17181B',
-  boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.7), inset 0 0 0 1px rgba(0,0,0,0.5)',
+  background: 'radial-gradient(120% 100% at 50% 40%, #6F706F 0%, #636462 60%, #575856 100%)',
+  boxShadow: 'inset 0 2px 5px rgba(0,0,0,0.55)',
 }
 const DIM = 'brightness(0.34) saturate(0.85)'
 
-// An unlit pixel: quiet rounded square, faint light along its top edge.
+// An unlit pixel: barely there, just a hairline grid on the diffuser, as on the real screen.
 const OFF: CSSProperties = {
-  background: '#22232A',
-  boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.04)',
+  background: 'rgba(255,255,255,0.03)',
+  boxShadow: 'inset 0 0 0 0.5px rgba(0,0,0,0.10)',
 }
 
 interface Interactive {
@@ -160,6 +160,8 @@ export default function TileDevice({
           ...SCREEN,
           borderRadius: `${SCREEN_R} ${SCREEN_R} 0 0`,
           padding: '1.2%',
+          // Lit pixels a little brighter and richer so they stand out against the grey diffuser
+          filter: 'saturate(1.3) brightness(1.15)',
           columnGap: '0.95%',
           rowGap: '0.95%',
         }}

@@ -7,7 +7,7 @@ export type Cells = (Lit | null)[]
 const rgbOf = (hex: number) => [(hex >> 16) & 255, (hex >> 8) & 255, hex & 255]
 
 // One LED at a brightness level (0–1): saturated colour with a slightly brighter centre and a soft
-// glow in its own colour. The level fades the pixel into the dark screen.
+// glow in its own colour. The level fades the pixel into the diffuser.
 export function led(hex: number, level = 1): Lit {
   // A colour like rgb(189,66,0) is orange light at ~74% strength, not brown: show the hue at full
   // brightness and fold the rest into the level.
@@ -19,7 +19,7 @@ export function led(hex: number, level = 1): Lit {
   return {
     center: `rgb(${mix(r)},${mix(g)},${mix(b)})`,
     edge: `rgb(${r},${g},${b})`,
-    glow: `rgba(${r},${g},${b},0.45)`,
+    glow: `rgba(${r},${g},${b},0.63)`,
     level: l,
   }
 }
