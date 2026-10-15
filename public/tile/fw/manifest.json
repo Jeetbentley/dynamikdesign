@@ -1,8 +1,8 @@
 {
-  "version": "0.0.0",
-  "url": "https://dynamikdesignlab.in/tile/fw/tile-0.0.0.bin",
-  "size": 1024,
-  "sha256": "5f4ecdb7b71c3e403983fe405cddcdc2f2576b655fdb3e80d94a6f7c32e58bc2",
-  "sig": "cGxhY2Vob2xkZXItbm90LXNpZ25lZA==",
-  "notes": "Placeholder. Overwritten by scripts/tile-release.mjs on the first release."
+  "version": "1.6.0",
+  "url": "https://dynamikdesignlab.in/tile/fw/tile-1.6.0.bin",
+  "size": 1589680,
+  "sha256": "149b2c8cdbd0678af754b578fca6ab489ef2adb1c9fb7a0d6850cc7846369258",
+  "sig": "MEUCIA3Ey9tG8mGteI7oR8ZtXHu+c0HheGcIHVNa0fLRdTeZAiEAh4/+7XpQnWRNucafSIbJdk5ki8yNsPq4/60RwuXD7Ug=",
+  "notes": "First release"
 }
