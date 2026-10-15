@@ -636,6 +636,12 @@ export default function TileProduct({ photos }: { photos: RoomPhoto[] }) {
           <div className="flex-[1_1_300px]">
             <p className={eyebrow}>Questions</p>
             <h2 id="faq-h" className={h2}>Good to know.</h2>
+            <Link
+              href="/tile/update"
+              className="mt-8 inline-flex items-center gap-2 font-mono text-[12px] uppercase tracking-[0.12em] text-[#EDEDEF]"
+            >
+              Firmware updates <span aria-hidden="true" className="text-[#F0641E]">→</span>
+            </Link>
           </div>
           <div className="min-w-0 flex-[2_1_480px]">
             {visibleFaqs.map((f) => (

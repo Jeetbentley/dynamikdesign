@@ -20,6 +20,27 @@ const nextConfig = {
       { source: '/materials', destination: '/services/build', statusCode: 301 },
     ]
   },
+  async headers() {
+    // Tile firmware updates. Devices fetch these directly, so: no redirects or rewrites touch /tile/fw/,
+    // the manifest is never cached, and each .bin (named by version) is cached forever and served as-is.
+    const noCache = [
+      { key: 'Cache-Control', value: 'no-cache, no-store, must-revalidate' },
+      { key: 'Content-Type', value: 'application/json' },
+      { key: 'X-Content-Type-Options', value: 'nosniff' },
+    ]
+    return [
+      { source: '/tile/fw/manifest.json', headers: noCache },
+      { source: '/tile/fw/releases.json', headers: noCache },
+      {
+        source: '/tile/fw/:file([^/]+\\.bin)',
+        headers: [
+          { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' },
+          { key: 'Content-Type', value: 'application/octet-stream' },
+          { key: 'X-Content-Type-Options', value: 'nosniff' },
+        ],
+      },
+    ]
+  },
 }
 
 module.exports = nextConfig
