@@ -21,7 +21,7 @@ interface Menu {
 
 const NAV_HEIGHT = 68
 // Pages that get the dark navbar that hides on scroll-down and returns on scroll-up.
-const DARK_ROUTES = ['/products/tile']
+const DARK_ROUTES = ['/products/tile', '/tile/', '/w/']
 
 const triggerClass = (dark: boolean, active: boolean) =>
   `flex items-center gap-1.5 font-medium py-2 transition-colors ${
