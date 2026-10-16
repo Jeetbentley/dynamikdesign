@@ -50,6 +50,7 @@ const monthYear = (ym: string) => {
 }
 
 const ORANGE = '#FF6B1A'
+const STARTED_FROM = { setup: 'first setup', delivery: 'delivery date', invoice: 'invoice date' } as const
 
 function GenuineBadge() {
   return (
@@ -103,7 +104,7 @@ function LiveStatus({ status }: { status: Extract<WarrantyStatus, { kind: 'genui
         </div>
         <p className={`mb-0 mt-3 ${mono}`}>
           Started {shortDate(status.start!)}
-          {status.startsFrom && ` (${status.startsFrom} date)`}
+          {status.startsFrom && ` (${STARTED_FROM[status.startsFrom]})`}
         </p>
       </>
     )
@@ -123,7 +124,7 @@ function LiveStatus({ status }: { status: Extract<WarrantyStatus, { kind: 'genui
       <GenuineBadge />
       <h1 className={`mb-4 ${h2}`}>Warranty not activated yet</h1>
       <p className={`m-0 max-w-[48ch] text-[17px] leading-[1.6] text-[#EDEDEF]`}>
-        Your {status.months}-month warranty starts on the day it’s delivered.
+        Your {status.months}-month warranty starts the day you first set up your Tile with the app.
       </p>
       <p className={`mb-0 mt-3 ${mono}`}>
         Made {monthYear(status.manufactured)} · {status.colour} chin

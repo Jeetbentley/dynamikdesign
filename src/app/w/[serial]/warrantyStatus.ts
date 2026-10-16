@@ -15,7 +15,7 @@ export type WarrantyStatus =
       manufactured: string // YYYY-MM
       months: number
       status: 'not_activated' | 'active' | 'expired'
-      startsFrom: 'delivery' | 'invoice' | null
+      startsFrom: 'setup' | 'delivery' | 'invoice' | null
       start: string | null // YYYY-MM-DD
       end: string | null
       daysLeft: number | null
@@ -34,7 +34,7 @@ function parse(data: unknown): WarrantyStatus | null {
   if (typeof d.colour !== 'string' || typeof d.manufactured !== 'string' || !/^\d{4}-\d{2}$/.test(d.manufactured)) return null
   if (typeof d.months !== 'number' || !STATUSES.includes(d.status as (typeof STATUSES)[number])) return null
   const status = d.status as (typeof STATUSES)[number]
-  const startsFrom = d.startsFrom === 'delivery' || d.startsFrom === 'invoice' ? d.startsFrom : null
+  const startsFrom = d.startsFrom === 'setup' || d.startsFrom === 'delivery' || d.startsFrom === 'invoice' ? d.startsFrom : null
   const start = isDate(d.start) ? d.start : null
   const end = isDate(d.end) ? d.end : null
   const daysLeft = typeof d.daysLeft === 'number' && Number.isFinite(d.daysLeft) ? Math.max(0, Math.round(d.daysLeft)) : null
