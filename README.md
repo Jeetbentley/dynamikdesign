@@ -66,3 +66,11 @@ Defined in `next.config.js` (301):
 - `/services/product-design` → `/services/design#industrial-design`
 - `/process` → `/approach`
 - `/materials` → `/services/build` (the page file is kept but unlinked)
+
+## Environment variables
+
+Copy `.env.example` to `.env.local` for local work and set the same names in Vercel → Project → Settings → Environment Variables. Never commit real values.
+
+- `WAITLIST_WEBHOOK_URL`, `WAITLIST_SECRET`: the Tile waitlist (Google Apps Script, see `scripts/tile-waitlist.gs`).
+- `SMTP_*`: optional waitlist emails.
+- `TILE_WARRANTY_API`: the warranty sheet's Apps Script `/exec` URL. `/w/<serial>` calls `?action=warranty&serial=<SERIAL>` on the server (8 s timeout, cached 10 minutes) to show live warranty status. Server-side only; if it's unset or unreachable the page shows its static warranty details with a short note.
