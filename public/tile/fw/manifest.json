@@ -1,8 +1,8 @@
 {
-  "version": "1.6.0",
-  "url": "https://dynamikdesignlab.in/tile/fw/tile-1.6.0.bin",
-  "size": 1589680,
-  "sha256": "149b2c8cdbd0678af754b578fca6ab489ef2adb1c9fb7a0d6850cc7846369258",
-  "sig": "MEUCIA3Ey9tG8mGteI7oR8ZtXHu+c0HheGcIHVNa0fLRdTeZAiEAh4/+7XpQnWRNucafSIbJdk5ki8yNsPq4/60RwuXD7Ug=",
-  "notes": "First release"
+  "version": "1.6.1",
+  "url": "https://dynamikdesignlab.in/tile/fw/tile-1.6.1.bin",
+  "size": 1592416,
+  "sha256": "27ca07bc184fca38311e3e193a8cb0fb833044728252bc4ff09596c67740b2fa",
+  "sig": "MEUCIF3W02Jf983yOxUZ7N8ZEIlkdGKsaE/TWNNgblptMPGRAiEAgOL8pUXVT5yJr6JOUn69VVJhnm3sq66hjeiQ8gvf7zQ=",
+  "notes": "Warranty activation"
 }
