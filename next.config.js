@@ -18,6 +18,9 @@ const nextConfig = {
       { source: '/services/product-design', destination: '/services/design#industrial-design', statusCode: 301 },
       { source: '/process', destination: '/approach', statusCode: 301 },
       { source: '/materials', destination: '/services/build', statusCode: 301 },
+      // Tile help: old/short links land on the matching section of /tile/start
+      { source: '/tile/manual', destination: '/tile/start#setup', statusCode: 301 },
+      { source: '/tile/warranty', destination: '/tile/start#warranty', statusCode: 301 },
     ]
   },
   async headers() {

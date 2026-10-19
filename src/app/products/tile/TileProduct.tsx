@@ -642,6 +642,13 @@ export default function TileProduct({ photos }: { photos: RoomPhoto[] }) {
             >
               Firmware updates <span aria-hidden="true" className="text-[#F0641E]">→</span>
             </Link>
+            <br />
+            <Link
+              href="/tile/start"
+              className="mt-4 inline-flex items-center gap-2 font-mono text-[12px] uppercase tracking-[0.12em] text-[#EDEDEF]"
+            >
+              Setup &amp; help <span aria-hidden="true" className="text-[#F0641E]">→</span>
+            </Link>
           </div>
           <div className="min-w-0 flex-[2_1_480px]">
             {visibleFaqs.map((f) => (

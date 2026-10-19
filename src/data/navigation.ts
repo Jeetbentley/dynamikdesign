@@ -74,6 +74,7 @@ export const FOOTER_EXPLORE: NavLink[] = [
   { label: 'Approach', href: '/approach' },
   { label: 'About', href: '/about' },
   { label: 'Blog', href: '/blog' },
+  { label: 'Tile setup & help', href: '/tile/start' },
 ]
 
 export const FOOTER_SERVICES: NavLink[] = [

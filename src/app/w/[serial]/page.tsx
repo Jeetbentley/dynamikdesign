@@ -241,6 +241,9 @@ export default async function WarrantyPage({ params }: { params: { serial: strin
             <Link href="/tile/update" className={pillOutline}>
               Update your Tile
             </Link>
+            <Link href="/tile/start" className={pillOutline}>
+              Setup &amp; help
+            </Link>
           </div>
         </div>
       </section>

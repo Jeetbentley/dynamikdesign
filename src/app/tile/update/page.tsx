@@ -136,6 +136,9 @@ export default function TileUpdatePage() {
               <a href={`${waHref(legal.phone)}?text=${encodeURIComponent('Help with a Tile update')}`} className={pillOutline}>
                 Get help on WhatsApp
               </a>
+              <Link href="/tile/start" className={pillOutline}>
+                Setup &amp; help
+              </Link>
               <Link href="/products/tile" className={pillOutline}>
                 Back to Tile
               </Link>
