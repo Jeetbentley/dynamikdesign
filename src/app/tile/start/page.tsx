@@ -279,9 +279,10 @@ export default function TileStartPage() {
         </p>
       </Section>
 
-      <Section id="warranty" label="Warranty" title="12 months.">
+      <Section id="warranty" label="Warranty" title={`${legal.warrantyMonths} months.`}>
         <p className={`m-0 mb-6 text-[17px] leading-[1.6] text-[#EDEDEF]`}>
-          From the day you first set Tile up on WiFi (and at most 18 months from the date we dispatched it).
+          From the day you first set Tile up on WiFi (and at most {legal.warrantyMonths + 6} months from the date we
+          dispatched it).
         </p>
         <div className="mb-8 grid gap-3 sm:grid-cols-2">
           <div className={card}>

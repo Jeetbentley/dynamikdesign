@@ -20,7 +20,7 @@ export const legal = {
   },
   supportHours: 'Mon–Sat, 10:00–19:00 IST',
   returnWindowDays: 7,
-  warrantyMonths: 12,
+  warrantyMonths: 6,
   dispatchWorkingDays: 3,
   codAvailable: true,
   codFee: 79,
