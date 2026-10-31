@@ -40,3 +40,7 @@ next-env.d.ts.bak
 # Firmware signing keys — never commit
 *.pem
 tile_ota_private*
+
+# Android app signing keys — never commit
+*.jks
+*.keystore

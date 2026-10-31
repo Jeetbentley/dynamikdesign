@@ -3,8 +3,11 @@ import type { ReactNode } from 'react'
 import Link from 'next/link'
 import TileShell, { pillOrange, pillOutline } from '../TileShell'
 import SerialForm from './SerialForm'
+import PhoneOrder from './PhoneOrder'
 import { body, card, eyebrow, h2, h3, mono } from '@/app/products/tile/tileStyles'
 import { legal, telHref, waHref } from '@/data/legal'
+// The current app release. A new release only needs this file (and the .apk) updated.
+import app from '../../../../public/tile/app/version.json'
 
 // Tile setup and help: the destination of the QR on Tile's box card. Plain server-rendered HTML;
 // only the serial form uses JavaScript (and still works without it). Sections are linkable: /tile/start#setup etc.
@@ -16,6 +19,7 @@ export const metadata: Metadata = {
 }
 
 const SECTIONS = [
+  ['app', 'App'],
   ['setup', 'Setup'],
   ['modes', 'Modes'],
   ['alexa', 'Alexa'],
@@ -31,6 +35,13 @@ const link = 'text-[#EDEDEF] underline decoration-[#34343A] underline-offset-4 h
 const sectionCls = 'scroll-mt-[150px] border-t border-[#1E1E22] px-6 py-16 sm:py-24'
 const wrap = 'mx-auto max-w-[880px]'
 const kbd = 'font-mono text-[0.92em] text-[#EDEDEF]'
+
+const SHORT_MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+// "2026-10-31" → "31 Oct 2026"
+const shortDate = (iso: string) => {
+  const [y, m, d] = iso.split('-').map(Number)
+  return y && m && d ? `${d} ${SHORT_MONTHS[m - 1]} ${y}` : iso
+}
 
 function Section({ id, label, title, children }: { id: string; label: string; title: string; children: ReactNode }) {
   return (
@@ -123,7 +134,7 @@ export default function TileStartPage() {
           <h1 className={`mb-5 ${h2}`}>Set up Tile</h1>
           <p className={`mb-8 max-w-[44ch] ${body}`}>Five minutes, one WiFi password. Pick your phone.</p>
           <div className="flex flex-col gap-3 sm:flex-row">
-            <a href="#android" className={`${pillOrange} min-h-[60px] text-[15px]`}>
+            <a href="#app" className={`${pillOrange} min-h-[60px] text-[15px]`}>
               Android: get the app
             </a>
             <a href="#iphone" className={`${pillOutline} min-h-[60px] text-[15px]`}>
@@ -149,6 +160,53 @@ export default function TileStartPage() {
           ))}
         </ul>
       </nav>
+
+      <Section id="app" label="App" title="Get the Tile app.">
+        <PhoneOrder
+          android={
+            <div className={card}>
+              <h3 className={`mb-5 ${h3}`}>Android</h3>
+              <a href="/tile/app/latest" className={`${pillOrange} min-h-[64px] w-full whitespace-nowrap px-4 text-[15px] tracking-[0.06em] sm:w-auto sm:px-10 sm:tracking-[0.1em]`}>
+                Download for Android
+              </a>
+              <p className={`mb-8 mt-3 ${mono}`}>
+                <span className="whitespace-nowrap">Version {app.version}</span> · <span className="whitespace-nowrap">{app.size}</span> ·{' '}
+                <span className="whitespace-nowrap">{shortDate(app.date)}</span>
+              </p>
+              <Steps
+                items={[
+                  <>Tap Download.</>,
+                  <>
+                    If asked, allow Chrome to <span className="text-[#EDEDEF]">“Install unknown apps”</span>.
+                  </>,
+                  <>
+                    Tap Install. If Play Protect warns, tap More details › Install anyway.
+                  </>,
+                  <>Open Tile with Bluetooth on and follow setup.</>,
+                ]}
+              />
+            </div>
+          }
+          iphone={
+            <div className={card}>
+              <h3 className={`mb-3 ${h3}`}>iPhone</h3>
+              <p className={`m-0 ${body}`}>
+                No app needed on iPhone: open Settings › Wi-Fi, join <span className={kbd}>Tile-xxxx</span>, then pick your home
+                WiFi.{' '}
+                <a href="#iphone" className={link}>
+                  Step by step
+                </a>
+              </p>
+            </div>
+          }
+        />
+        <p className="m-0 mt-6 break-all font-mono text-[12px] leading-[1.6] text-[#85858D]">SHA-256: {app.sha256}</p>
+        <p className="m-0 mt-2 text-[14px] text-[#A3A3AB]">
+          <Link href="/privacy" className={link}>
+            Privacy policy
+          </Link>
+        </p>
+      </Section>
 
       <Section id="setup" label="Setup" title="Get Tile online.">
         <h3 className={`mb-4 ${h3}`}>Before you start</h3>
@@ -182,13 +240,10 @@ export default function TileStartPage() {
           <Steps
             items={[
               <>
-                Download the Tile app.
-                <div className="mt-3">
-                  <a href="/tile/app/tile.apk" className={`${pillOrange} px-6`}>
-                    Download app
-                  </a>
-                </div>
-                <p className="m-0 mt-3 text-[14px] text-[#A3A3AB]">Allow installs from this source if Android asks.</p>
+                Install the Tile app.{' '}
+                <a href="#app" className={link}>
+                  Download and install steps
+                </a>
               </>,
               <>Open it, keep Bluetooth on, choose your home WiFi and enter the password.</>,
               <>Green tick, then the time appears.</>,

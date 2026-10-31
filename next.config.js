@@ -1,3 +1,6 @@
+// The current Tile Android app; /tile/app/latest points at tile-<version>.apk from this file.
+const tileApp = require('./public/tile/app/version.json')
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
@@ -21,6 +24,8 @@ const nextConfig = {
       // Tile help: old/short links land on the matching section of /tile/start
       { source: '/tile/manual', destination: '/tile/start#setup', statusCode: 301 },
       { source: '/tile/warranty', destination: '/tile/start#warranty', statusCode: 301 },
+      // Temporary, so it can move to each new release
+      { source: '/tile/app/latest', destination: `/tile/app/tile-${tileApp.version}.apk`, statusCode: 302 },
     ]
   },
   async headers() {
@@ -39,6 +44,16 @@ const nextConfig = {
         headers: [
           { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' },
           { key: 'Content-Type', value: 'application/octet-stream' },
+          { key: 'X-Content-Type-Options', value: 'nosniff' },
+        ],
+      },
+      // Tile Android app
+      { source: '/tile/app/version.json', headers: noCache },
+      {
+        source: '/tile/app/:file([^/]+\\.apk)',
+        headers: [
+          { key: 'Content-Type', value: 'application/vnd.android.package-archive' },
+          { key: 'Content-Disposition', value: 'attachment' },
           { key: 'X-Content-Type-Options', value: 'nosniff' },
         ],
       },

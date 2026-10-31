@@ -63,10 +63,22 @@ export default function PrivacyPage() {
             <a className="text-red" href={`mailto:${legal.grievanceOfficer.email}`}>{legal.grievanceOfficer.email}</a> or{' '}
             <a className="text-red" href={telHref(legal.grievanceOfficer.phone)}>{legal.grievanceOfficer.phone}</a>.
           </p>
-          <h2 className="heading-h3 pt-4">The Tile device</h2>
-          <p>
-            Tile works on your own WiFi with no account. We don&apos;t collect usage data from the device.
-          </p>
+          <h2 className="heading-h3 pt-4">Tile app and device</h2>
+          <ul className="list-disc pl-6 space-y-2">
+            <li>
+              The Tile app uses Bluetooth (and location permission, which Android requires for Bluetooth scanning) only to
+              find and set up your Tile. Location is not collected or stored.
+            </li>
+            <li>The app talks only to your Tile on your local network.</li>
+            <li>
+              Tile sends its serial number, hardware ID (MAC) and firmware version to dynamikdesignlab.in once, to activate
+              the warranty, and when checking for firmware updates.
+            </li>
+            <li>
+              No accounts, no ads, no personal data sold or shared. Questions:{' '}
+              <a className="text-red" href={`mailto:${legal.email}`}>{legal.email}</a>.
+            </li>
+          </ul>
           <h2 className="heading-h3 pt-4">Communications</h2>
           <p>
             We send launch and order updates by email and WhatsApp. You can opt out at any time by replying or writing to
