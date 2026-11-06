@@ -1,4 +1,4 @@
-import { legal } from './legal'
+import { legal, warrantyStart } from './legal'
 
 // Tile specs and FAQ. Any value still containing a [PLACEHOLDER] is hidden on the page
 // and appears automatically once the real value is filled in here.
@@ -25,7 +25,7 @@ export const TILE_FAQS: { q: string; a: string; link?: { href: string; label: st
   { q: 'How do I reset it?', a: 'Plug it in and unplug it within 5 seconds, twice. Plug it in a third time and it starts fresh.' },
   {
     q: "What's the warranty?",
-    a: `${legal.warrantyMonths} months from delivery against manufacturing defects.`,
+    a: `${legal.warrantyMonths}-month warranty against manufacturing defects. ${warrantyStart}`,
     link: { href: '/warranty', label: 'See the full warranty.' },
   },
 ]

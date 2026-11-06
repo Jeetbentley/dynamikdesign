@@ -5,7 +5,7 @@ import TileShell, { pillOrange, pillOutline } from '../TileShell'
 import SerialForm from './SerialForm'
 import PhoneOrder from './PhoneOrder'
 import { body, card, eyebrow, h2, h3, mono } from '@/app/products/tile/tileStyles'
-import { legal, telHref, waHref } from '@/data/legal'
+import { legal, telHref, waHref, warrantyStart } from '@/data/legal'
 // The current app release. A new release only needs this file (and the .apk) updated.
 import app from '../../../../public/tile/app/version.json'
 
@@ -336,8 +336,7 @@ export default function TileStartPage() {
 
       <Section id="warranty" label="Warranty" title={`${legal.warrantyMonths} months.`}>
         <p className={`m-0 mb-6 text-[17px] leading-[1.6] text-[#EDEDEF]`}>
-          From the day you first set Tile up on WiFi (and at most {legal.warrantyMonths + 6} months from the date we
-          dispatched it).
+          {legal.warrantyMonths}-month warranty. {warrantyStart}
         </p>
         <div className="mb-8 grid gap-3 sm:grid-cols-2">
           <div className={card}>

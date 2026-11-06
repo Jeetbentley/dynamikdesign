@@ -1,5 +1,5 @@
 import LegalPage, { A, Email, H2, List } from '@/components/LegalPage'
-import { legal, waHref } from '@/data/legal'
+import { legal, waHref, warrantyStart } from '@/data/legal'
 
 export const metadata = {
   title: 'Warranty — Dynamik Design Lab',
@@ -11,8 +11,8 @@ export default function WarrantyPage() {
     <LegalPage title="Warranty">
       <H2>Coverage</H2>
       <p>
-        Our products carry a {legal.warrantyMonths}-month warranty from the date of delivery against manufacturing defects in
-        materials and workmanship. The warranty is for the original purchaser and needs the order ID or invoice.
+        Tile carries a {legal.warrantyMonths}-month warranty against manufacturing defects in materials and workmanship.{' '}
+        {warrantyStart} The warranty is for the original purchaser and needs the order ID or invoice.
       </p>
 
       <H2>What we do</H2>

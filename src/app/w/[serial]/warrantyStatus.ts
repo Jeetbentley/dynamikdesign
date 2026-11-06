@@ -13,7 +13,7 @@ export type WarrantyStatus =
       serial: string
       colour: string
       manufactured: string // YYYY-MM
-      months: number
+      months: number | null // from the sheet; the page falls back to legal.warrantyMonths
       status: 'not_activated' | 'active' | 'expired'
       startsFrom: 'setup' | 'delivery' | 'invoice' | null
       start: string | null // YYYY-MM-DD
@@ -32,8 +32,9 @@ function parse(data: unknown): WarrantyStatus | null {
   if (d.genuine === false) return { kind: 'not_found', serial: d.serial }
   if (d.genuine !== true) return null
   if (typeof d.colour !== 'string' || typeof d.manufactured !== 'string' || !/^\d{4}-\d{2}$/.test(d.manufactured)) return null
-  if (typeof d.months !== 'number' || !STATUSES.includes(d.status as (typeof STATUSES)[number])) return null
+  if (!STATUSES.includes(d.status as (typeof STATUSES)[number])) return null
   const status = d.status as (typeof STATUSES)[number]
+  const months = typeof d.months === 'number' && Number.isInteger(d.months) && d.months > 0 ? d.months : null
   const startsFrom = d.startsFrom === 'setup' || d.startsFrom === 'delivery' || d.startsFrom === 'invoice' ? d.startsFrom : null
   const start = isDate(d.start) ? d.start : null
   const end = isDate(d.end) ? d.end : null
@@ -41,7 +42,7 @@ function parse(data: unknown): WarrantyStatus | null {
   // Active and expired need their dates; without them the status can't be shown truthfully.
   if (status === 'active' && (!start || !end || daysLeft === null)) return null
   if (status === 'expired' && !end) return null
-  return { kind: 'genuine', serial: d.serial, colour: d.colour, manufactured: d.manufactured, months: d.months, status, startsFrom, start, end, daysLeft }
+  return { kind: 'genuine', serial: d.serial, colour: d.colour, manufactured: d.manufactured, months, status, startsFrom, start, end, daysLeft }
 }
 
 export async function getWarrantyStatus(serial: string): Promise<WarrantyStatus | null> {

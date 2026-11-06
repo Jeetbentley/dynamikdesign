@@ -41,6 +41,9 @@ export const telHref = (phone: string) => `tel:${phone.replace(/[^\d+]/g, '')}`
 // WhatsApp link for the same number
 export const waHref = (phone: string) => `https://wa.me/${phone.replace(/\D/g, '')}`
 
+// When the Tile warranty starts. Tile activates it itself on first WiFi setup.
+export const warrantyStart = 'It starts the day you first set Tile up on WiFi (or the delivery date if it never goes online).'
+
 // "12 months" → "1-year" for short labels; falls back to months
 export const warrantyLabel =
   legal.warrantyMonths % 12 === 0 ? `${legal.warrantyMonths / 12}-year` : `${legal.warrantyMonths}-month`

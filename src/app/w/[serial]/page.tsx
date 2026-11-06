@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import TileShell, { pillOrange, pillOutline } from '@/app/tile/TileShell'
 import { body, card, eyebrow, h2, mono } from '@/app/products/tile/tileStyles'
-import { legal, waHref } from '@/data/legal'
+import { legal, waHref, warrantyStart } from '@/data/legal'
 import { getWarrantyStatus, type WarrantyStatus } from './warrantyStatus'
 
 // Warranty page behind the QR code on every Tile box and device: /w/DDLTL-YYMM-C-NNNN.
@@ -124,7 +124,7 @@ function LiveStatus({ status }: { status: Extract<WarrantyStatus, { kind: 'genui
       <GenuineBadge />
       <h1 className={`mb-4 ${h2}`}>Warranty not activated yet</h1>
       <p className={`m-0 max-w-[48ch] text-[17px] leading-[1.6] text-[#EDEDEF]`}>
-        Your {status.months}-month warranty starts the day you first set up your Tile with the app.
+        Your {status.months ?? legal.warrantyMonths}-month warranty starts the day you first set Tile up on WiFi.
       </p>
       <p className={`mb-0 mt-3 ${mono}`}>
         Made {monthYear(status.manufactured)} · {status.colour} chin
@@ -213,7 +213,7 @@ export default async function WarrantyPage({ params }: { params: { serial: strin
           <div className="mt-12">
             <h2 className={`mb-3 ${mono}`}>Warranty</h2>
             <p className={`m-0 max-w-[56ch] text-[17px] leading-[1.6] text-[#EDEDEF]`}>
-              {legal.warrantyMonths}-month warranty from the date of delivery, against manufacturing defects.
+              {genuine?.months ?? legal.warrantyMonths}-month warranty against manufacturing defects. {warrantyStart}
             </p>
           </div>
 
